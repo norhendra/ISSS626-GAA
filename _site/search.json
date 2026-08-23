@@ -2,15 +2,15 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "ISSS626-GAA",
+    "title": "ISSS626",
     "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
+    "text": "Welcome to ISSS626 Geospatial Analytics and Applications. This site documents my coursework: hands-on exercises, in-class exercises, and take-home assignments completed using R."
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
+    "objectID": "index.html#latest-posts",
+    "href": "index.html#latest-posts",
+    "title": "ISSS626",
+    "section": "Latest Posts",
+    "text": "Latest Posts"
   }
 ]

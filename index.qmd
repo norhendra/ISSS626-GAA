@@ -1,11 +1,20 @@
 ---
-title: "ISSS626-GAA"
+title: "ISSS626"
+listing:
+  type: grid
+  contents:
+    - "Hands-on_Ex/*/*.qmd"
+    # - "Take-home_Ex/*/*.qmd"
+    # - "In-class_Ex/*/*.qmd"
+  sort: "date desc"
+  fields: [date, title, description]
+  max-items: 12
+toc: false
 ---
 
-This is a Quarto website.
+Welcome to **ISSS626 Geospatial Analytics and Applications**. This site documents my coursework: hands-on exercises, in-class exercises, and take-home assignments completed using R.
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+## Latest Posts
 
-```{r}
-1 + 1
-```
+::: listing-block
+:::
