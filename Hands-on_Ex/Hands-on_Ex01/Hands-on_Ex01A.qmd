@@ -1,5 +1,5 @@
 ---
-title: "Hands-on Exercise 1A"
+title: "Hands-on Exercise 1A: Geospatial Data Science with R"
 format: html
 author: "Nor Hendra"
 date: "23 August 2026"
