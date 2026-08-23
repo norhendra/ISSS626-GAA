@@ -12,7 +12,7 @@ listing:
 toc: false
 ---
 
-Welcome to **ISSS626 Geospatial Analytics and Applications**. This site documents my coursework: hands-on exercises, in-class exercises, and take-home assignments completed using R.
+Hello, I am Nor Hendra and welcome to my **ISSS626 Geospatial Analytics and Applications** coursework page. This site documents my coursework: hands-on exercises, in-class exercises, and take-home assignments completed using R.
 
 ## Latest Posts
 
