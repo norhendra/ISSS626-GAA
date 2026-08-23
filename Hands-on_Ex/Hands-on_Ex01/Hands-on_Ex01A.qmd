@@ -1,0 +1,542 @@
+---
+title: "Hands-on Exercise 1A"
+format: html
+author: "Nor Hendra"
+date: "23 August 2026"
+editor: visual
+freeze: true
+execute:
+  eval: true
+  echo: true
+  warning: false
+---
+
+# 1. Learning Outcome
+
+Geospatial Data Science is the process of importing, wrangling, integrating, and processing geographically referenced data sets. In this hands-on exercise, I learned how to perform geospatial data science tasks in R by using the **sf** package.
+
+By the end of this exercise, I acquired the following competencies:
+
+- installing and loading [sf](https://r-spatial.github.io/sf/) and [tidyverse](https://www.tidyverse.org/) packages into the R environment,
+- importing geospatial data by using appropriate functions of the **sf** package,
+- importing aspatial data by using appropriate functions of the **readr** package,
+- exploring the content of a simple feature data frame by using appropriate **Base R** and **sf** functions,
+- assigning or transforming coordinate systems by using appropriate **sf** functions,
+- converting aspatial data into an sf data frame by using appropriate functions of the **sf** package,
+- performing geoprocessing tasks by using appropriate functions of the **sf** package,
+- performing data wrangling tasks by using appropriate functions of the **dplyr** package, and
+- performing Exploratory Data Analysis (EDA) by using appropriate functions from the **ggplot2** package.
+
+::: callout-note
+I made it a habit to read the reference guide of each function, especially the input data requirements, syntax, and argument options, before using them.
+:::
+
+::: callout-important
+## Note on data formats used in this write-up
+
+The reference material describes the subzone boundary and cycling path as ESRI shapefiles and the pre-school locations as a KML. What I actually downloaded from data.gov.sg and LTA DataMall came as **GeoJSON** for all three geospatial layers instead. I adapted the code and the explanation accordingly, and flagged every place this changes something.
+:::
+
+# 2. Data Acquisition
+
+Data are key to any form of analytics, geospatial analytics included. Before analysing, the necessary data must first be assembled. For this exercise, I extracted the following data sets:
+
+- Master Plan 2014 Subzone Boundary (No Sea), **GeoJSON**, from [data.gov.sg](https://data.gov.sg/)
+- Pre-Schools Location, **GeoJSON**, from [data.gov.sg](https://data.gov.sg/)
+- Cycling Path Network, **GeoJSON**, from [data.gov.sg](https://data.gov.sg/)
+- Latest version of Singapore Airbnb listing data, **CSV**, from [Inside Airbnb](http://insideairbnb.com/get-the-data.html)
+
+## 2.1 Folder structure
+
+Inside `Hands-on_Ex01`, I created a `data` sub-folder, and within it two further sub-folders named `geospatial` and `aspatial`.
+
+The three GeoJSON files were placed directly into `geospatial` and `listings.csv` was placed into `aspatial`.
+
+```         
+Hands-on_Ex01/
+└── data/
+    ├── geospatial/
+    │   ├── MasterPlan2014SubzoneBoundaryNoSea.geojson
+    │   ├── PreSchoolsLocation.geojson
+    │   └── CyclingPathNetworkGEOJSON.geojson
+    └── aspatial/
+        └── listings.csv
+```
+
+# 3. Getting Started
+
+Two R packages are used in this exercise:
+
+- **sf** for importing, managing, and processing geospatial data, and
+- **tidyverse** for performing data science tasks such as importing, wrangling and visualising data.
+
+::: callout-note
+Tidyverse is a family of R packages. The ones I actually rely on here are **readr** for importing csv data, **tidyr** for manipulating data, **dplyr** for transforming data, and **ggplot2** for visualising data.
+:::
+
+```{r}
+pacman::p_load(sf, tidyverse)
+```
+
+The [`p_load()`](https://cran.r-project.org/web/packages/pacman/pacman.pdf) function of the [**pacman**](https://github.com/trinker/pacman) package installs and loads sf and tidyverse into the R environment in a single call. That is why it is preferred over `install.packages()` followed by `library()`.
+
+# 4. Importing Geospatial Data
+
+In this section I imported the following geospatial data into R by using [`st_read()`](https://r-spatial.github.io/sf/reference/st_read.html) of the **sf** package:
+
+- `MasterPlan2014SubzoneBoundaryNoSea`, a polygon feature layer in GeoJSON format,
+- `CyclingPathNetworkGEOJSON`, a line feature layer in GeoJSON format, and
+- `PreSchoolsLocation`, a point feature layer in GeoJSON format.
+
+::: callout-note
+Every layer here is a single self-contained file, so the import uses one path argument rather than the `dsn` / `layer` pair the reference material uses for its shapefile. `st_read()` auto-detects the driver (shapefile, KML, GeoJSON, and so on) from the file itself.
+:::
+
+## 4.1 Importing the subzone boundary
+
+```{r}
+mpsz <- st_read("data/geospatial/MasterPlan2014SubzoneBoundaryNoSea.geojson")
+```
+
+The message reveals 323 polygon features, matching the 2014 subzone count reported in the reference material. Unlike the shapefile version, the coordinate reference system reads as **WGS84 (EPSG:4326)** straight away, with a bounding box in decimal degrees rather than the tens of thousands of metres a projected layer would show. GeoJSON coordinates are always geographic per the format spec, regardless of what CRS the source data was originally surveyed in.
+
+## 4.2 Importing the cycling path network
+
+```{r}
+cyclingpath <- st_read("data/geospatial/CyclingPathNetworkGEOJSON.geojson")
+```
+
+This layer has 8,523 line features and 6 attribute fields. That is noticeably more paths than the 4,651 the reference material describes, since LTA's published cycling path network has been extended since the book was written. It also carries far fewer attribute columns than the reference material's 19-field shapefile version (`OBJECTID_1`, `CYL_PATH`, `AGENCY_MAINT`, `INC_CRC`, `FMEL_UPD_D`, `SHAPE_1.LEN`). None of those extra shapefile fields are actually used later in this exercise though, so it has no effect on the analysis.
+
+::: callout-important
+## Correction to the reference material
+
+The reference chapter describes the cycling path layer as being similar to "the *MP19_SUBZONE_WEB_PL* shape file." That is a typo carried over from the book. The subzone layer imported in Section 4.1 is Master Plan **2014**, not MP19. This matters because Hands-on Exercise 2 genuinely does use the Master Plan **2019** boundary, and mixing the two up invites confusion about which vintage of subzone boundary is actually in play.
+:::
+
+## 4.3 Importing pre-school locations
+
+```{r}
+preschool <- st_read("data/geospatial/PreSchoolsLocation.geojson")
+```
+
+The message reveals 2,290 point features and only 2 fields, `Name` and `Description`. This actually matches the reference material's own KML import, since this GeoJSON was clearly exported directly from the original KML without flattening its attribute table. `Description` still holds an HTML table with `CENTRE_NAME`, `CENTRE_CODE`, and update-date fields embedded as markup rather than as proper columns. I don't need those attribute values for this exercise, so I leave the field as is here. The equivalent parsing step is covered properly in Hands-on Exercise 2, where the attributes are actually used.
+
+::: callout-important
+## Correction to the reference material
+
+The reference chapter imports the pre-school layer and transforms it in the same step:
+
+``` r
+preschool = st_read("chap01/data/geospatial/PreSchoolsLocation.kml") %>%
+  st_transform(crs = 3414)
+```
+
+I deliberately do **not** do this. Applying `st_transform()` at import time undermines the book's own later narrative. Its Section 1.6 explains that the preschool points "failed to plot on top of the mpsz layer" due to a CRS mismatch, and its Section 1.7.2 claims the printout still "reveals wgs84 coordinate system." But if the transform already ran at import, neither of those statements would be true, and the book's own before and after printouts for that section are identical to each other. I import without transforming, and apply the transform later in Section 7, where it belongs.
+:::
+
+# 5. Checking the Content of A Simple Feature Data Frame
+
+Before wrangling geospatial data, it is good practice to get to know the data set first.
+
+## 5.1 Working with `st_geometry()`
+
+```{r}
+st_geometry(mpsz)
+```
+
+This displays the geometry type, the geographic extent, and the coordinate system, which is WGS84 for the reasons noted in Section 4.1.
+
+## 5.2 Working with `glimpse()`
+
+```{r}
+glimpse(mpsz)
+```
+
+The field names in this GeoJSON differ from the reference material's shapefile in a couple of ways worth flagging.
+
+::: callout-note
+## Correction to the reference material
+
+The reference chapter describes area and length fields as `SHAPE_L` and `SHAPE_AREA`, and elsewhere as `SHAPE_Leng` / `SHAPE_Area`. Neither matches what's actually in this file. The GeoJSON export names them `SHAPE_1.LEN` and `SHAPE_1.AREA`, and there is no `X_ADDR` / `Y_ADDR` pair at all (those were shapefile-specific centroid columns that didn't carry over into the GeoJSON export). None of these fields are used in the calculations later in this exercise, since I derive area independently with `st_area()` in Section 9, so the mismatch doesn't affect the analysis. It would still break any code copied verbatim from the reference material that references these columns by name.
+:::
+
+## 5.3 Working with `head()`
+
+```{r}
+head(mpsz, n = 5)  
+```
+
+# 6. Plotting the Geospatial Data
+
+```{r}
+plot(st_geometry(mpsz))
+```
+
+```{r}
+plot(mpsz["PLN_AREA_N"])
+```
+
+::: callout-tip
+`plot()` is appropriate for a quick look at a geospatial object. For high cartographic quality maps, a package such as **tmap** should be used, which is exactly what Hands-on Exercise 2 covers.
+:::
+
+Now let me try plotting the preschool layer on top of the mpsz layer.
+
+```{r}
+plot(st_geometry(mpsz))
+plot(st_geometry(preschool), 
+     add = TRUE)
+```
+
+::: callout-important
+## Where this diverges from the reference material
+
+In the reference material, this exact overlay fails, because its `mpsz` is a shapefile already in SVY21 (coordinates in metres) while `preschool` is a KML in WGS84 (coordinates in degrees). Plotting the two together puts the preschool points far outside the subzone boundaries' plotting extent.
+
+That failure doesn't reproduce here. **Both layers are GeoJSON, and GeoJSON is always WGS84 by specification.** There is no coordinate system mismatch to cause a visible failure, so the overlay above already looks correct. This is a genuine consequence of the different file formats, not something I fixed on purpose.
+
+It does **not** mean the projection step in Section 7 is unnecessary though. WGS84 stores angular degrees, not metres. Any calculation that assumes metric units, such as a 5 metre buffer or an area in square kilometres, will silently misinterpret those degrees as metres unless the data is first transformed to a projected coordinate system. The visual overlay working is not the same thing as the data being fit for measurement.
+:::
+
+# 7. Working with Projection
+
+Map projection is an important property of geospatial data. To perform geoprocessing that involves distance or area (buffering, area calculation), the data must be in a projected coordinate system with metric units, regardless of whether the layers visually align in WGS84.
+
+::: callout-note
+## Why this matters, from the lesson slides
+
+Geographic coordinate systems (GCS) such as wgs84 define locations on a three-dimensional spherical surface and give accurate positional information, but they are **not appropriate for distance and area measurements**. One degree at the north pole spans a far shorter ground distance than one degree at the equator.
+
+Projected coordinate systems (PCS) such as svy21 provide consistent length and area measurement across space. This is exactly why a transformation from GCS to PCS is required before any of the buffering, area, or density calculations in Section 9.
+:::
+
+## 7.1 Checking the coordinate reference system
+
+```{r}
+st_crs(mpsz)
+```
+
+This correctly reports EPSG:4326 (WGS84).
+
+::: callout-note
+## Why the reference material's EPSG-9001 problem doesn't appear here
+
+The reference chapter spends a subsection fixing a *wrongly labelled* CRS. Its shapefile's `.prj` file is incomplete, so `st_crs()` reports EPSG **9001**, which isn't even a coordinate system (it's the EPSG code for the unit *metre*), instead of the correct 3414. The fix there is `st_set_crs()`, which relabels metadata without moving any coordinates.
+
+That specific failure mode is a shapefile artefact. `.prj` files are a separate sidecar file that's easy to omit or corrupt during a shapefile export. GeoJSON has no equivalent sidecar to go missing. The CRS is either implied as WGS84 by the format spec (as here) or stated explicitly inside the file itself. So there is no mislabelled CRS bug to fix in this data, and `st_set_crs()` isn't the right tool here since my CRS label is already correct. What I need instead is a genuine coordinate transformation, covered next.
+:::
+
+## 7.2 Transforming the geospatial layers to svy21
+
+Since all three geospatial layers came in as WGS84, all three need `st_transform()` before any metric geoprocessing.
+
+```{r}
+mpsz3414 <- st_transform(mpsz, crs = 3414)
+preschool3414 <- st_transform(preschool, crs = 3414)
+cyclingpath3414 <- st_transform(cyclingpath, crs = 3414)
+```
+
+::: callout-note
+In practice, the appropriate projected coordinate system must be identified *before* performing the transformation. [epsg.io](https://epsg.io/) provides a comprehensive list of country coordinate systems. [3414](https://epsg.io/3414) is Singapore's SVY21.
+:::
+
+Confirming the transformation took effect. The bounding box should now be in the tens of thousands, not single digits:
+
+```{r}
+st_geometry(mpsz3414)
+```
+
+```{r}
+st_geometry(preschool3414)
+```
+
+This is the point where the projection actually starts to matter for this exercise, even though the plots in Section 6 looked fine without it. Everything from here on, including Section 9's buffers and areas, depends on these transformed versions rather than the originals.
+
+# 8. Importing and Converting Aspatial Data
+
+In practice it is not unusual to come across data such as the Inside Airbnb `listings` file. This is called **aspatial data** because it is not geospatial data, but among its data fields there are two that capture the x and y coordinates of the data points.
+
+## 8.1 Importing the aspatial data
+
+```{r}
+listings <- read_csv("data/aspatial/listings.csv")
+```
+
+::: callout-important
+## Correction to the reference material
+
+The reference chapter states that "listing tibble data frame consists of 4252 rows and 16 columns," while its own printed output directly above that sentence shows a different figure again. Inside Airbnb republishes its listings quarterly, so the exact row and column count will keep shifting for anyone downloading it fresh. My own file has yet another column count, since it happens to include a `host_profile_id` field the reference material's copy did not. This is exactly why I read the dimensions off the object programmatically instead of quoting a number from the book:
+:::
+
+```{r}
+dim(listings)
+```
+
+The two fields I need for the next step are `latitude` and `longitude`, in decimal degree format, so as with the geospatial layers this is wgs84.
+
+## 8.2 Creating a simple feature data frame from an aspatial data frame
+
+```{r}
+listings_sf <- st_as_sf(listings, 
+                        coords = c("longitude", "latitude"),
+                        crs = 4326) %>%
+  st_transform(crs = 3414)
+```
+
+Things to learn from the arguments above:
+
+- the `coords` argument requires the column name of the x-coordinates **first**, then the column name of the y-coordinates. Reversing them is a silent error since the points will still be created, just in entirely the wrong places.
+- the `crs` argument requires the coordinate system in EPSG format. [EPSG:4326](https://epsg.io/4326) is the wgs84 Geographic Coordinate System and [EPSG:3414](https://epsg.io/3414) is the Singapore SVY21 Projected Coordinate System.
+- `%>%` nests `st_transform()` so the result is immediately in the svy21 projected coordinate system, consistent with the geospatial layers transformed in Section 7.
+
+```{r}
+glimpse(listings_sf)
+```
+
+Plotting `listings_sf` on top of `mpsz3414`:
+
+```{r}
+plot(st_geometry(mpsz3414))
+plot(st_geometry(listings_sf), 
+     add = TRUE, 
+     pch = 20, 
+     cex = 0.3, 
+     col = "steelblue")
+```
+
+# 9. Geoprocessing with sf package
+
+Beyond handling geospatial data (importing, exporting, assigning projections, transforming projections), the **sf** package also offers a wide range of geoprocessing (GIS analysis) functions.
+
+::: callout-note
+## Grounding this in the OGC standard
+
+From the lesson slides, the OGC OpenGIS Implementation Standard / ISO 19125 defines methods that support spatial analysis, including `distance`, `buffer`, `convex hull`, `intersection`, `union`, `difference` and `symmetric difference`, all of which return new geometric objects. The sf functions used below are R's implementation of exactly that standard, which is why the same verbs show up in PostGIS and QGIS.
+:::
+
+## 9.1 Use case 1: Land acquisition analysis
+
+### 9.1.1 The scenario
+
+The authority is planning to upgrade the existing cycling path. To do so, they need to acquire 5 metres of reserved land on both sides of the existing cycling path. I am tasked to determine the extent of the land needing to be acquired and its total area.
+
+### 9.1.2 The solution
+
+```{r}
+buffer_cycling <- st_buffer(cyclingpath3414, 
+                            dist = 5, 
+                            nQuadSegs = 30)
+```
+
+::: callout-note
+`dist = 5` is interpreted in the units of the layer's CRS. Because `cyclingpath3414` has already been transformed to svy21 (metres), this correctly produces a 5 metre buffer. Had I skipped Section 7.2 and buffered the original wgs84 `cyclingpath` instead, `dist = 5` would have been read as 5 **degrees**, roughly 550 km. That is exactly why the transform in Section 7 matters regardless of the overlay in Section 6 having looked fine.
+:::
+
+```{r}
+buffer_cycling <- buffer_cycling %>%
+  mutate(AREA = st_area(geometry))
+```
+
+```{r}
+sum(buffer_cycling$AREA)
+```
+
+```{r}
+mpsz_selected <- mpsz3414 %>%
+  filter(SUBZONE_N == "TAMPINES WEST")
+```
+
+```{r}
+buffer_cycling_selected <- st_intersection(buffer_cycling, 
+                                           mpsz_selected)
+```
+
+```{r}
+plot(st_geometry(mpsz_selected))
+plot(st_geometry(buffer_cycling_selected), 
+     col = "#C1443C", 
+     border = NA, 
+     add = TRUE)
+```
+
+## 9.2 Use case 2: Number of pre-schools by planning subzone
+
+### 9.2.1 The scenario
+
+The authority requires a count of pre-schools for each planning subzone to support forward planning.
+
+### 9.2.2 The solution
+
+```{r}
+mpsz3414$`PreSch Count` <- lengths(st_intersects(mpsz3414, preschool3414))
+```
+
+::: callout-warning
+`st_intersects()` should not be confused with [`st_intersection()`](https://r-spatial.github.io/sf/reference/geos_binary_ops.html). The former is a **predicate** returning which features touch or overlap. The latter is a **geometry-generating operator** returning new clipped geometries.
+
+Note also that the reference chapter uses `lengths()` here (plural, the vectorised form) while its surrounding prose describes it as `length()` (singular). Only `lengths()` produces a per-subzone count.
+:::
+
+```{r}
+summary(mpsz3414$`PreSch Count`)
+```
+
+```{r}
+top_n(mpsz3414, 1, `PreSch Count`)
+```
+
+```{r}
+mpsz3414 <- mpsz3414 %>%
+  mutate(Area = st_area(geometry))
+```
+
+::: callout-note
+The reference chapter writes this as `mpsz$Area <- mpsz %>% st_area()`, mixing base assignment with a pipe. I use the tidier `mutate()` form instead, consistent with how `AREA` was computed in Section 9.1.2.
+:::
+
+```{r}
+mpsz3414 <- mpsz3414 %>%
+  mutate(`PreSch Density` = `PreSch Count` / Area * 1000000)
+```
+
+The multiplier of 1,000,000 converts from counts per square metre to counts per square kilometre, since `st_area()` returns metres squared for an svy21 layer.
+
+## 9.3 Exploratory Data Analysis
+
+::: panel-tabset
+## R Graphics
+
+```{r}
+hist(mpsz3414$`PreSch Density`)
+```
+
+## ggplot2
+
+```{r}
+ggplot(data = mpsz3414, 
+       aes(x = as.numeric(`PreSch Density`))) +
+  geom_histogram(bins = 20, 
+                 color = "black", 
+                 fill = "light blue") +
+  labs(title = "Are pre-schools evenly distributed in Singapore?",
+       x = "Pre-school density (per km sq)",
+       y = "Frequency")
+```
+:::
+
+```{r}
+ggplot(data = mpsz3414, 
+       aes(y = `PreSch Count`, 
+           x = as.numeric(`PreSch Density`))) +
+  geom_point(color = "black") +
+  xlim(0, 40) +
+  ylim(0, 40) +
+  labs(title = "Relationship between pre-school density and count",
+       x = "Pre-school density (per km sq)",
+       y = "Pre-school count")
+```
+
+::: callout-important
+## Correction to the reference material
+
+The reference chapter writes this scatterplot with `geom_point(color="black", fill="light blue")`. `fill` has no effect here since `geom_point()` defaults to shape 19, a solid circle with no fill aesthetic, only `colour`. To actually use both, a fillable shape (21 to 25) is needed, demonstrated in the Extras.
+:::
+
+# 10. Extras
+
+## 10.1 Fixing the scatterplot properly with a fillable shape
+
+```{r}
+ggplot(data = mpsz3414, 
+       aes(y = `PreSch Count`, 
+           x = as.numeric(`PreSch Density`))) +
+  geom_point(shape = 21, 
+             colour = "#1E3A5F", 
+             fill = "#7FB3D5", 
+             size = 2.5, 
+             alpha = 0.8) +
+  xlim(0, 40) +
+  ylim(0, 40) +
+  labs(title = "Pre-school density against count, by planning subzone",
+       x = "Pre-school density (per km sq)",
+       y = "Pre-school count") +
+  theme_minimal()
+```
+
+## 10.2 Geometry validity checks before geoprocessing
+
+GeoJSON exports from open-data portals are somewhat more prone to invalid or duplicate-vertex geometries than curated shapefiles, so this check is worth running here specifically.
+
+```{r}
+table(st_is_valid(mpsz3414))
+```
+
+```{r}
+mpsz3414 <- st_make_valid(mpsz3414)
+table(st_is_valid(mpsz3414))
+```
+
+```{r}
+sum(st_is_empty(mpsz3414))
+```
+
+## 10.3 Choosing the right spatial predicate
+
+```{r}
+count_intersects <- lengths(st_intersects(mpsz3414, preschool3414))
+count_contains <- lengths(st_contains(mpsz3414, preschool3414))
+
+tibble(
+  predicate = c("st_intersects", "st_contains"),
+  total_counted = c(sum(count_intersects), sum(count_contains)),
+  actual_preschools = nrow(preschool3414)
+)
+```
+
+If `st_intersects` totals more than the actual number of pre-schools, boundary points are being double counted between adjacent subzones.
+
+## 10.4 Nearest-neighbour distance: how far is the nearest pre-school?
+
+```{r}
+nearest_idx <- st_nearest_feature(listings_sf, preschool3414)
+
+listings_sf <- listings_sf %>%
+  mutate(dist_to_preschool = st_distance(listings_sf, 
+                                         preschool3414[nearest_idx, ], 
+                                         by_element = TRUE))
+
+summary(as.numeric(listings_sf$dist_to_preschool))
+```
+
+```{r}
+ggplot(data = listings_sf,
+       aes(x = as.numeric(dist_to_preschool))) +
+  geom_histogram(bins = 40, 
+                 fill = "#4A7C59", 
+                 colour = "white") +
+  labs(title = "Distance from each Airbnb listing to its nearest pre-school",
+       x = "Distance (metres)",
+       y = "Number of listings") +
+  theme_minimal()
+```
+
+## 10.5 A quick look at region-level aggregation
+
+```{r}
+mpsz_region <- mpsz3414 %>%
+  group_by(REGION_N) %>%
+  summarise(`PreSch Count` = sum(`PreSch Count`),
+            Area = sum(Area)) %>%
+  mutate(`PreSch Density` = `PreSch Count` / Area * 1000000)
+
+mpsz_region %>%
+  st_drop_geometry() %>%
+  arrange(desc(`PreSch Density`))
+```
+
+```{r}
+plot(mpsz_region["PreSch Count"], 
+     main = "Pre-school count by region")
+```
+

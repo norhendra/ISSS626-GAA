@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Nor Hendra">
+<meta name="dcterms.date" content="2026-08-23">
+
+<title>Hands-on Exercise 1A – ISSS626</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-445b8638c3d06994fee0907d791121c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">ISSS626</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-hands-on-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Hands-on Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01A.html">
+ <span class="dropdown-text">Hands-on Exercise 1A</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01B.html">
+ <span class="dropdown-text">Hands-on Exercise 1B</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#learning-outcome" id="toc-learning-outcome" class="nav-link active" data-scroll-target="#learning-outcome">1. Learning Outcome</a></li>
+  <li><a href="#data-acquisition" id="toc-data-acquisition" class="nav-link" data-scroll-target="#data-acquisition">2. Data Acquisition</a>
+  <ul class="collapse">
+  <li><a href="#folder-structure" id="toc-folder-structure" class="nav-link" data-scroll-target="#folder-structure">2.1 Folder structure</a></li>
+  </ul></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">3. Getting Started</a></li>
+  <li><a href="#importing-geospatial-data" id="toc-importing-geospatial-data" class="nav-link" data-scroll-target="#importing-geospatial-data">4. Importing Geospatial Data</a>
+  <ul class="collapse">
+  <li><a href="#importing-the-subzone-boundary" id="toc-importing-the-subzone-boundary" class="nav-link" data-scroll-target="#importing-the-subzone-boundary">4.1 Importing the subzone boundary</a></li>
+  <li><a href="#importing-the-cycling-path-network" id="toc-importing-the-cycling-path-network" class="nav-link" data-scroll-target="#importing-the-cycling-path-network">4.2 Importing the cycling path network</a></li>
+  <li><a href="#importing-pre-school-locations" id="toc-importing-pre-school-locations" class="nav-link" data-scroll-target="#importing-pre-school-locations">4.3 Importing pre-school locations</a></li>
+  </ul></li>
+  <li><a href="#checking-the-content-of-a-simple-feature-data-frame" id="toc-checking-the-content-of-a-simple-feature-data-frame" class="nav-link" data-scroll-target="#checking-the-content-of-a-simple-feature-data-frame">5. Checking the Content of A Simple Feature Data Frame</a>
+  <ul class="collapse">
+  <li><a href="#working-with-st_geometry" id="toc-working-with-st_geometry" class="nav-link" data-scroll-target="#working-with-st_geometry">5.1 Working with <code>st_geometry()</code></a></li>
+  <li><a href="#working-with-glimpse" id="toc-working-with-glimpse" class="nav-link" data-scroll-target="#working-with-glimpse">5.2 Working with <code>glimpse()</code></a></li>
+  <li><a href="#working-with-head" id="toc-working-with-head" class="nav-link" data-scroll-target="#working-with-head">5.3 Working with <code>head()</code></a></li>
+  </ul></li>
+  <li><a href="#plotting-the-geospatial-data" id="toc-plotting-the-geospatial-data" class="nav-link" data-scroll-target="#plotting-the-geospatial-data">6. Plotting the Geospatial Data</a></li>
+  <li><a href="#working-with-projection" id="toc-working-with-projection" class="nav-link" data-scroll-target="#working-with-projection">7. Working with Projection</a>
+  <ul class="collapse">
+  <li><a href="#checking-the-coordinate-reference-system" id="toc-checking-the-coordinate-reference-system" class="nav-link" data-scroll-target="#checking-the-coordinate-reference-system">7.1 Checking the coordinate reference system</a></li>
+  <li><a href="#transforming-the-geospatial-layers-to-svy21" id="toc-transforming-the-geospatial-layers-to-svy21" class="nav-link" data-scroll-target="#transforming-the-geospatial-layers-to-svy21">7.2 Transforming the geospatial layers to svy21</a></li>
+  </ul></li>
+  <li><a href="#importing-and-converting-aspatial-data" id="toc-importing-and-converting-aspatial-data" class="nav-link" data-scroll-target="#importing-and-converting-aspatial-data">8. Importing and Converting Aspatial Data</a>
+  <ul class="collapse">
+  <li><a href="#importing-the-aspatial-data" id="toc-importing-the-aspatial-data" class="nav-link" data-scroll-target="#importing-the-aspatial-data">8.1 Importing the aspatial data</a></li>
+  <li><a href="#creating-a-simple-feature-data-frame-from-an-aspatial-data-frame" id="toc-creating-a-simple-feature-data-frame-from-an-aspatial-data-frame" class="nav-link" data-scroll-target="#creating-a-simple-feature-data-frame-from-an-aspatial-data-frame">8.2 Creating a simple feature data frame from an aspatial data frame</a></li>
+  </ul></li>
+  <li><a href="#geoprocessing-with-sf-package" id="toc-geoprocessing-with-sf-package" class="nav-link" data-scroll-target="#geoprocessing-with-sf-package">9. Geoprocessing with sf package</a>
+  <ul class="collapse">
+  <li><a href="#use-case-1-land-acquisition-analysis" id="toc-use-case-1-land-acquisition-analysis" class="nav-link" data-scroll-target="#use-case-1-land-acquisition-analysis">9.1 Use case 1: Land acquisition analysis</a>
+  <ul class="collapse">
+  <li><a href="#the-scenario" id="toc-the-scenario" class="nav-link" data-scroll-target="#the-scenario">9.1.1 The scenario</a></li>
+  <li><a href="#the-solution" id="toc-the-solution" class="nav-link" data-scroll-target="#the-solution">9.1.2 The solution</a></li>
+  </ul></li>
+  <li><a href="#use-case-2-number-of-pre-schools-by-planning-subzone" id="toc-use-case-2-number-of-pre-schools-by-planning-subzone" class="nav-link" data-scroll-target="#use-case-2-number-of-pre-schools-by-planning-subzone">9.2 Use case 2: Number of pre-schools by planning subzone</a>
+  <ul class="collapse">
+  <li><a href="#the-scenario-1" id="toc-the-scenario-1" class="nav-link" data-scroll-target="#the-scenario-1">9.2.1 The scenario</a></li>
+  <li><a href="#the-solution-1" id="toc-the-solution-1" class="nav-link" data-scroll-target="#the-solution-1">9.2.2 The solution</a></li>
+  </ul></li>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis">9.3 Exploratory Data Analysis</a></li>
+  </ul></li>
+  <li><a href="#extras" id="toc-extras" class="nav-link" data-scroll-target="#extras">10. Extras</a>
+  <ul class="collapse">
+  <li><a href="#fixing-the-scatterplot-properly-with-a-fillable-shape" id="toc-fixing-the-scatterplot-properly-with-a-fillable-shape" class="nav-link" data-scroll-target="#fixing-the-scatterplot-properly-with-a-fillable-shape">10.1 Fixing the scatterplot properly with a fillable shape</a></li>
+  <li><a href="#geometry-validity-checks-before-geoprocessing" id="toc-geometry-validity-checks-before-geoprocessing" class="nav-link" data-scroll-target="#geometry-validity-checks-before-geoprocessing">10.2 Geometry validity checks before geoprocessing</a></li>
+  <li><a href="#choosing-the-right-spatial-predicate" id="toc-choosing-the-right-spatial-predicate" class="nav-link" data-scroll-target="#choosing-the-right-spatial-predicate">10.3 Choosing the right spatial predicate</a></li>
+  <li><a href="#nearest-neighbour-distance-how-far-is-the-nearest-pre-school" id="toc-nearest-neighbour-distance-how-far-is-the-nearest-pre-school" class="nav-link" data-scroll-target="#nearest-neighbour-distance-how-far-is-the-nearest-pre-school">10.4 Nearest-neighbour distance: how far is the nearest pre-school?</a></li>
+  <li><a href="#a-quick-look-at-region-level-aggregation" id="toc-a-quick-look-at-region-level-aggregation" class="nav-link" data-scroll-target="#a-quick-look-at-region-level-aggregation">10.5 A quick look at region-level aggregation</a></li>
+  </ul></li>
+  <li><a href="#summary-of-corrections-and-adaptations" id="toc-summary-of-corrections-and-adaptations" class="nav-link" data-scroll-target="#summary-of-corrections-and-adaptations">11. Summary of corrections and adaptations</a>
+  <ul class="collapse">
+  <li><a href="#corrections-to-the-reference-materials-own-text-or-code" id="toc-corrections-to-the-reference-materials-own-text-or-code" class="nav-link" data-scroll-target="#corrections-to-the-reference-materials-own-text-or-code">11.1 Corrections to the reference material’s own text or code</a></li>
+  <li><a href="#adaptations-required-because-my-source-files-are-geojson-not-shapefilekml" id="toc-adaptations-required-because-my-source-files-are-geojson-not-shapefilekml" class="nav-link" data-scroll-target="#adaptations-required-because-my-source-files-are-geojson-not-shapefilekml">11.2 Adaptations required because my source files are GeoJSON, not shapefile/KML</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Hands-on Exercise 1A</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Nor Hendra </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 23, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="learning-outcome" class="level1">
+<h1>1. Learning Outcome</h1>
+<p>Geospatial Data Science is the process of importing, wrangling, integrating, and processing geographically referenced data sets. In this hands-on exercise, I learned how to perform geospatial data science tasks in R by using the <strong>sf</strong> package.</p>
+<p>By the end of this exercise, I acquired the following competencies:</p>
+<ul>
+<li>installing and loading <a href="https://r-spatial.github.io/sf/">sf</a> and <a href="https://www.tidyverse.org/">tidyverse</a> packages into the R environment,</li>
+<li>importing geospatial data by using appropriate functions of the <strong>sf</strong> package,</li>
+<li>importing aspatial data by using appropriate functions of the <strong>readr</strong> package,</li>
+<li>exploring the content of a simple feature data frame by using appropriate <strong>Base R</strong> and <strong>sf</strong> functions,</li>
+<li>assigning or transforming coordinate systems by using appropriate <strong>sf</strong> functions,</li>
+<li>converting aspatial data into an sf data frame by using appropriate functions of the <strong>sf</strong> package,</li>
+<li>performing geoprocessing tasks by using appropriate functions of the <strong>sf</strong> package,</li>
+<li>performing data wrangling tasks by using appropriate functions of the <strong>dplyr</strong> package, and</li>
+<li>performing Exploratory Data Analysis (EDA) by using appropriate functions from the <strong>ggplot2</strong> package.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I made it a habit to read the reference guide of each function, especially the input data requirements, syntax, and argument options, before using them.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Note on data formats used in this write-up
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The reference material describes the subzone boundary and cycling path as ESRI shapefiles and the pre-school locations as a KML. What I actually downloaded from data.gov.sg and LTA DataMall came as <strong>GeoJSON</strong> for all three geospatial layers instead. I adapted the code and the explanation accordingly, and flagged every place this changes something.</p>
+</div>
+</div>
+</section>
+<section id="data-acquisition" class="level1">
+<h1>2. Data Acquisition</h1>
+<p>Data are key to any form of analytics, geospatial analytics included. Before analysing, the necessary data must first be assembled. For this exercise, I extracted the following data sets:</p>
+<ul>
+<li>Master Plan 2014 Subzone Boundary (No Sea), <strong>GeoJSON</strong>, from <a href="https://data.gov.sg/">data.gov.sg</a></li>
+<li>Pre-Schools Location, <strong>GeoJSON</strong>, from <a href="https://data.gov.sg/">data.gov.sg</a></li>
+<li>Cycling Path Network, <strong>GeoJSON</strong>, from <a href="https://data.gov.sg/">data.gov.sg</a></li>
+<li>Latest version of Singapore Airbnb listing data, <strong>CSV</strong>, from <a href="http://insideairbnb.com/get-the-data.html">Inside Airbnb</a></li>
+</ul>
+<section id="folder-structure" class="level2">
+<h2 class="anchored" data-anchor-id="folder-structure">2.1 Folder structure</h2>
+<p>Inside <code>Hands-on_Ex01</code>, I created a <code>data</code> sub-folder, and within it two further sub-folders named <code>geospatial</code> and <code>aspatial</code>.</p>
+<p>The three GeoJSON files were placed directly into <code>geospatial</code> and <code>listings.csv</code> was placed into <code>aspatial</code>.</p>
+<pre><code>Hands-on_Ex01/
+└── data/
+    ├── geospatial/
+    │   ├── MasterPlan2014SubzoneBoundaryNoSea.geojson
+    │   ├── PreSchoolsLocation.geojson
+    │   └── CyclingPathNetworkGEOJSON.geojson
+    └── aspatial/
+        └── listings.csv</code></pre>
+</section>
+</section>
+<section id="getting-started" class="level1">
+<h1>3. Getting Started</h1>
+<p>Two R packages are used in this exercise:</p>
+<ul>
+<li><strong>sf</strong> for importing, managing, and processing geospatial data, and</li>
+<li><strong>tidyverse</strong> for performing data science tasks such as importing, wrangling and visualising data.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Tidyverse is a family of R packages. The ones I actually rely on here are <strong>readr</strong> for importing csv data, <strong>tidyr</strong> for manipulating data, <strong>dplyr</strong> for transforming data, and <strong>ggplot2</strong> for visualising data.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The <a href="https://cran.r-project.org/web/packages/pacman/pacman.pdf"><code>p_load()</code></a> function of the <a href="https://github.com/trinker/pacman"><strong>pacman</strong></a> package installs and loads sf and tidyverse into the R environment in a single call. That is why it is preferred over <code>install.packages()</code> followed by <code>library()</code>.</p>
+</section>
+<section id="importing-geospatial-data" class="level1">
+<h1>4. Importing Geospatial Data</h1>
+<p>In this section I imported the following geospatial data into R by using <a href="https://r-spatial.github.io/sf/reference/st_read.html"><code>st_read()</code></a> of the <strong>sf</strong> package:</p>
+<ul>
+<li><code>MasterPlan2014SubzoneBoundaryNoSea</code>, a polygon feature layer in GeoJSON format,</li>
+<li><code>CyclingPathNetworkGEOJSON</code>, a line feature layer in GeoJSON format, and</li>
+<li><code>PreSchoolsLocation</code>, a point feature layer in GeoJSON format.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Every layer here is a single self-contained file, so the import uses one path argument rather than the <code>dsn</code> / <code>layer</code> pair the reference material uses for its shapefile. <code>st_read()</code> auto-detects the driver (shapefile, KML, GeoJSON, and so on) from the file itself.</p>
+</div>
+</div>
+<section id="importing-the-subzone-boundary" class="level2">
+<h2 class="anchored" data-anchor-id="importing-the-subzone-boundary">4.1 Importing the subzone boundary</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mpsz <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/geospatial/MasterPlan2014SubzoneBoundaryNoSea.geojson"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `MP14_SUBZONE_NO_SEA_PL' from data source 
+  `/Users/norhendra/norhendra/ISSS626-GAA/Hands-on_Ex/Hands-on_Ex01/data/geospatial/MasterPlan2014SubzoneBoundaryNoSea.geojson' 
+  using driver `GeoJSON'
+Simple feature collection with 323 features and 13 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 103.6057 ymin: 1.158699 xmax: 104.0885 ymax: 1.470775
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+<p>The message reveals 323 polygon features, matching the 2014 subzone count reported in the reference material. Unlike the shapefile version, the coordinate reference system reads as <strong>WGS84 (EPSG:4326)</strong> straight away, with a bounding box in decimal degrees rather than the tens of thousands of metres a projected layer would show. GeoJSON coordinates are always geographic per the format spec, regardless of what CRS the source data was originally surveyed in.</p>
+</section>
+<section id="importing-the-cycling-path-network" class="level2">
+<h2 class="anchored" data-anchor-id="importing-the-cycling-path-network">4.2 Importing the cycling path network</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cyclingpath <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/geospatial/CyclingPathNetworkGEOJSON.geojson"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `CYCLINGPATH' from data source 
+  `/Users/norhendra/norhendra/ISSS626-GAA/Hands-on_Ex/Hands-on_Ex01/data/geospatial/CyclingPathNetworkGEOJSON.geojson' 
+  using driver `GeoJSON'
+Simple feature collection with 8523 features and 6 fields
+Geometry type: MULTILINESTRING
+Dimension:     XY
+Bounding box:  xmin: 103.637 ymin: 1.265428 xmax: 103.9664 ymax: 1.467361
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+<p>This layer has 8,523 line features and 6 attribute fields. That is noticeably more paths than the 4,651 the reference material describes, since LTA’s published cycling path network has been extended since the book was written. It also carries far fewer attribute columns than the reference material’s 19-field shapefile version (<code>OBJECTID_1</code>, <code>CYL_PATH</code>, <code>AGENCY_MAINT</code>, <code>INC_CRC</code>, <code>FMEL_UPD_D</code>, <code>SHAPE_1.LEN</code>). None of those extra shapefile fields are actually used later in this exercise though, so it has no effect on the analysis.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Correction to the reference material
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The reference chapter describes the cycling path layer as being similar to “the <em>MP19_SUBZONE_WEB_PL</em> shape file.” That is a typo carried over from the book. The subzone layer imported in Section 4.1 is Master Plan <strong>2014</strong>, not MP19. This matters because Hands-on Exercise 2 genuinely does use the Master Plan <strong>2019</strong> boundary, and mixing the two up invites confusion about which vintage of subzone boundary is actually in play.</p>
+</div>
+</div>
+</section>
+<section id="importing-pre-school-locations" class="level2">
+<h2 class="anchored" data-anchor-id="importing-pre-school-locations">4.3 Importing pre-school locations</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>preschool <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="st">"data/geospatial/PreSchoolsLocation.geojson"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `PreSchoolsLocation' from data source 
+  `/Users/norhendra/norhendra/ISSS626-GAA/Hands-on_Ex/Hands-on_Ex01/data/geospatial/PreSchoolsLocation.geojson' 
+  using driver `GeoJSON'
+Simple feature collection with 2290 features and 2 fields
+Geometry type: POINT
+Dimension:     XYZ
+Bounding box:  xmin: 103.6878 ymin: 1.247759 xmax: 103.9897 ymax: 1.462134
+z_range:       zmin: 0 zmax: 0
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+<p>The message reveals 2,290 point features and only 2 fields, <code>Name</code> and <code>Description</code>. This actually matches the reference material’s own KML import, since this GeoJSON was clearly exported directly from the original KML without flattening its attribute table. <code>Description</code> still holds an HTML table with <code>CENTRE_NAME</code>, <code>CENTRE_CODE</code>, and update-date fields embedded as markup rather than as proper columns. I don’t need those attribute values for this exercise, so I leave the field as is here. The equivalent parsing step is covered properly in Hands-on Exercise 2, where the attributes are actually used.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Correction to the reference material
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The reference chapter imports the pre-school layer and transforms it in the same step:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>preschool <span class="ot">=</span> <span class="fu">st_read</span>(<span class="st">"chap01/data/geospatial/PreSchoolsLocation.kml"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>I deliberately do <strong>not</strong> do this. Applying <code>st_transform()</code> at import time undermines the book’s own later narrative. Its Section 1.6 explains that the preschool points “failed to plot on top of the mpsz layer” due to a CRS mismatch, and its Section 1.7.2 claims the printout still “reveals wgs84 coordinate system.” But if the transform already ran at import, neither of those statements would be true, and the book’s own before and after printouts for that section are identical to each other. I import without transforming, and apply the transform later in Section 7, where it belongs.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="checking-the-content-of-a-simple-feature-data-frame" class="level1">
+<h1>5. Checking the Content of A Simple Feature Data Frame</h1>
+<p>Before wrangling geospatial data, it is good practice to get to know the data set first.</p>
+<section id="working-with-st_geometry" class="level2">
+<h2 class="anchored" data-anchor-id="working-with-st_geometry">5.1 Working with <code>st_geometry()</code></h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(mpsz)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 323 features 
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 103.6057 ymin: 1.158699 xmax: 104.0885 ymax: 1.470775
+Geodetic CRS:  WGS 84
+First 5 geometries:</code></pre>
+</div>
+</div>
+<p>This displays the geometry type, the geographic extent, and the coordinate system, which is WGS84 for the reasons noted in Section 4.1.</p>
+</section>
+<section id="working-with-glimpse" class="level2">
+<h2 class="anchored" data-anchor-id="working-with-glimpse">5.2 Working with <code>glimpse()</code></h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(mpsz)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 323
+Columns: 14
+$ OBJECTID_1   &lt;int&gt; 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 3…
+$ SUBZONE_NO   &lt;int&gt; 2, 2, 3, 4, 5, 4, 10, 12, 4, 6, 1, 1, 3, 8, 3, 7, 9, 2, 1…
+$ SUBZONE_N    &lt;chr&gt; "PEOPLE'S PARK", "BUKIT MERAH", "CHINATOWN", "PHILLIP", "…
+$ SUBZONE_C    &lt;chr&gt; "OTSZ02", "BMSZ02", "OTSZ03", "DTSZ04", "DTSZ05", "OTSZ04…
+$ CA_IND       &lt;chr&gt; "Y", "N", "Y", "Y", "Y", "Y", "N", "Y", "N", "Y", "Y", "Y…
+$ PLN_AREA_N   &lt;chr&gt; "OUTRAM", "BUKIT MERAH", "OUTRAM", "DOWNTOWN CORE", "DOWN…
+$ PLN_AREA_C   &lt;chr&gt; "OT", "BM", "OT", "DT", "DT", "OT", "BM", "DT", "BM", "DT…
+$ REGION_N     &lt;chr&gt; "CENTRAL REGION", "CENTRAL REGION", "CENTRAL REGION", "CE…
+$ REGION_C     &lt;chr&gt; "CR", "CR", "CR", "CR", "CR", "CR", "CR", "CR", "CR", "CR…
+$ INC_CRC      &lt;chr&gt; "B4120D23006C932A", "1C51019439A68700", "0FF1661344C84AED…
+$ FMEL_UPD_D   &lt;chr&gt; "20160511160621", "20160511160621", "20160511160621", "20…
+$ SHAPE_1.AREA &lt;dbl&gt; 93140.44, 411722.82, 587222.68, 39437.94, 188767.49, 1330…
+$ SHAPE_1.LEN  &lt;dbl&gt; 1822.1927, 3074.9632, 4297.5999, 871.5549, 1872.7522, 160…
+$ geometry     &lt;MULTIPOLYGON [°]&gt; MULTIPOLYGON (((103.8432 1...., MULTIPOLYGON…</code></pre>
+</div>
+</div>
+<p>The field names in this GeoJSON differ from the reference material’s shapefile in a couple of ways worth flagging.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Correction to the reference material
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The reference chapter describes area and length fields as <code>SHAPE_L</code> and <code>SHAPE_AREA</code>, and elsewhere as <code>SHAPE_Leng</code> / <code>SHAPE_Area</code>. Neither matches what’s actually in this file. The GeoJSON export names them <code>SHAPE_1.LEN</code> and <code>SHAPE_1.AREA</code>, and there is no <code>X_ADDR</code> / <code>Y_ADDR</code> pair at all (those were shapefile-specific centroid columns that didn’t carry over into the GeoJSON export). None of these fields are used in the calculations later in this exercise, since I derive area independently with <code>st_area()</code> in Section 9, so the mismatch doesn’t affect the analysis. It would still break any code copied verbatim from the reference material that references these columns by name.</p>
+</div>
+</div>
+</section>
+<section id="working-with-head" class="level2">
+<h2 class="anchored" data-anchor-id="working-with-head">5.3 Working with <code>head()</code></h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mpsz, <span class="at">n =</span> <span class="dv">5</span>)  </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 5 features and 13 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 103.8131 ymin: 1.274155 xmax: 103.8532 ymax: 1.286506
+Geodetic CRS:  WGS 84
+  OBJECTID_1 SUBZONE_NO     SUBZONE_N SUBZONE_C CA_IND    PLN_AREA_N PLN_AREA_C
+1         21          2 PEOPLE'S PARK    OTSZ02      Y        OUTRAM         OT
+2         22          2   BUKIT MERAH    BMSZ02      N   BUKIT MERAH         BM
+3         23          3     CHINATOWN    OTSZ03      Y        OUTRAM         OT
+4         24          4       PHILLIP    DTSZ04      Y DOWNTOWN CORE         DT
+5         25          5 RAFFLES PLACE    DTSZ05      Y DOWNTOWN CORE         DT
+        REGION_N REGION_C          INC_CRC     FMEL_UPD_D SHAPE_1.AREA
+1 CENTRAL REGION       CR B4120D23006C932A 20160511160621     93140.44
+2 CENTRAL REGION       CR 1C51019439A68700 20160511160621    411722.82
+3 CENTRAL REGION       CR 0FF1661344C84AED 20160511160621    587222.68
+4 CENTRAL REGION       CR 615D4EDDEF809F8E 20160511160621     39437.94
+5 CENTRAL REGION       CR 72107B11807074F4 20160511160621    188767.49
+  SHAPE_1.LEN                       geometry
+1   1822.1927 MULTIPOLYGON (((103.8432 1....
+2   3074.9632 MULTIPOLYGON (((103.8221 1....
+3   4297.5999 MULTIPOLYGON (((103.8438 1....
+4    871.5549 MULTIPOLYGON (((103.8496 1....
+5   1872.7522 MULTIPOLYGON (((103.8525 1....</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="plotting-the-geospatial-data" class="level1">
+<h1>6. Plotting the Geospatial Data</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(mpsz))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01A_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mpsz[<span class="st">"PLN_AREA_N"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01A_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>plot()</code> is appropriate for a quick look at a geospatial object. For high cartographic quality maps, a package such as <strong>tmap</strong> should be used, which is exactly what Hands-on Exercise 2 covers.</p>
+</div>
+</div>
+<p>Now let me try plotting the preschool layer on top of the mpsz layer.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(mpsz))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(preschool), </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01A_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Where this diverges from the reference material
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the reference material, this exact overlay fails, because its <code>mpsz</code> is a shapefile already in SVY21 (coordinates in metres) while <code>preschool</code> is a KML in WGS84 (coordinates in degrees). Plotting the two together puts the preschool points far outside the subzone boundaries’ plotting extent.</p>
+<p>That failure doesn’t reproduce here. <strong>Both layers are GeoJSON, and GeoJSON is always WGS84 by specification.</strong> There is no coordinate system mismatch to cause a visible failure, so the overlay above already looks correct. This is a genuine consequence of the different file formats, not something I fixed on purpose.</p>
+<p>It does <strong>not</strong> mean the projection step in Section 7 is unnecessary though. WGS84 stores angular degrees, not metres. Any calculation that assumes metric units, such as a 5 metre buffer or an area in square kilometres, will silently misinterpret those degrees as metres unless the data is first transformed to a projected coordinate system. The visual overlay working is not the same thing as the data being fit for measurement.</p>
+</div>
+</div>
+</section>
+<section id="working-with-projection" class="level1">
+<h1>7. Working with Projection</h1>
+<p>Map projection is an important property of geospatial data. To perform geoprocessing that involves distance or area (buffering, area calculation), the data must be in a projected coordinate system with metric units, regardless of whether the layers visually align in WGS84.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why this matters, from the lesson slides
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Geographic coordinate systems (GCS) such as wgs84 define locations on a three-dimensional spherical surface and give accurate positional information, but they are <strong>not appropriate for distance and area measurements</strong>. One degree at the north pole spans a far shorter ground distance than one degree at the equator.</p>
+<p>Projected coordinate systems (PCS) such as svy21 provide consistent length and area measurement across space. This is exactly why a transformation from GCS to PCS is required before any of the buffering, area, or density calculations in Section 9.</p>
+</div>
+</div>
+<section id="checking-the-coordinate-reference-system" class="level2">
+<h2 class="anchored" data-anchor-id="checking-the-coordinate-reference-system">7.1 Checking the coordinate reference system</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_crs</span>(mpsz)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Coordinate Reference System:
+  User input: WGS 84 
+  wkt:
+GEOGCRS["WGS 84",
+    DATUM["World Geodetic System 1984",
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1]]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433]],
+    CS[ellipsoidal,2],
+        AXIS["geodetic latitude (Lat)",north,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433]],
+        AXIS["geodetic longitude (Lon)",east,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433]],
+    ID["EPSG",4326]]</code></pre>
+</div>
+</div>
+<p>This correctly reports EPSG:4326 (WGS84).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Why the reference material’s EPSG-9001 problem doesn’t appear here
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The reference chapter spends a subsection fixing a <em>wrongly labelled</em> CRS. Its shapefile’s <code>.prj</code> file is incomplete, so <code>st_crs()</code> reports EPSG <strong>9001</strong>, which isn’t even a coordinate system (it’s the EPSG code for the unit <em>metre</em>), instead of the correct 3414. The fix there is <code>st_set_crs()</code>, which relabels metadata without moving any coordinates.</p>
+<p>That specific failure mode is a shapefile artefact. <code>.prj</code> files are a separate sidecar file that’s easy to omit or corrupt during a shapefile export. GeoJSON has no equivalent sidecar to go missing. The CRS is either implied as WGS84 by the format spec (as here) or stated explicitly inside the file itself. So there is no mislabelled CRS bug to fix in this data, and <code>st_set_crs()</code> isn’t the right tool here since my CRS label is already correct. What I need instead is a genuine coordinate transformation, covered next.</p>
+</div>
+</div>
+</section>
+<section id="transforming-the-geospatial-layers-to-svy21" class="level2">
+<h2 class="anchored" data-anchor-id="transforming-the-geospatial-layers-to-svy21">7.2 Transforming the geospatial layers to svy21</h2>
+<p>Since all three geospatial layers came in as WGS84, all three need <code>st_transform()</code> before any metric geoprocessing.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>mpsz3414 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(mpsz, <span class="at">crs =</span> <span class="dv">3414</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>preschool3414 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(preschool, <span class="at">crs =</span> <span class="dv">3414</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>cyclingpath3414 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(cyclingpath, <span class="at">crs =</span> <span class="dv">3414</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In practice, the appropriate projected coordinate system must be identified <em>before</em> performing the transformation. <a href="https://epsg.io/">epsg.io</a> provides a comprehensive list of country coordinate systems. <a href="https://epsg.io/3414">3414</a> is Singapore’s SVY21.</p>
+</div>
+</div>
+<p>Confirming the transformation took effect. The bounding box should now be in the tens of thousands, not single digits:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(mpsz3414)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 323 features 
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33
+Projected CRS: SVY21 / Singapore TM
+First 5 geometries:</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(preschool3414)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 2290 features 
+Geometry type: POINT
+Dimension:     XYZ
+Bounding box:  xmin: 11810.03 ymin: 25596.33 xmax: 45404.24 ymax: 49300.88
+z_range:       zmin: 0 zmax: 0
+Projected CRS: SVY21 / Singapore TM
+First 5 geometries:</code></pre>
+</div>
+</div>
+<p>This is the point where the projection actually starts to matter for this exercise, even though the plots in Section 6 looked fine without it. Everything from here on, including Section 9’s buffers and areas, depends on these transformed versions rather than the originals.</p>
+</section>
+</section>
+<section id="importing-and-converting-aspatial-data" class="level1">
+<h1>8. Importing and Converting Aspatial Data</h1>
+<p>In practice it is not unusual to come across data such as the Inside Airbnb <code>listings</code> file. This is called <strong>aspatial data</strong> because it is not geospatial data, but among its data fields there are two that capture the x and y coordinates of the data points.</p>
+<section id="importing-the-aspatial-data" class="level2">
+<h2 class="anchored" data-anchor-id="importing-the-aspatial-data">8.1 Importing the aspatial data</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>listings <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/listings.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Correction to the reference material
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The reference chapter states that “listing tibble data frame consists of 4252 rows and 16 columns,” while its own printed output directly above that sentence shows a different figure again. Inside Airbnb republishes its listings quarterly, so the exact row and column count will keep shifting for anyone downloading it fresh. My own file has yet another column count, since it happens to include a <code>host_profile_id</code> field the reference material’s copy did not. This is exactly why I read the dimensions off the object programmatically instead of quoting a number from the book:</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(listings)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3247   19</code></pre>
+</div>
+</div>
+<p>The two fields I need for the next step are <code>latitude</code> and <code>longitude</code>, in decimal degree format, so as with the geospatial layers this is wgs84.</p>
+</section>
+<section id="creating-a-simple-feature-data-frame-from-an-aspatial-data-frame" class="level2">
+<h2 class="anchored" data-anchor-id="creating-a-simple-feature-data-frame-from-an-aspatial-data-frame">8.2 Creating a simple feature data frame from an aspatial data frame</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>listings_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(listings, </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">crs =</span> <span class="dv">4326</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">3414</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Things to learn from the arguments above:</p>
+<ul>
+<li>the <code>coords</code> argument requires the column name of the x-coordinates <strong>first</strong>, then the column name of the y-coordinates. Reversing them is a silent error since the points will still be created, just in entirely the wrong places.</li>
+<li>the <code>crs</code> argument requires the coordinate system in EPSG format. <a href="https://epsg.io/4326">EPSG:4326</a> is the wgs84 Geographic Coordinate System and <a href="https://epsg.io/3414">EPSG:3414</a> is the Singapore SVY21 Projected Coordinate System.</li>
+<li><code>%&gt;%</code> nests <code>st_transform()</code> so the result is immediately in the svy21 projected coordinate system, consistent with the geospatial layers transformed in Section 7.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(listings_sf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 3,247
+Columns: 18
+$ id                             &lt;dbl&gt; 71609, 71896, 71903, 294281, 344803, 36…
+$ name                           &lt;chr&gt; "Ensuite Room (Room 1 &amp; 2) near EXPO", …
+$ host_id                        &lt;dbl&gt; 367042, 367042, 367042, 1521514, 367042…
+$ host_profile_id                &lt;dbl&gt; 1.462517e+18, 1.462517e+18, 1.462517e+1…
+$ host_name                      &lt;chr&gt; "Belinda", "Belinda", "Belinda", "Elizb…
+$ neighbourhood_group            &lt;chr&gt; "East Region", "East Region", "East Reg…
+$ neighbourhood                  &lt;chr&gt; "Tampines", "Tampines", "Tampines", "Ne…
+$ room_type                      &lt;chr&gt; "Private room", "Private room", "Privat…
+$ price                          &lt;dbl&gt; NA, NA, NA, 32, 15, NA, 26, 11, 28, 48,…
+$ minimum_nights                 &lt;dbl&gt; 92, 92, 92, 92, 92, 92, 92, 92, 92, 92,…
+$ number_of_reviews              &lt;dbl&gt; 19, 24, 46, 131, 60, 81, 163, 20, 0, 17…
+$ last_review                    &lt;date&gt; 2020-01-17, 2019-10-13, 2020-01-09, 20…
+$ reviews_per_month              &lt;dbl&gt; 0.11, 0.13, 0.25, 0.75, 0.34, 0.52, 0.9…
+$ calculated_host_listings_count &lt;dbl&gt; 5, 5, 5, 7, 5, 7, 7, 4, 2, 1, 8, 1, 73,…
+$ availability_365               &lt;dbl&gt; 90, 90, 90, 364, 364, 364, 364, 364, 36…
+$ number_of_reviews_ltm          &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+$ license                        &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ geometry                       &lt;POINT [m]&gt; POINT (41972.5 36390.05), POINT (…</code></pre>
+</div>
+</div>
+<p>Plotting <code>listings_sf</code> on top of <code>mpsz3414</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(mpsz3414))</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(listings_sf), </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">add =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">20</span>, </span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex =</span> <span class="fl">0.3</span>, </span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"steelblue"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01A_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="geoprocessing-with-sf-package" class="level1">
+<h1>9. Geoprocessing with sf package</h1>
+<p>Beyond handling geospatial data (importing, exporting, assigning projections, transforming projections), the <strong>sf</strong> package also offers a wide range of geoprocessing (GIS analysis) functions.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Grounding this in the OGC standard
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>From the lesson slides, the OGC OpenGIS Implementation Standard / ISO 19125 defines methods that support spatial analysis, including <code>distance</code>, <code>buffer</code>, <code>convex hull</code>, <code>intersection</code>, <code>union</code>, <code>difference</code> and <code>symmetric difference</code>, all of which return new geometric objects. The sf functions used below are R’s implementation of exactly that standard, which is why the same verbs show up in PostGIS and QGIS.</p>
+</div>
+</div>
+<section id="use-case-1-land-acquisition-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="use-case-1-land-acquisition-analysis">9.1 Use case 1: Land acquisition analysis</h2>
+<section id="the-scenario" class="level3">
+<h3 class="anchored" data-anchor-id="the-scenario">9.1.1 The scenario</h3>
+<p>The authority is planning to upgrade the existing cycling path. To do so, they need to acquire 5 metres of reserved land on both sides of the existing cycling path. I am tasked to determine the extent of the land needing to be acquired and its total area.</p>
+</section>
+<section id="the-solution" class="level3">
+<h3 class="anchored" data-anchor-id="the-solution">9.1.2 The solution</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>buffer_cycling <span class="ot">&lt;-</span> <span class="fu">st_buffer</span>(cyclingpath3414, </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>                            <span class="at">dist =</span> <span class="dv">5</span>, </span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">nQuadSegs =</span> <span class="dv">30</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>dist = 5</code> is interpreted in the units of the layer’s CRS. Because <code>cyclingpath3414</code> has already been transformed to svy21 (metres), this correctly produces a 5 metre buffer. Had I skipped Section 7.2 and buffered the original wgs84 <code>cyclingpath</code> instead, <code>dist = 5</code> would have been read as 5 <strong>degrees</strong>, roughly 550 km. That is exactly why the transform in Section 7 matters regardless of the overlay in Section 6 having looked fine.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>buffer_cycling <span class="ot">&lt;-</span> buffer_cycling <span class="sc">%&gt;%</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">AREA =</span> <span class="fu">st_area</span>(geometry))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(buffer_cycling<span class="sc">$</span>AREA)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>4989654 [m^2]</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>mpsz_selected <span class="ot">&lt;-</span> mpsz3414 <span class="sc">%&gt;%</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(SUBZONE_N <span class="sc">==</span> <span class="st">"TAMPINES WEST"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>buffer_cycling_selected <span class="ot">&lt;-</span> <span class="fu">st_intersection</span>(buffer_cycling, </span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>                                           mpsz_selected)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(mpsz_selected))</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(buffer_cycling_selected), </span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"#C1443C"</span>, </span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="cn">NA</span>, </span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">add =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01A_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="use-case-2-number-of-pre-schools-by-planning-subzone" class="level2">
+<h2 class="anchored" data-anchor-id="use-case-2-number-of-pre-schools-by-planning-subzone">9.2 Use case 2: Number of pre-schools by planning subzone</h2>
+<section id="the-scenario-1" class="level3">
+<h3 class="anchored" data-anchor-id="the-scenario-1">9.2.1 The scenario</h3>
+<p>The authority requires a count of pre-schools for each planning subzone to support forward planning.</p>
+</section>
+<section id="the-solution-1" class="level3">
+<h3 class="anchored" data-anchor-id="the-solution-1">9.2.2 The solution</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>mpsz3414<span class="sc">$</span><span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span> <span class="ot">&lt;-</span> <span class="fu">lengths</span>(<span class="fu">st_intersects</span>(mpsz3414, preschool3414))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>st_intersects()</code> should not be confused with <a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html"><code>st_intersection()</code></a>. The former is a <strong>predicate</strong> returning which features touch or overlap. The latter is a <strong>geometry-generating operator</strong> returning new clipped geometries.</p>
+<p>Note also that the reference chapter uses <code>lengths()</code> here (plural, the vectorised form) while its surrounding prose describes it as <code>length()</code> (singular). Only <code>lengths()</code> produces a per-subzone count.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mpsz3414<span class="sc">$</span><span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   0.00    0.00    4.00    7.09   10.00   72.00 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">top_n</span>(mpsz3414, <span class="dv">1</span>, <span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 1 feature and 14 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 39655.33 ymin: 35966 xmax: 42940.57 ymax: 38622.37
+Projected CRS: SVY21 / Singapore TM
+  OBJECTID_1 SUBZONE_NO     SUBZONE_N SUBZONE_C CA_IND PLN_AREA_N PLN_AREA_C
+1        204          2 TAMPINES EAST    TMSZ02      N   TAMPINES         TM
+     REGION_N REGION_C          INC_CRC     FMEL_UPD_D SHAPE_1.AREA SHAPE_1.LEN
+1 EAST REGION       ER 21658EAAF84F4D8D 20160511160621      4339824    10180.62
+                        geometry PreSch Count
+1 MULTIPOLYGON (((42196.76 38...           72</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>mpsz3414 <span class="ot">&lt;-</span> mpsz3414 <span class="sc">%&gt;%</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Area =</span> <span class="fu">st_area</span>(geometry))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The reference chapter writes this as <code>mpsz$Area &lt;- mpsz %&gt;% st_area()</code>, mixing base assignment with a pipe. I use the tidier <code>mutate()</code> form instead, consistent with how <code>AREA</code> was computed in Section 9.1.2.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>mpsz3414 <span class="ot">&lt;-</span> mpsz3414 <span class="sc">%&gt;%</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span> <span class="sc">/</span> Area <span class="sc">*</span> <span class="dv">1000000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The multiplier of 1,000,000 converts from counts per square metre to counts per square kilometre, since <code>st_area()</code> returns metres squared for an svy21 layer.</p>
+</section>
+</section>
+<section id="exploratory-data-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis">9.3 Exploratory Data Analysis</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">R Graphics</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">ggplot2</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(mpsz3414<span class="sc">$</span><span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01A_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> mpsz3414, </span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.numeric</span>(<span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span>))) <span class="sc">+</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">20</span>, </span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color =</span> <span class="st">"black"</span>, </span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fill =</span> <span class="st">"light blue"</span>) <span class="sc">+</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Are pre-schools evenly distributed in Singapore?"</span>,</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Pre-school density (per km sq)"</span>,</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Frequency"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01A_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> mpsz3414, </span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">y =</span> <span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>, </span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="fu">as.numeric</span>(<span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span>))) <span class="sc">+</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Relationship between pre-school density and count"</span>,</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Pre-school density (per km sq)"</span>,</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Pre-school count"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01A_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Correction to the reference material
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The reference chapter writes this scatterplot with <code>geom_point(color="black", fill="light blue")</code>. <code>fill</code> has no effect here since <code>geom_point()</code> defaults to shape 19, a solid circle with no fill aesthetic, only <code>colour</code>. To actually use both, a fillable shape (21 to 25) is needed, demonstrated in the Extras.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="extras" class="level1">
+<h1>10. Extras</h1>
+<p>Everything below stays within the scope of this exercise but goes a little beyond what the reference chapter covers.</p>
+<section id="fixing-the-scatterplot-properly-with-a-fillable-shape" class="level2">
+<h2 class="anchored" data-anchor-id="fixing-the-scatterplot-properly-with-a-fillable-shape">10.1 Fixing the scatterplot properly with a fillable shape</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> mpsz3414, </span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">y =</span> <span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>, </span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="fu">as.numeric</span>(<span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span>))) <span class="sc">+</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">shape =</span> <span class="dv">21</span>, </span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"#1E3A5F"</span>, </span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">fill =</span> <span class="st">"#7FB3D5"</span>, </span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="fl">2.5</span>, </span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">0</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Pre-school density against count, by planning subzone"</span>,</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Pre-school density (per km sq)"</span>,</span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Pre-school count"</span>) <span class="sc">+</span></span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01A_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="geometry-validity-checks-before-geoprocessing" class="level2">
+<h2 class="anchored" data-anchor-id="geometry-validity-checks-before-geoprocessing">10.2 Geometry validity checks before geoprocessing</h2>
+<p>GeoJSON exports from open-data portals are somewhat more prone to invalid or duplicate-vertex geometries than curated shapefiles, so this check is worth running here specifically.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">st_is_valid</span>(mpsz3414))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+FALSE  TRUE 
+    9   314 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>mpsz3414 <span class="ot">&lt;-</span> <span class="fu">st_make_valid</span>(mpsz3414)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">st_is_valid</span>(mpsz3414))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+TRUE 
+ 323 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">st_is_empty</span>(mpsz3414))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+</section>
+<section id="choosing-the-right-spatial-predicate" class="level2">
+<h2 class="anchored" data-anchor-id="choosing-the-right-spatial-predicate">10.3 Choosing the right spatial predicate</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>count_intersects <span class="ot">&lt;-</span> <span class="fu">lengths</span>(<span class="fu">st_intersects</span>(mpsz3414, preschool3414))</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>count_contains <span class="ot">&lt;-</span> <span class="fu">lengths</span>(<span class="fu">st_contains</span>(mpsz3414, preschool3414))</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">predicate =</span> <span class="fu">c</span>(<span class="st">"st_intersects"</span>, <span class="st">"st_contains"</span>),</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">total_counted =</span> <span class="fu">c</span>(<span class="fu">sum</span>(count_intersects), <span class="fu">sum</span>(count_contains)),</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">actual_preschools =</span> <span class="fu">nrow</span>(preschool3414)</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 3
+  predicate     total_counted actual_preschools
+  &lt;chr&gt;                 &lt;int&gt;             &lt;int&gt;
+1 st_intersects          2290              2290
+2 st_contains            2290              2290</code></pre>
+</div>
+</div>
+<p>If <code>st_intersects</code> totals more than the actual number of pre-schools, boundary points are being double counted between adjacent subzones.</p>
+</section>
+<section id="nearest-neighbour-distance-how-far-is-the-nearest-pre-school" class="level2">
+<h2 class="anchored" data-anchor-id="nearest-neighbour-distance-how-far-is-the-nearest-pre-school">10.4 Nearest-neighbour distance: how far is the nearest pre-school?</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>nearest_idx <span class="ot">&lt;-</span> <span class="fu">st_nearest_feature</span>(listings_sf, preschool3414)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>listings_sf <span class="ot">&lt;-</span> listings_sf <span class="sc">%&gt;%</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dist_to_preschool =</span> <span class="fu">st_distance</span>(listings_sf, </span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>                                         preschool3414[nearest_idx, ], </span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">by_element =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">as.numeric</span>(listings_sf<span class="sc">$</span>dist_to_preschool))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+   2.781  116.824  177.282  205.953  262.881 5929.910 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> listings_sf,</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.numeric</span>(dist_to_preschool))) <span class="sc">+</span></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">40</span>, </span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fill =</span> <span class="st">"#4A7C59"</span>, </span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">colour =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Distance from each Airbnb listing to its nearest pre-school"</span>,</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Distance (metres)"</span>,</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Number of listings"</span>) <span class="sc">+</span></span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01A_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="a-quick-look-at-region-level-aggregation" class="level2">
+<h2 class="anchored" data-anchor-id="a-quick-look-at-region-level-aggregation">10.5 A quick look at region-level aggregation</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>mpsz_region <span class="ot">&lt;-</span> mpsz3414 <span class="sc">%&gt;%</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(REGION_N) <span class="sc">%&gt;%</span></span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span>),</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">Area =</span> <span class="fu">sum</span>(Area)) <span class="sc">%&gt;%</span></span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">PreSch Count</span><span class="st">`</span> <span class="sc">/</span> Area <span class="sc">*</span> <span class="dv">1000000</span>)</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>mpsz_region <span class="sc">%&gt;%</span></span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(<span class="st">`</span><span class="at">PreSch Density</span><span class="st">`</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 4
+  REGION_N          `PreSch Count`       Area `PreSch Density`
+  &lt;chr&gt;                      &lt;int&gt;      [m^2]          [1/m^2]
+1 CENTRAL REGION               692 136405634.             5.07
+2 NORTH-EAST REGION            467 136053572.             3.43
+3 EAST REGION                  380 112969680.             3.36
+4 NORTH REGION                 303 139405603.             2.17
+5 WEST REGION                  448 257110297.             1.74</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mpsz_region[<span class="st">"PreSch Count"</span>], </span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Pre-school count by region"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01A_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="summary-of-corrections-and-adaptations" class="level1">
+<h1>11. Summary of corrections and adaptations</h1>
+<section id="corrections-to-the-reference-materials-own-text-or-code" class="level2">
+<h2 class="anchored" data-anchor-id="corrections-to-the-reference-materials-own-text-or-code">11.1 Corrections to the reference material’s own text or code</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>Location in reference</th>
+<th>Issue</th>
+<th>Correction applied</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Throughout</td>
+<td>Data paths written as <code>chap01/data/...</code></td>
+<td>Changed to <code>data/...</code></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Section 1.4.2</td>
+<td>Refers to <code>MP19_SUBZONE_WEB_PL</code></td>
+<td>Correct layer is Master Plan <strong>2014</strong></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Sections 1.4.3, 1.6, 1.7.2</td>
+<td><code>st_transform()</code> applied at kml import, contradicting the book’s own later narrative about a failed overlay and a wgs84 printout</td>
+<td>Import without transforming, transform in Section 7</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Section 1.5.2</td>
+<td>Refers to fields <code>SHAPE_L</code> / <code>SHAPE_AREA</code></td>
+<td>My file’s actual fields are <code>SHAPE_1.LEN</code> / <code>SHAPE_1.AREA</code></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Section 1.8.1</td>
+<td>States 4,252 rows by 16 columns, printed output disagrees</td>
+<td>Read dimensions programmatically with <code>dim()</code></td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Section 1.9.2.2</td>
+<td>Prose says <code>length()</code>, code correctly uses <code>lengths()</code></td>
+<td>Noted only <code>lengths()</code> gives a per-subzone count</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>Section 1.9.2.2</td>
+<td><code>geom_point(color="black", fill="light blue")</code>, inert <code>fill</code></td>
+<td>Removed, fillable shape shown in Extras 10.1</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="adaptations-required-because-my-source-files-are-geojson-not-shapefilekml" class="level2">
+<h2 class="anchored" data-anchor-id="adaptations-required-because-my-source-files-are-geojson-not-shapefilekml">11.2 Adaptations required because my source files are GeoJSON, not shapefile/KML</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>What changed</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Single-path <code>st_read()</code> instead of <code>dsn</code>/<code>layer</code></td>
+<td>GeoJSON is one file, not a multi-file bundle</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>No “wrong EPSG code” demonstration in Section 7.1</td>
+<td>GeoJSON has no <code>.prj</code> sidecar to go missing, CRS is correct by spec</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Overlay plot in Section 6 does not fail</td>
+<td>All three layers are WGS84 by GeoJSON spec, so there is no CRS mismatch to visibly break the plot</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><code>cyclingpath</code> now also needs <code>st_transform()</code></td>
+<td>The reference material’s shapefile version was already in svy21, my GeoJSON version is WGS84</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Different field names on <code>mpsz</code> (<code>SHAPE_1.LEN</code>/<code>SHAPE_1.AREA</code>, no <code>X_ADDR</code>/<code>Y_ADDR</code>)</td>
+<td>Artefact of how the GeoJSON export flattened the original shapefile schema</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Cycling path feature count is 8,523, not 4,651</td>
+<td>LTA’s published network has grown since the reference material was written</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
