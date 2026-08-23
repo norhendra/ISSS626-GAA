@@ -9,7 +9,7 @@
 <meta name="author" content="Nor Hendra">
 <meta name="dcterms.date" content="2026-08-23">
 
-<title>Hands-on Exercise 1A – ISSS626</title>
+<title>Hands-on Exercise 1A: Geospatial Data Science with R – ISSS626</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -220,11 +220,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#nearest-neighbour-distance-how-far-is-the-nearest-pre-school" id="toc-nearest-neighbour-distance-how-far-is-the-nearest-pre-school" class="nav-link" data-scroll-target="#nearest-neighbour-distance-how-far-is-the-nearest-pre-school">10.4 Nearest-neighbour distance: how far is the nearest pre-school?</a></li>
   <li><a href="#a-quick-look-at-region-level-aggregation" id="toc-a-quick-look-at-region-level-aggregation" class="nav-link" data-scroll-target="#a-quick-look-at-region-level-aggregation">10.5 A quick look at region-level aggregation</a></li>
   </ul></li>
-  <li><a href="#summary-of-corrections-and-adaptations" id="toc-summary-of-corrections-and-adaptations" class="nav-link" data-scroll-target="#summary-of-corrections-and-adaptations">11. Summary of corrections and adaptations</a>
-  <ul class="collapse">
-  <li><a href="#corrections-to-the-reference-materials-own-text-or-code" id="toc-corrections-to-the-reference-materials-own-text-or-code" class="nav-link" data-scroll-target="#corrections-to-the-reference-materials-own-text-or-code">11.1 Corrections to the reference material’s own text or code</a></li>
-  <li><a href="#adaptations-required-because-my-source-files-are-geojson-not-shapefilekml" id="toc-adaptations-required-because-my-source-files-are-geojson-not-shapefilekml" class="nav-link" data-scroll-target="#adaptations-required-because-my-source-files-are-geojson-not-shapefilekml">11.2 Adaptations required because my source files are GeoJSON, not shapefile/KML</a></li>
-  </ul></li>
   </ul>
 </nav>
     </div>
@@ -233,7 +228,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Hands-on Exercise 1A</h1>
+<h1 class="title">Hands-on Exercise 1A: Geospatial Data Science with R</h1>
 </div>
 
 
@@ -1019,7 +1014,6 @@ Note
 </section>
 <section id="extras" class="level1">
 <h1>10. Extras</h1>
-<p>Everything below stays within the scope of this exercise but goes a little beyond what the reference chapter covers.</p>
 <section id="fixing-the-scatterplot-properly-with-a-fillable-shape" class="level2">
 <h2 class="anchored" data-anchor-id="fixing-the-scatterplot-properly-with-a-fillable-shape">10.1 Fixing the scatterplot properly with a fillable shape</h2>
 <div class="cell">
@@ -1163,121 +1157,6 @@ TRUE
 </div>
 </div>
 </div>
-</section>
-</section>
-<section id="summary-of-corrections-and-adaptations" class="level1">
-<h1>11. Summary of corrections and adaptations</h1>
-<section id="corrections-to-the-reference-materials-own-text-or-code" class="level2">
-<h2 class="anchored" data-anchor-id="corrections-to-the-reference-materials-own-text-or-code">11.1 Corrections to the reference material’s own text or code</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>#</th>
-<th>Location in reference</th>
-<th>Issue</th>
-<th>Correction applied</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>Throughout</td>
-<td>Data paths written as <code>chap01/data/...</code></td>
-<td>Changed to <code>data/...</code></td>
-</tr>
-<tr class="even">
-<td>2</td>
-<td>Section 1.4.2</td>
-<td>Refers to <code>MP19_SUBZONE_WEB_PL</code></td>
-<td>Correct layer is Master Plan <strong>2014</strong></td>
-</tr>
-<tr class="odd">
-<td>3</td>
-<td>Sections 1.4.3, 1.6, 1.7.2</td>
-<td><code>st_transform()</code> applied at kml import, contradicting the book’s own later narrative about a failed overlay and a wgs84 printout</td>
-<td>Import without transforming, transform in Section 7</td>
-</tr>
-<tr class="even">
-<td>4</td>
-<td>Section 1.5.2</td>
-<td>Refers to fields <code>SHAPE_L</code> / <code>SHAPE_AREA</code></td>
-<td>My file’s actual fields are <code>SHAPE_1.LEN</code> / <code>SHAPE_1.AREA</code></td>
-</tr>
-<tr class="odd">
-<td>5</td>
-<td>Section 1.8.1</td>
-<td>States 4,252 rows by 16 columns, printed output disagrees</td>
-<td>Read dimensions programmatically with <code>dim()</code></td>
-</tr>
-<tr class="even">
-<td>6</td>
-<td>Section 1.9.2.2</td>
-<td>Prose says <code>length()</code>, code correctly uses <code>lengths()</code></td>
-<td>Noted only <code>lengths()</code> gives a per-subzone count</td>
-</tr>
-<tr class="odd">
-<td>7</td>
-<td>Section 1.9.2.2</td>
-<td><code>geom_point(color="black", fill="light blue")</code>, inert <code>fill</code></td>
-<td>Removed, fillable shape shown in Extras 10.1</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="adaptations-required-because-my-source-files-are-geojson-not-shapefilekml" class="level2">
-<h2 class="anchored" data-anchor-id="adaptations-required-because-my-source-files-are-geojson-not-shapefilekml">11.2 Adaptations required because my source files are GeoJSON, not shapefile/KML</h2>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>#</th>
-<th>What changed</th>
-<th>Why</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>Single-path <code>st_read()</code> instead of <code>dsn</code>/<code>layer</code></td>
-<td>GeoJSON is one file, not a multi-file bundle</td>
-</tr>
-<tr class="even">
-<td>2</td>
-<td>No “wrong EPSG code” demonstration in Section 7.1</td>
-<td>GeoJSON has no <code>.prj</code> sidecar to go missing, CRS is correct by spec</td>
-</tr>
-<tr class="odd">
-<td>3</td>
-<td>Overlay plot in Section 6 does not fail</td>
-<td>All three layers are WGS84 by GeoJSON spec, so there is no CRS mismatch to visibly break the plot</td>
-</tr>
-<tr class="even">
-<td>4</td>
-<td><code>cyclingpath</code> now also needs <code>st_transform()</code></td>
-<td>The reference material’s shapefile version was already in svy21, my GeoJSON version is WGS84</td>
-</tr>
-<tr class="odd">
-<td>5</td>
-<td>Different field names on <code>mpsz</code> (<code>SHAPE_1.LEN</code>/<code>SHAPE_1.AREA</code>, no <code>X_ADDR</code>/<code>Y_ADDR</code>)</td>
-<td>Artefact of how the GeoJSON export flattened the original shapefile schema</td>
-</tr>
-<tr class="even">
-<td>6</td>
-<td>Cycling path feature count is 8,523, not 4,651</td>
-<td>LTA’s published network has grown since the reference material was written</td>
-</tr>
-</tbody>
-</table>
 
 
 </section>
