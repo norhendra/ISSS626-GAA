@@ -1,19 +1,15 @@
-/* =====================================================================
-   Nor Hendra · ISSS626 Geospatial Analytics
-   Light "web3" theme — energy from motion + glow, not from darkness
-   ===================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 :root {
-  /* base surfaces — kept light so exercise content stays readable */
+  /* base surfaces */
   --bg:        #F4F6F5;
   --surface:   #FFFFFF;
   --ink:       #16232B;
   --muted:     #647079;
   --line:      #E4E6E1;
 
-  /* web3 accent ramp — used for glow, gradients, motion */
+  /* web3 accent ramp  */
   --teal:      #17A398;
   --teal-deep: #0E7C74;
   --violet:    #6C5CE7;
@@ -28,14 +24,14 @@
   --radius:      12px;
 }
 
-/* ------------------------------------------------------------------ */
+
 /* Base                                                               */
-/* ------------------------------------------------------------------ */
+
 body {
   background-color: var(--bg);
   color: var(--ink);
   font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-  /* subtle animated aurora wash in the page background */
+  /* aurora wash in the page background */
   background-image:
     radial-gradient(1200px 600px at 10% -10%, rgba(23,163,152,0.08), transparent 60%),
     radial-gradient(1000px 500px at 100% 0%, rgba(108,92,231,0.08), transparent 55%);
@@ -57,7 +53,7 @@ code, kbd, .coord {
 a { color: var(--teal-deep); text-decoration: none; }
 a:hover { color: var(--violet); }
 
-/* animated gradient link underline for in-content links */
+/* gradient link*/
 .quarto-title-block a,
 main a:not(.nav-link):not(.navbar-brand) {
   background-image: var(--grad-accent);
@@ -71,9 +67,9 @@ main a:not(.nav-link):not(.navbar-brand):hover {
   background-size: 100% 2px;
 }
 
-/* ------------------------------------------------------------------ */
+
 /* Navbar                                                             */
-/* ------------------------------------------------------------------ */
+
 .navbar {
   background-color: rgba(255,255,255,0.72) !important;
   backdrop-filter: saturate(180%) blur(12px);
@@ -134,9 +130,9 @@ main a:not(.nav-link):not(.navbar-brand):hover {
   color: var(--teal-deep);
 }
 
-/* ------------------------------------------------------------------ */
+
 /* Hero (homepage only — wrap content in ::: {.hero} in index.qmd)    */
-/* ------------------------------------------------------------------ */
+
 .hero {
   position: relative;
   margin: 1rem 0 2.5rem;
@@ -231,9 +227,9 @@ main a:not(.nav-link):not(.navbar-brand):hover {
   50%      { opacity: 0.4; transform: scale(0.7); }
 }
 
-/* ------------------------------------------------------------------ */
+
 /* Listing cards                                                      */
-/* ------------------------------------------------------------------ */
+
 .quarto-listing { margin-top: 1rem; }
 
 .quarto-listing .card,
@@ -297,15 +293,15 @@ main a:not(.nav-link):not(.navbar-brand):hover {
 }
 .listing-author { color: var(--muted); font-size: 0.8rem; }
 
-/* ------------------------------------------------------------------ */
+
 /* Content callouts get a little more life                            */
-/* ------------------------------------------------------------------ */
+
 div.callout { border-radius: 10px !important; }
 div.callout.callout-style-default > .callout-header {
   font-family: "Space Grotesk", sans-serif;
 }
 
-/* Section headings in content: small gradient tick before them */
+/* Section headings in content: small gradient tick */
 main h2 {
   position: relative;
   padding-left: 0.9rem;
@@ -333,9 +329,9 @@ div.sourceCode {
   box-shadow: 0 2px 10px rgba(22,35,43,0.04);
 }
 
-/* ------------------------------------------------------------------ */
+
 /* Reveal-on-scroll (paired with tiny script in _includes)           */
-/* ------------------------------------------------------------------ */
+
 .reveal-up {
   opacity: 0;
   transform: translateY(18px);
@@ -346,9 +342,9 @@ div.sourceCode {
   transform: none;
 }
 
-/* ------------------------------------------------------------------ */
-/* Footer                                                             */
-/* ------------------------------------------------------------------ */
+
+/* Footer    */
+
 .nav-footer {
   background: var(--surface);
   border-top: 1px solid var(--line);
@@ -356,7 +352,7 @@ div.sourceCode {
   font-size: 0.85rem;
 }
 
-/* Respect reduced-motion preferences */
+/* reduced-motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation: none !important;
