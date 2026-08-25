@@ -1,73 +1,365 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+/* =====================================================================
+   Nor Hendra · ISSS626 Geospatial Analytics
+   Light "web3" theme — energy from motion + glow, not from darkness
+   ===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 :root {
-  --bg:      #F6F5F0;
-  --surface: #FFFFFF;
-  --ink:     #1E2A32;
-  --muted:   #64707A;
-  --line:    #E1DED4;
-  --teal:    #2E6F63;
-  --ochre:   #C68A2E;
+  /* base surfaces — kept light so exercise content stays readable */
+  --bg:        #F4F6F5;
+  --surface:   #FFFFFF;
+  --ink:       #16232B;
+  --muted:     #647079;
+  --line:      #E4E6E1;
+
+  /* web3 accent ramp — used for glow, gradients, motion */
+  --teal:      #17A398;
+  --teal-deep: #0E7C74;
+  --violet:    #6C5CE7;
+  --ochre:     #E0913A;
+  --cyan:      #22D3EE;
+
+  /* gradients */
+  --grad-accent: linear-gradient(120deg, var(--teal) 0%, var(--violet) 100%);
+  --grad-soft:   linear-gradient(120deg, rgba(23,163,152,0.12) 0%, rgba(108,92,231,0.12) 100%);
+
+  --glow-teal:   0 0 24px rgba(23,163,152,0.35);
+  --radius:      12px;
 }
 
+/* ------------------------------------------------------------------ */
+/* Base                                                               */
+/* ------------------------------------------------------------------ */
 body {
   background-color: var(--bg);
   color: var(--ink);
-  font-family: "IBM Plex Sans", -apple-system, sans-serif;
+  font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  /* subtle animated aurora wash in the page background */
+  background-image:
+    radial-gradient(1200px 600px at 10% -10%, rgba(23,163,152,0.08), transparent 60%),
+    radial-gradient(1000px 500px at 100% 0%, rgba(108,92,231,0.08), transparent 55%);
+  background-attachment: fixed;
 }
 
-h1, h2, h3, h4, .navbar-title, .quarto-title h1 {
+h1, h2, h3, h4, h5,
+.navbar-title, .quarto-title h1 {
   font-family: "Space Grotesk", sans-serif;
   font-weight: 600;
   color: var(--ink);
+  letter-spacing: -0.01em;
 }
 
-a { color: var(--teal); }
-a:hover { color: var(--ochre); }
+code, kbd, .coord {
+  font-family: "IBM Plex Mono", monospace;
+}
 
-/* navbar */
+a { color: var(--teal-deep); text-decoration: none; }
+a:hover { color: var(--violet); }
+
+/* animated gradient link underline for in-content links */
+.quarto-title-block a,
+main a:not(.nav-link):not(.navbar-brand) {
+  background-image: var(--grad-accent);
+  background-size: 0% 2px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size 0.25s ease;
+}
+.quarto-title-block a:hover,
+main a:not(.nav-link):not(.navbar-brand):hover {
+  background-size: 100% 2px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Navbar                                                             */
+/* ------------------------------------------------------------------ */
 .navbar {
-  background-color: var(--surface) !important;
-  border-bottom: 3px solid var(--teal);
+  background-color: rgba(255,255,255,0.72) !important;
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--line);
+  position: relative;
 }
+/* animated gradient hairline under the navbar */
+.navbar::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--teal), var(--violet), var(--cyan), var(--teal));
+  background-size: 300% 100%;
+  animation: slideGradient 8s linear infinite;
+}
+@keyframes slideGradient {
+  0%   { background-position:   0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+.navbar .navbar-brand img { height: 34px; }
+
 .navbar .navbar-brand,
 .navbar .nav-link {
   color: var(--ink) !important;
   font-weight: 500;
+  position: relative;
 }
-.navbar .nav-link:hover {
-  color: var(--teal) !important;
+.navbar .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0.5rem; right: 0.5rem; bottom: 0.35rem;
+  height: 2px;
+  background: var(--grad-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.22s ease;
 }
+.navbar .nav-link:hover::after { transform: scaleX(1); }
+.navbar .nav-link:hover { color: var(--teal-deep) !important; }
+
 .dropdown-menu {
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: var(--radius);
+  box-shadow: 0 12px 40px rgba(22,35,43,0.10);
+  overflow: hidden;
+  padding: 0.35rem;
+}
+.dropdown-item {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.dropdown-item:hover {
+  background: var(--grad-soft);
+  color: var(--teal-deep);
 }
 
-/* homepage listing grid (auto-generated by the `listing:` block in index.qmd) */
+/* ------------------------------------------------------------------ */
+/* Hero (homepage only — wrap content in ::: {.hero} in index.qmd)    */
+/* ------------------------------------------------------------------ */
+.hero {
+  position: relative;
+  margin: 1rem 0 2.5rem;
+  padding: 3rem 2.2rem;
+  border-radius: 20px;
+  background:
+    var(--grad-soft),
+    var(--surface);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  isolation: isolate;
+}
+/* moving grid lattice behind the hero */
+.hero::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(23,163,152,0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(108,92,231,0.10) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: radial-gradient(120% 120% at 50% 0%, #000 40%, transparent 75%);
+  animation: driftGrid 20s linear infinite;
+  z-index: -1;
+}
+@keyframes driftGrid {
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: 34px 68px, 68px 34px; }
+}
+/* floating glow orbs */
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 340px; height: 340px;
+  right: -80px; top: -120px;
+  background: radial-gradient(circle, rgba(108,92,231,0.25), transparent 70%);
+  filter: blur(20px);
+  border-radius: 50%;
+  animation: floatOrb 12s ease-in-out infinite alternate;
+  z-index: -1;
+}
+@keyframes floatOrb {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(-30px,40px) scale(1.15); }
+}
+
+.hero .eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal-deep);
+  margin-bottom: 0.6rem;
+}
+.hero h1 {
+  font-size: clamp(1.9rem, 4vw, 2.9rem);
+  line-height: 1.05;
+  margin: 0 0 0.9rem;
+}
+/* gradient text accent */
+.hero h1 .grad {
+  background: var(--grad-accent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero p {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 60ch;
+  margin: 0;
+}
+.hero .coord {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.4rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.78rem;
+  color: var(--ink);
+  background: rgba(255,255,255,0.7);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.hero .coord .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--teal);
+  box-shadow: var(--glow-teal);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* ------------------------------------------------------------------ */
+/* Listing cards                                                      */
+/* ------------------------------------------------------------------ */
+.quarto-listing { margin-top: 1rem; }
+
 .quarto-listing .card,
 .quarto-grid-item {
   border: 1px solid var(--line) !important;
-  border-radius: 6px;
+  border-radius: var(--radius);
   background-color: var(--surface);
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+/* gradient sheen sweep on hover */
+.quarto-listing .card::before,
+.quarto-grid-item::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(23,163,152,0.10) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+.quarto-listing .card:hover::before,
+.quarto-grid-item:hover::before {
+  transform: translateX(120%);
 }
 .quarto-listing .card:hover,
 .quarto-grid-item:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   border-color: var(--teal) !important;
+  box-shadow: 0 14px 40px rgba(23,163,152,0.16);
 }
+/* top accent strip on each card */
+.quarto-listing .card::after,
+.quarto-grid-item::after {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--grad-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.quarto-listing .card:hover::after,
+.quarto-grid-item:hover::after {
+  transform: scaleX(1);
+}
+
 .listing-title {
   font-family: "Space Grotesk", sans-serif;
-  font-size: 1.05rem;
+  font-size: 1.08rem;
+  font-weight: 600;
   color: var(--ink) !important;
 }
-.listing-description {
-  color: var(--muted);
-  font-size: 0.9rem;
-}
+.listing-description { color: var(--muted); font-size: 0.9rem; }
 .listing-date {
-  color: var(--teal);
-  font-size: 0.78rem;
+  color: var(--teal-deep);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.74rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+.listing-author { color: var(--muted); font-size: 0.8rem; }
+
+/* ------------------------------------------------------------------ */
+/* Content callouts get a little more life                            */
+/* ------------------------------------------------------------------ */
+div.callout { border-radius: 10px !important; }
+div.callout.callout-style-default > .callout-header {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+/* Section headings in content: small gradient tick before them */
+main h2 {
+  position: relative;
+  padding-left: 0.9rem;
+}
+main h2::before {
+  content: "";
+  position: absolute; left: 0; top: 0.15em; bottom: 0.15em;
+  width: 4px; border-radius: 4px;
+  background: var(--grad-accent);
+}
+
+/* Tables */
+main table {
+  border-radius: 10px;
+  overflow: hidden;
+}
+main thead {
+  background: var(--grad-soft);
+}
+
+/* Code blocks: soften + accent border */
+div.sourceCode {
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  box-shadow: 0 2px 10px rgba(22,35,43,0.04);
+}
+
+/* ------------------------------------------------------------------ */
+/* Reveal-on-scroll (paired with tiny script in _includes)           */
+/* ------------------------------------------------------------------ */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal-up.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Footer                                                             */
+/* ------------------------------------------------------------------ */
+.nav-footer {
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

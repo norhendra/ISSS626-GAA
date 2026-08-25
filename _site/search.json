@@ -2,9 +2,9 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "ISSS626",
+    "title": "Geospatial Analytics & Applications",
     "section": "",
-    "text": "Hello, I am Nor Hendra and welcome to my ISSS626 Geospatial Analytics and Applications coursework page. This site documents my coursework: hands-on exercises, in-class exercises, and take-home assignments completed using R."
+    "text": "Nor Hendra\n    Geospatial Analytics & Applications"
   },
   {
     "objectID": "index.html#latest-posts",
@@ -18,7 +18,7 @@
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01A.html",
     "title": "Hands-on Exercise 1A: Geospatial Data Science with R",
     "section": "",
-    "text": "Geospatial Data Science is the process of importing, wrangling, integrating, and processing geographically referenced data sets. In this hands-on exercise, I learned how to perform geospatial data science tasks in R by using the sf package.\nBy the end of this exercise, I acquired the following competencies:\n\ninstalling and loading sf and tidyverse packages into the R environment,\nimporting geospatial data by using appropriate functions of the sf package,\nimporting aspatial data by using appropriate functions of the readr package,\nexploring the content of a simple feature data frame by using appropriate Base R and sf functions,\nassigning or transforming coordinate systems by using appropriate sf functions,\nconverting aspatial data into an sf data frame by using appropriate functions of the sf package,\nperforming geoprocessing tasks by using appropriate functions of the sf package,\nperforming data wrangling tasks by using appropriate functions of the dplyr package, and\nperforming Exploratory Data Analysis (EDA) by using appropriate functions from the ggplot2 package.\n\n\n\n\n\n\n\nNote\n\n\n\nI made it a habit to read the reference guide of each function, especially the input data requirements, syntax, and argument options, before using them.\n\n\n\n\n\n\n\n\nImportantNote on data formats used in this write-up\n\n\n\nThe reference material describes the subzone boundary and cycling path as ESRI shapefiles and the pre-school locations as a KML. What I actually downloaded from data.gov.sg and LTA DataMall came as GeoJSON for all three geospatial layers instead. I adapted the code and the explanation accordingly, and flagged every place this changes something."
+    "text": "Nor Hendra\n    Geospatial Analytics & Applications"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01A.html#folder-structure",
@@ -172,7 +172,7 @@
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01B.html",
     "title": "Hands-on Exercise 1B: Thematic Mapping and GeoVisualisation with R",
     "section": "",
-    "text": "Thematic mapping involves the use of map symbols to visualise selected properties of geographic features that are not naturally visible, such as population, temperature, crime rate, and property prices, to name just a few.\nGeovisualisation is the process of using visual representations and cartographic techniques to explore, analyse, and communicate geospatial data. It combines elements of cartography, computer science, and information visualisation to enhance spatial understanding and knowledge discovery.\nIn this hands-on exercise, I learned how to plot functional and truthful choropleth maps by using an R package called tmap.\n\n\n\n\n\n\nNoteSurvival tip\n\n\n\nI made it a habit to read the functional description of each function before using it. That mattered more than usual here, because tmap version 4 renamed a lot of arguments from version 3, and much of the older material online still uses the version 3 forms.\n\n\n\n\n\n\n\n\nImportantNote on data formats used in this write-up\n\n\n\nThe reference material uses the Master Plan 2019 Subzone Boundary as a KML file, which is why it spends a whole subsection scraping attributes out of an embedded HTML table. What I downloaded from data.gov.sg came as GeoJSON instead, and this GeoJSON already carries SUBZONE_N, PLN_AREA_N, REGION_N and SUBZONE_C as proper columns. That means the entire HTML-scraping step the reference material performs is unnecessary for my file, so I dropped it. I flagged every place the format changes something."
+    "text": "Nor Hendra\n    Geospatial Analytics & Applications"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01B.html#the-data",
@@ -306,5 +306,12 @@
     "title": "Hands-on Exercise 1B: Thematic Mapping and GeoVisualisation with R",
     "section": "10.2 Adaptations required because my boundary file is GeoJSON, not KML",
     "text": "10.2 Adaptations required because my boundary file is GeoJSON, not KML\n\n\n\n\n\n\n\n\n#\nWhat changed\nWhy\n\n\n\n\n1\nDropped the entire extract_kml_field() / rvest scraping step\nMy GeoJSON already carries SUBZONE_N, PLN_AREA_N, REGION_N, SUBZONE_C as ordinary columns, confirmed via names(mpsz), so there is no HTML table to parse\n\n\n2\nNoted the area/length fields are SHAPE.AREA / SHAPE.LEN here\nGeoJSON export named them differently from the reference shapefile’s SHAPE_Leng / SHAPE_Area; neither is used in the exercise\n\n\n3\nConfirmed the join key SUBZONE_N exists and is spelled correctly\nThe name-based left_join() depends on it; verified present rather than assumed"
+  },
+  {
+    "objectID": "index.html#latest-exercises",
+    "href": "index.html#latest-exercises",
+    "title": "Geospatial Analytics & Applications",
+    "section": "Latest Exercises",
+    "text": "Latest Exercises"
   }
 ]

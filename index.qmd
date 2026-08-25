@@ -1,5 +1,6 @@
 ---
-title: "ISSS626"
+title: ""
+pagetitle: "Nor Hendra · ISSS626 Geospatial Analytics"
 listing:
   type: grid
   contents:
@@ -7,14 +8,18 @@ listing:
     # - "Take-home_Ex/*/*.qmd"
     # - "In-class_Ex/*/*.qmd"
   sort: "date desc"
-  fields: [image, date, title, author]
+  fields: [date, title, image, author]
   max-items: 12
 toc: false
 ---
 
-Hello, I am Nor Hendra and welcome to my **ISSS626 Geospatial Analytics and Applications** coursework page. This site documents my coursework: hands-on exercises, in-class exercises, and take-home assignments completed using R.
+```{=html}
+<div class="hero">
+  <div class="eyebrow">ISSS626 · Singapore Management University</div>
+  <h1>Geospatial Analytics <span class="grad">&amp; Applications</span></h1>
+  <p>Hi, I am Nor Hendra. This site documents my coursework in geospatial data science: hands-on exercises, in-class exercises, and take-home assignments, all built with R, sf, and tmap.</p>
+  <span class="coord"><span class="dot"></span> 1.2966° N, 103.8500° E · Singapore</span>
+</div>
+```
 
-## Latest Posts
-
-::: listing-block
-:::
+## Latest Exercises
