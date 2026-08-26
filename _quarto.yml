@@ -29,10 +29,20 @@ website:
 
 format:
   html:
-    theme: cosmo
+    # Two themes → Quarto renders a light/dark toggle in the navbar automatically.
+    # First entry is the default (light); the toggle flips to the second (dark).
+    theme:
+      light: cosmo
+      dark:
+        - cosmo
+        - styles-dark.scss
     css: styles.css
     toc: true
+    code-copy: true
+    code-overflow: wrap
     include-before-body: _includes/preloader.html
-    include-after-body: _includes/reveal.html
+    include-after-body:
+      - _includes/reveal.html
+      - _includes/ui.html
 
 editor: visual

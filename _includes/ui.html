@@ -1,0 +1,58 @@
+<button id="back-to-top" aria-label="Back to top" title="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 19V5"/><path d="M5 12l7-7 7 7"/>
+  </svg>
+</button>
+
+<script>
+  (function () {
+    /* ---- Scroll progress bar ---- */
+    var bar = document.createElement('div');
+    bar.id = 'scroll-progress';
+    document.body.appendChild(bar);
+
+    var btt = document.getElementById('back-to-top');
+
+    function onScroll() {
+      var h = document.documentElement;
+      var scrollTop = h.scrollTop || document.body.scrollTop;
+      var height = h.scrollHeight - h.clientHeight;
+      var pct = height > 0 ? (scrollTop / height) * 100 : 0;
+      bar.style.width = pct + '%';
+
+      if (btt) {
+        if (scrollTop > 400) { btt.classList.add('show'); }
+        else { btt.classList.remove('show'); }
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
+
+    /* ---- Back to top ---- */
+    if (btt) {
+      btt.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    /* ---- SGT clock ---- */
+    function tickClock() {
+      var el = document.getElementById('sgt-clock');
+      if (!el) return;
+      try {
+        var now = new Date().toLocaleTimeString('en-GB', {
+          timeZone: 'Asia/Singapore',
+          hour: '2-digit', minute: '2-digit', second: '2-digit'
+        });
+        el.textContent = now + ' SGT';
+      } catch (e) {
+        // fallback
+        el.textContent = new Date().toLocaleTimeString();
+      }
+    }
+    tickClock();
+    setInterval(tickClock, 1000);
+  })();
+</script>

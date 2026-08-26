@@ -8,18 +8,290 @@ listing:
     # - "Take-home_Ex/*/*.qmd"
     # - "In-class_Ex/*/*.qmd"
   sort: "date desc"
-  fields: [date, title, image, author]
+  fields: [date, title, description, author]
   max-items: 12
 toc: false
 ---
 
 ```{=html}
-<div class="hero">
-  <div class="eyebrow">ISSS626 · Singapore Management University</div>
-  <h1>Geospatial Analytics <span class="grad">&amp; Applications</span></h1>
-  <p>Hi, I am Nor Hendra. This site documents my coursework in geospatial data science: hands-on exercises, in-class exercises, and take-home assignments, all built with R, sf, and tmap.</p>
-  <span class="coord"><span class="dot"></span> 1.2966° N, 103.8500° E · Singapore</span>
+<div class="hero hero-globe">
+  <div class="hero-copy">
+    <div class="eyebrow">ISSS626 · Singapore Management University</div>
+    <h1><span class="grad" data-text="Geospatial Analytics &amp; Applications">Geospatial Analytics &amp; Applications</span></h1>
+    <p>Hi, I am Nor Hendra. This site documents my coursework in geospatial data science: hands-on exercises, in-class exercises, and take-home assignments, all built with R, sf, and tmap.</p>
+    <div class="globe-actions">
+      <button id="locate-btn" class="globe-btn" type="button">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="10" r="3"/>
+          <path d="M12 21c-4-4.5-7-8-7-11a7 7 0 0 1 14 0c0 3-3 6.5-7 11z"/>
+        </svg>
+        Locate me
+      </button>
+      <span class="globe-hint">Drag to spin · click to drop a pin</span>
+    </div>
+  </div>
+
+  <div class="hero-globe-viz">
+    <div id="globe-wrap">
+      <svg id="globe" role="img" aria-label="Interactive rotating globe"></svg>
+    </div>
+    <div class="globe-readout">
+      <span class="ro-dot"></span>
+      <span id="globe-coords" class="ro-coords">1.2966° N, 103.8500° E</span>
+      <span id="globe-zone" class="ro-zone">Tropical zone</span>
+    </div>
+  </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+<script>
+(function () {
+  function initGlobe() {
+    if (typeof d3 === 'undefined') { setTimeout(initGlobe, 200); return; }
+
+    var svg = d3.select('#globe');
+    var wrap = document.getElementById('globe-wrap');
+    if (!svg.node() || !wrap) return;
+
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // state
+    var mLon = 103.8500, mLat = 1.2966;   // default: Singapore
+    var paused = false, resumeAt = 0;
+
+    // theme colors
+    function themeColors() {
+      var cs = getComputedStyle(document.body);
+      var g = function (n, f) { var v = cs.getPropertyValue(n).trim(); return v || f; };
+      return {
+        surface: g('--surface', '#ffffff'),
+        teal:    g('--teal',    '#17A398'),
+        tealDeep:g('--teal-deep','#0E7C74'),
+        violet:  g('--violet',  '#6C5CE7'),
+        cyan:    g('--cyan',    '#22D3EE'),
+        line:    g('--line',    '#E4E6E1'),
+        ink:     g('--ink',     '#16232B')
+      };
+    }
+    function isDark() { return document.body.classList.contains('quarto-dark'); }
+
+    // projection + path
+    var projection = d3.geoOrthographic().clipAngle(90).precision(0.3);
+    var path = d3.geoPath(projection);
+    var graticule = d3.geoGraticule10();
+
+    // svg scaffolding
+    var defs = svg.append('defs');
+    var oceanGrad = defs.append('radialGradient')
+      .attr('id', 'oceanGrad').attr('cx', '35%').attr('cy', '30%').attr('r', '75%');
+    var oStop1 = oceanGrad.append('stop').attr('offset', '0%');
+    var oStop2 = oceanGrad.append('stop').attr('offset', '100%');
+
+    var glow = defs.append('filter').attr('id', 'markerGlow')
+      .attr('x', '-80%').attr('y', '-80%').attr('width', '260%').attr('height', '260%');
+    glow.append('feGaussianBlur').attr('stdDeviation', '3').attr('result', 'b');
+    var fm = glow.append('feMerge');
+    fm.append('feMergeNode').attr('in', 'b');
+    fm.append('feMergeNode').attr('in', 'SourceGraphic');
+
+    var spherePath = svg.append('path').attr('class', 'g-sphere');
+    var haloPath   = svg.append('path').attr('class', 'g-halo');
+    var gratPath   = svg.append('path').attr('class', 'g-grat');
+    var landPath   = svg.append('path').attr('class', 'g-land');
+
+    var markerG = svg.append('g').attr('class', 'g-marker');
+    var ring = markerG.append('circle').attr('class', 'm-ring').attr('r', 6).attr('fill', 'none');
+    ring.append('animate').attr('attributeName', 'r').attr('values', '5;16').attr('dur', '2s').attr('repeatCount', 'indefinite');
+    ring.append('animate').attr('attributeName', 'opacity').attr('values', '0.9;0').attr('dur', '2s').attr('repeatCount', 'indefinite');
+    var dot = markerG.append('circle').attr('class', 'm-dot').attr('r', 4).attr('filter', 'url(#markerGlow)');
+
+    var width = 0, height = 0, radius = 0;
+
+    function applyColors() {
+      var c = themeColors();
+      var dark = isDark();
+      oStop1.attr('stop-color', dark ? '#12262A' : '#FFFFFF');
+      oStop2.attr('stop-color', dark ? '#0C1A1D' : '#E9F3F1');
+      spherePath.attr('fill', 'url(#oceanGrad)').attr('stroke', c.teal).attr('stroke-opacity', dark ? 0.5 : 0.35).attr('stroke-width', 1);
+      haloPath.attr('fill', 'none').attr('stroke', c.violet).attr('stroke-opacity', 0.25).attr('stroke-width', 6);
+      gratPath.attr('fill', 'none').attr('stroke', c.teal).attr('stroke-opacity', dark ? 0.18 : 0.14).attr('stroke-width', 0.5);
+      landPath.attr('fill', c.teal).attr('fill-opacity', dark ? 0.55 : 0.72).attr('stroke', dark ? '#0C1A1D' : '#FFFFFF').attr('stroke-opacity', 0.5).attr('stroke-width', 0.4);
+      ring.attr('stroke', c.cyan).attr('stroke-width', 2);
+      dot.attr('fill', c.cyan).attr('stroke', dark ? '#0C1A1D' : '#FFFFFF').attr('stroke-width', 1.5);
+    }
+
+    var landFeature = null;
+
+    function resize() {
+      width = Math.max(220, Math.min(wrap.clientWidth, 420));
+      height = width;
+      radius = width / 2 - 6;
+      svg.attr('viewBox', '0 0 ' + width + ' ' + height)
+         .attr('width', width).attr('height', height);
+      projection.scale(radius).translate([width / 2, height / 2]);
+      haloPath.attr('d', path({ type: 'Sphere' }));
+      redraw();
+    }
+
+    function redraw() {
+      spherePath.attr('d', path({ type: 'Sphere' }));
+      gratPath.attr('d', path(graticule));
+      if (landFeature) landPath.attr('d', path(landFeature));
+      updateMarker();
+    }
+
+    function updateMarker() {
+      var rot = projection.rotate();
+      var center = [-rot[0], -rot[1]];
+      var visible = d3.geoDistance([mLon, mLat], center) < Math.PI / 2;
+      if (visible) {
+        var p = projection([mLon, mLat]);
+        markerG.style('display', null).attr('transform', 'translate(' + p[0] + ',' + p[1] + ')');
+      } else {
+        markerG.style('display', 'none');
+      }
+    }
+
+    function zoneOf(lat) {
+      var a = Math.abs(lat);
+      if (a < 23.5) return 'Tropical zone';
+      if (a < 66.5) return 'Temperate zone';
+      return 'Polar zone';
+    }
+    function fmt(lon, lat) {
+      var ns = lat >= 0 ? 'N' : 'S';
+      var ew = lon >= 0 ? 'E' : 'W';
+      return Math.abs(lat).toFixed(4) + '° ' + ns + ', ' + Math.abs(lon).toFixed(4) + '° ' + ew;
+    }
+    function updateReadout() {
+      var co = document.getElementById('globe-coords');
+      var zo = document.getElementById('globe-zone');
+      if (co) co.textContent = fmt(mLon, mLat);
+      if (zo) zo.textContent = zoneOf(mLat);
+    }
+
+    function rotateTo(lon, lat) {
+      var r0 = projection.rotate();
+      var target = [-lon, -lat, 0];
+      if (reduceMotion) { projection.rotate(target); redraw(); return; }
+      d3.transition().duration(900).tween('rotate', function () {
+        var i = d3.interpolate(r0, target);
+        return function (t) { projection.rotate(i(t)); redraw(); };
+      });
+    }
+
+    function setMarker(lon, lat, spin) {
+      mLon = lon; mLat = lat;
+      updateReadout();
+      if (spin) rotateTo(lon, lat); else redraw();
+      paused = true; resumeAt = d3.now() + 2600;
+    }
+
+    // drag to spin, click to drop a pin
+    var startPx = 0, startPy = 0, rotAtStart = null, moved = 0;
+    var drag = d3.drag()
+      .on('start', function (event) {
+        paused = true;
+        rotAtStart = projection.rotate();
+        var pt = d3.pointer(event, svg.node());
+        startPx = pt[0]; startPy = pt[1]; moved = 0;
+      })
+      .on('drag', function (event) {
+        var pt = d3.pointer(event, svg.node());
+        var dx = pt[0] - startPx, dy = pt[1] - startPy;
+        moved = Math.max(moved, Math.hypot(dx, dy));
+        var k = 75 / projection.scale();
+        projection.rotate([
+          rotAtStart[0] + dx * k,
+          rotAtStart[1] - dy * k,
+          rotAtStart[2]
+        ]);
+        redraw();
+      })
+      .on('end', function (event) {
+        var pt = d3.pointer(event, svg.node());
+        if (moved < 5) {
+          var cx = width / 2, cy = height / 2;
+          if (Math.hypot(pt[0] - cx, pt[1] - cy) <= radius) {
+            var inv = projection.invert(pt);
+            if (inv && isFinite(inv[0]) && isFinite(inv[1])) {
+              setMarker(inv[0], inv[1], true);
+              return;
+            }
+          }
+        }
+        paused = true; resumeAt = d3.now() + 1500;
+      });
+    svg.call(drag);
+    svg.style('cursor', 'grab');
+    svg.on('mousedown', function () { svg.style('cursor', 'grabbing'); });
+    svg.on('mouseup',   function () { svg.style('cursor', 'grab'); });
+
+    // auto-rotation
+    var last = d3.now();
+    d3.timer(function () {
+      var now = d3.now();
+      var diff = now - last; last = now;
+      if (resumeAt && now > resumeAt) { paused = false; resumeAt = 0; }
+      if (paused || reduceMotion) return;
+      var r = projection.rotate();
+      r[0] += diff * 0.008;
+      projection.rotate(r);
+      redraw();
+    });
+
+    // locate me
+    var locateBtn = document.getElementById('locate-btn');
+    if (locateBtn) {
+      locateBtn.addEventListener('click', function () {
+        if (!navigator.geolocation) { flashBtn('Not supported'); return; }
+        flashBtn('Locating…');
+        navigator.geolocation.getCurrentPosition(
+          function (pos) {
+            setMarker(pos.coords.longitude, pos.coords.latitude, true);
+            flashBtn('Located', true);
+          },
+          function () { flashBtn('Unavailable'); },
+          { timeout: 8000, enableHighAccuracy: false }
+        );
+      });
+    }
+    function flashBtn(msg, ok) {
+      if (!locateBtn) return;
+      locateBtn.classList.toggle('is-ok', !!ok);
+      if (locateBtn.lastChild) locateBtn.lastChild.textContent = ' ' + msg;
+      setTimeout(function () {
+        if (locateBtn.lastChild) locateBtn.lastChild.textContent = ' Locate me';
+        locateBtn.classList.remove('is-ok');
+      }, 2200);
+    }
+
+    // recolor on theme switch
+    new MutationObserver(applyColors)
+      .observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+    // boot
+    applyColors();
+    projection.rotate([-mLon, -15, 0]);
+    updateReadout();
+    resize();
+    window.addEventListener('resize', resize);
+
+    // land data, fall back to wireframe if it fails
+    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json')
+      .then(function (world) {
+        landFeature = topojson.feature(world, world.objects.land);
+        applyColors();
+        redraw();
+      })
+      .catch(function () { /* keep wireframe globe */ });
+  }
+
+  if (document.readyState !== 'loading') initGlobe();
+  else document.addEventListener('DOMContentLoaded', initGlobe);
+})();
+</script>
 ```
 
 ## Latest Exercises
