@@ -338,12 +338,6 @@ window.Quarto = {
     </ul>
   </li>
 </ul>
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
-<span class="menu-text">Home</span></a>
-  </li>  
-</ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
@@ -475,7 +469,7 @@ window.Quarto = {
   <div class="hero-copy">
     <div class="eyebrow">ISSS626 · Singapore Management University</div>
     <h1><span class="grad" data-text="Geospatial Analytics &amp; Applications">Geospatial Analytics &amp; Applications</span></h1>
-    <p>Hi, I am Nor Hendra. This site documents my coursework in geospatial data science: hands-on exercises, in-class exercises, and take-home assignments, all built with R, sf, and tmap.</p>
+    <p>Hi, I am Nor Hendra. This site documents my coursework in geospatial data science: hands-on exercises, in-class exercises, and take-home assignments, all built with R.</p>
     <div class="globe-actions">
       <button id="locate-btn" class="globe-btn" type="button">
         <svg viewbox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -644,52 +638,71 @@ window.Quarto = {
       paused = true; resumeAt = d3.now() + 2600;
     }
 
-    // drag to spin, tap to drop a pin (works with mouse and touch)
-    var startPx = 0, startPy = 0, rotAtStart = null, moved = 0, lastPt = null;
-    var drag = d3.drag()
-      .on('start', function (event) {
-        paused = true;
-        rotAtStart = projection.rotate();
-        var pt = d3.pointer(event, svg.node());
-        startPx = pt[0]; startPy = pt[1]; moved = 0; lastPt = pt;
-      })
-      .on('drag', function (event) {
-        var pt = d3.pointer(event, svg.node());
-        lastPt = pt;
-        var dx = pt[0] - startPx, dy = pt[1] - startPy;
-        moved = Math.max(moved, Math.hypot(dx, dy));
-        var k = 75 / projection.scale();
-        projection.rotate([
-          rotAtStart[0] + dx * k,
-          rotAtStart[1] - dy * k,
-          rotAtStart[2]
-        ]);
-        redraw();
-      })
-      .on('end', function () {
-        // use the last known point (touchend carries no coordinates)
-        var pt = lastPt || [startPx, startPy];
-        if (moved < 6) {
-          var cx = width / 2, cy = height / 2;
-          if (Math.hypot(pt[0] - cx, pt[1] - cy) <= radius) {
-            var inv = projection.invert(pt);
-            if (inv && isFinite(inv[0]) && isFinite(inv[1])) {
-              setMarker(inv[0], inv[1], true);
-              return;
-            }
+    // drag to spin, tap to drop a pin. native pointer events for mouse and touch
+    var svgNode = svg.node();
+    var dragging = false, activeId = null;
+    var startPx = 0, startPy = 0, rotAtStart = null, moved = 0, lastPt = [0, 0];
+
+    // map a pointer event to globe (viewBox) coordinates
+    function toGlobe(e) {
+      var rect = svgNode.getBoundingClientRect();
+      var sx = rect.width  ? width  / rect.width  : 1;
+      var sy = rect.height ? height / rect.height : 1;
+      return [(e.clientX - rect.left) * sx, (e.clientY - rect.top) * sy];
+    }
+
+    svgNode.addEventListener('pointerdown', function (e) {
+      dragging = true;
+      activeId = e.pointerId;
+      try { svgNode.setPointerCapture(e.pointerId); } catch (err) {}
+      paused = true;
+      rotAtStart = projection.rotate();
+      var pt = toGlobe(e);
+      startPx = pt[0]; startPy = pt[1]; moved = 0; lastPt = pt;
+      svg.style('cursor', 'grabbing');
+      e.preventDefault();
+    }, { passive: false });
+
+    svgNode.addEventListener('pointermove', function (e) {
+      if (!dragging || e.pointerId !== activeId) return;
+      var pt = toGlobe(e);
+      lastPt = pt;
+      var dx = pt[0] - startPx, dy = pt[1] - startPy;
+      moved = Math.max(moved, Math.hypot(dx, dy));
+      var k = 75 / projection.scale();
+      projection.rotate([
+        rotAtStart[0] + dx * k,
+        rotAtStart[1] - dy * k,
+        rotAtStart[2]
+      ]);
+      redraw();
+      e.preventDefault();
+    }, { passive: false });
+
+    function endPointer(e) {
+      if (!dragging) return;
+      dragging = false;
+      svg.style('cursor', 'grab');
+      var pt = lastPt;
+      if (moved < 6) {
+        var cx = width / 2, cy = height / 2;
+        if (Math.hypot(pt[0] - cx, pt[1] - cy) <= radius) {
+          var inv = projection.invert(pt);
+          if (inv && isFinite(inv[0]) && isFinite(inv[1])) {
+            setMarker(inv[0], inv[1], true);
+            return;
           }
         }
-        paused = true; resumeAt = d3.now() + 1500;
-      });
-    svg.call(drag);
+      }
+      paused = true; resumeAt = d3.now() + 1500;
+    }
+    svgNode.addEventListener('pointerup', endPointer);
+    svgNode.addEventListener('pointercancel', function () {
+      dragging = false;
+      svg.style('cursor', 'grab');
+      paused = true; resumeAt = d3.now() + 1500;
+    });
     svg.style('cursor', 'grab');
-    svg.on('mousedown', function () { svg.style('cursor', 'grabbing'); });
-    svg.on('mouseup',   function () { svg.style('cursor', 'grab'); });
-
-    // stop scroll page
-    var svgNode = svg.node();
-    svgNode.addEventListener('touchstart', function (e) { e.preventDefault(); }, { passive: false });
-    svgNode.addEventListener('touchmove',  function (e) { e.preventDefault(); }, { passive: false });
 
     // auto-rotation
     var last = d3.now();

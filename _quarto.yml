@@ -19,9 +19,6 @@ website:
             href: "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01A.html"
           - text: "Hands-on Exercise 1B"
             href: "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01B.html"
-    right:
-      - href: index.qmd
-        text: Home
   page-footer:
     left: "Nor Hendra · ISSS626 Geospatial Analytics & Applications, SMU"
     right: "Built with Quarto"
