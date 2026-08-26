@@ -89,7 +89,7 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-date','listing-title','listing-description','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-date','listing-title','listing-image','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
       searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
     };
@@ -484,7 +484,6 @@ window.Quarto = {
         </svg>
         Locate me
       </button>
-      <span class="globe-hint">Drag to spin · click to drop a pin</span>
     </div>
   </div>
 
@@ -497,6 +496,7 @@ window.Quarto = {
       <span id="globe-coords" class="ro-coords">1.2966° N, 103.8500° E</span>
       <span id="globe-zone" class="ro-zone">Tropical zone</span>
     </div>
+    <span class="globe-hint">Drag to spin · tap to drop a pin</span>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
@@ -644,17 +644,18 @@ window.Quarto = {
       paused = true; resumeAt = d3.now() + 2600;
     }
 
-    // drag to spin, click to drop a pin
-    var startPx = 0, startPy = 0, rotAtStart = null, moved = 0;
+    // drag to spin, tap to drop a pin (works with mouse and touch)
+    var startPx = 0, startPy = 0, rotAtStart = null, moved = 0, lastPt = null;
     var drag = d3.drag()
       .on('start', function (event) {
         paused = true;
         rotAtStart = projection.rotate();
         var pt = d3.pointer(event, svg.node());
-        startPx = pt[0]; startPy = pt[1]; moved = 0;
+        startPx = pt[0]; startPy = pt[1]; moved = 0; lastPt = pt;
       })
       .on('drag', function (event) {
         var pt = d3.pointer(event, svg.node());
+        lastPt = pt;
         var dx = pt[0] - startPx, dy = pt[1] - startPy;
         moved = Math.max(moved, Math.hypot(dx, dy));
         var k = 75 / projection.scale();
@@ -665,9 +666,10 @@ window.Quarto = {
         ]);
         redraw();
       })
-      .on('end', function (event) {
-        var pt = d3.pointer(event, svg.node());
-        if (moved < 5) {
+      .on('end', function () {
+        // use the last known point (touchend carries no coordinates)
+        var pt = lastPt || [startPx, startPy];
+        if (moved < 6) {
           var cx = width / 2, cy = height / 2;
           if (Math.hypot(pt[0] - cx, pt[1] - cy) <= radius) {
             var inv = projection.invert(pt);
@@ -683,6 +685,11 @@ window.Quarto = {
     svg.style('cursor', 'grab');
     svg.on('mousedown', function () { svg.style('cursor', 'grabbing'); });
     svg.on('mouseup',   function () { svg.style('cursor', 'grab'); });
+
+    // stop scroll page
+    var svgNode = svg.node();
+    svgNode.addEventListener('touchstart', function (e) { e.preventDefault(); }, { passive: false });
+    svgNode.addEventListener('touchmove',  function (e) { e.preventDefault(); }, { passive: false });
 
     // auto-rotation
     var last = d3.now();
@@ -760,13 +767,11 @@ window.Quarto = {
 <div class="g-col-1" data-index="0" data-listing-date-sort="1787414400000" data-listing-file-modified-sort="1787475781488" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="18" data-listing-word-count-sort="3521">
 <a href="./Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01A.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img loading='lazy' src="Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01A_files/figure-html/unnamed-chunk-8-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 Hands-on Exercise 1A: Geospatial Data Science with R
 </h5>
-<div class="card-text listing-description delink">
-Geospatial Data Science is the process of importing, wrangling, integrating, and processing geographically referenced data sets. In this hands-on exercise, I learned how to…<strong></strong>
-</div>
 <div class="card-attribution card-text-small justify">
 <div class="listing-author">
 Nor Hendra
@@ -781,13 +786,11 @@ Aug 23, 2026
 <div class="g-col-1" data-index="1" data-listing-date-sort="1787414400000" data-listing-file-modified-sort="1787475661954" data-listing-date-modified-sort="1787475661000" data-listing-reading-time-sort="38" data-listing-word-count-sort="7457">
 <a href="./Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01B.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img loading='lazy' src="Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01B_files/figure-html/unnamed-chunk-13-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 Hands-on Exercise 1B: Thematic Mapping and GeoVisualisation with R
 </h5>
-<div class="card-text listing-description delink">
-Thematic mapping involves the use of map symbols to visualise selected properties of geographic features that are not naturally visible, such as population, temperature…
-</div>
 <div class="card-attribution card-text-small justify">
 <div class="listing-author">
 Nor Hendra

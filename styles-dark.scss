@@ -9,6 +9,7 @@ $card-bg:    #131C20;
 
 
 /*-- scss:rules --*/
+// scope dark overrides under body.quarto-dark so they win over styles.css
 
 body.quarto-dark {
   --bg:        #0E1518;

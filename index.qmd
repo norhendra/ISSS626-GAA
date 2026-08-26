@@ -8,7 +8,7 @@ listing:
     # - "Take-home_Ex/*/*.qmd"
     # - "In-class_Ex/*/*.qmd"
   sort: "date desc"
-  fields: [date, title, description, author]
+  fields: [date, title, image, author]
   max-items: 12
 toc: false
 ---
@@ -28,7 +28,6 @@ toc: false
         </svg>
         Locate me
       </button>
-      <span class="globe-hint">Drag to spin · click to drop a pin</span>
     </div>
   </div>
 
@@ -41,6 +40,7 @@ toc: false
       <span id="globe-coords" class="ro-coords">1.2966° N, 103.8500° E</span>
       <span id="globe-zone" class="ro-zone">Tropical zone</span>
     </div>
+    <span class="globe-hint">Drag to spin · tap to drop a pin</span>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
@@ -188,17 +188,18 @@ toc: false
       paused = true; resumeAt = d3.now() + 2600;
     }
 
-    // drag to spin, click to drop a pin
-    var startPx = 0, startPy = 0, rotAtStart = null, moved = 0;
+    // drag to spin, tap to drop a pin (works with mouse and touch)
+    var startPx = 0, startPy = 0, rotAtStart = null, moved = 0, lastPt = null;
     var drag = d3.drag()
       .on('start', function (event) {
         paused = true;
         rotAtStart = projection.rotate();
         var pt = d3.pointer(event, svg.node());
-        startPx = pt[0]; startPy = pt[1]; moved = 0;
+        startPx = pt[0]; startPy = pt[1]; moved = 0; lastPt = pt;
       })
       .on('drag', function (event) {
         var pt = d3.pointer(event, svg.node());
+        lastPt = pt;
         var dx = pt[0] - startPx, dy = pt[1] - startPy;
         moved = Math.max(moved, Math.hypot(dx, dy));
         var k = 75 / projection.scale();
@@ -209,9 +210,10 @@ toc: false
         ]);
         redraw();
       })
-      .on('end', function (event) {
-        var pt = d3.pointer(event, svg.node());
-        if (moved < 5) {
+      .on('end', function () {
+        // use the last known point (touchend carries no coordinates)
+        var pt = lastPt || [startPx, startPy];
+        if (moved < 6) {
           var cx = width / 2, cy = height / 2;
           if (Math.hypot(pt[0] - cx, pt[1] - cy) <= radius) {
             var inv = projection.invert(pt);
@@ -227,6 +229,11 @@ toc: false
     svg.style('cursor', 'grab');
     svg.on('mousedown', function () { svg.style('cursor', 'grabbing'); });
     svg.on('mouseup',   function () { svg.style('cursor', 'grab'); });
+
+    // stop scroll page
+    var svgNode = svg.node();
+    svgNode.addEventListener('touchstart', function (e) { e.preventDefault(); }, { passive: false });
+    svgNode.addEventListener('touchmove',  function (e) { e.preventDefault(); }, { passive: false });
 
     // auto-rotation
     var last = d3.now();

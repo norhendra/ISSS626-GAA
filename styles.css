@@ -463,8 +463,9 @@ div.sourceCode {
 }
 .globe-hint {
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-family: "IBM Plex Mono", monospace;
+  text-align: center;
 }
 
 .hero-globe-viz {
@@ -479,8 +480,17 @@ div.sourceCode {
   align-items: center;
   width: 100%;
   filter: drop-shadow(0 18px 40px rgba(23,163,152,0.18));
+  touch-action: none;
+  -ms-touch-action: none;
 }
-#globe { max-width: 100%; height: auto; touch-action: none; }
+#globe {
+  max-width: 100%;
+  height: auto;
+  touch-action: none;
+  -ms-touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
 
 .globe-btn {
   display: inline-flex;
