@@ -1303,7 +1303,7 @@ u = 1.7464e+13, rank = 2, p-value = 0.02</code></pre>
             io.unobserve(entry.target);
           }
         });
-      }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+      }, { threshold: 0, rootMargin: '0px 0px -10px 0px' });
       targets.forEach(function (el) { io.observe(el); });
     }
     if (document.readyState !== 'loading') { initReveal(); }
