@@ -1,5 +1,5 @@
 ---
-title: "1st Order Spatial Point Patterns Analysis Method"
+title: "Hands-on Exercise 2A: 1st Order Spatial Point Patterns Analysis Method"
 author: "Nor Hendra"
 date: "29 August 2026"
 date-modified: "last-modified"
