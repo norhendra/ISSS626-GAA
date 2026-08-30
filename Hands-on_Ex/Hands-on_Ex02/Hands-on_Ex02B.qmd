@@ -1,5 +1,5 @@
 ---
-title: "2nd Order Spatial Point Patterns Analysis Methods"
+title: "Hands-on Exercise 2B: 2nd Order Spatial Point Patterns Analysis Methods"
 author: "Nor Hendra"
 date: "29 August 2026"
 date-modified: "last-modified"
@@ -210,6 +210,38 @@ I noticed that the F-function reads in the opposite direction to the G-function.
 ## 5.3 Analysing Spatial Point Process Using the K-Function
 
 The K-function measures the expected number of additional points found within a given distance of a typical point, which lets me look at clustering across a whole range of spatial scales in one function rather than just at the nearest neighbour scale.
+
+::: callout-tip
+### Out of curiosity: does `glocal` actually exist?
+
+I got curious about the `glocal = TRUE` argument used in the reference's K-function and L-function `envelope()` calls, since I had not seen that spelling before. I checked it directly in the console.
+
+```{r}
+args(envelope.ppp)
+```
+
+No `glocal` anywhere in the list it prints, only `global`, defaulting to `FALSE`.
+:::
+
+To confirm this rather than just trust the printout, I ran the same envelope three ways on Choa Chu Kang with the same seed each time.
+
+```{r}
+set.seed(1234)
+test_glocal <- envelope(childcare_ck_ppp, Kest, nsim = 99, rank = 1, glocal = TRUE)
+
+set.seed(1234)
+test_global_false <- envelope(childcare_ck_ppp, Kest, nsim = 99, nrank = 1, global = FALSE)
+
+set.seed(1234)
+test_global_true <- envelope(childcare_ck_ppp, Kest, nsim = 99, nrank = 1, global = TRUE)
+```
+
+```{r}
+identical(test_glocal$hi, test_global_false$hi)
+identical(test_glocal$hi, test_global_true$hi)
+```
+
+Both checks return what I expected: `glocal = TRUE` matches `global = FALSE` exactly, and does not match `global = TRUE`. This confirms `glocal` was silently absorbed by `envelope()`'s `...` and ignored, so the reference's envelopes were pointwise all along, not global. I am using `global = TRUE` going forward so the code matches what the text describes.
 
 
 ### 5.3.1 Choa Chu Kang planning area
