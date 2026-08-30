@@ -221,7 +221,7 @@ I got curious about the `glocal = TRUE` argument used in the reference's K-funct
 args(envelope.ppp)
 ```
 
-```         
+
 function (Y, fun = Kest, nsim = 99, nrank = 1, ..., funargs = list(),
 funYargs = funargs, simulate = NULL, fix.n = FALSE, fix.marks = FALSE,
 verbose = TRUE, clipdata = TRUE, transform = NULL, global = FALSE,
@@ -231,7 +231,7 @@ savepatterns = FALSE, nsim2 = nsim, VARIANCE = FALSE, nSD = 2,
 Yname = NULL, maxnerr = nsim, rejectNA = FALSE, silent = FALSE,
 do.pwrong = FALSE, envir.simul = NULL)
 NULL
-```
+
 
 No `glocal` anywhere in this list, only `global`, defaulting to `FALSE`. To confirm this rather than just trust the printout, I ran the same envelope three ways on Choa Chu Kang with the same seed each time.
 
