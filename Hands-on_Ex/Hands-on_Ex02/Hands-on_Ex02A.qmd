@@ -1,0 +1,606 @@
+---
+title: "1st Order Spatial Point Patterns Analysis Method"
+author: "Nor Hendra"
+date: "29 August 2026"
+date-modified: "last-modified"
+format: html
+editor: visual
+freeze: true
+execute:
+  eval: true
+  echo: true
+  warning: false
+---
+
+# 1. Learning Outcome
+
+In this study draft I am working through First-order Spatial Point Pattern Analysis (1st-SPPA). This step shows me how to use **spatstat** to evaluate whether the childcare centres in Singapore are randomly distributed, and if not, where the higher concentration areas are.
+
+The two questions driving this exercise are:
+
+- Are the childcare centres in Singapore randomly distributed throughout the country?
+- If not, where are the locations with higher concentration of childcare centres?
+
+# 2. The Data
+
+I am using two data sets, both already in geojson format:
+
+- *Child Care Services*, a point feature data set giving the location and attributes of childcare centres.
+- *Master Plan 2019 Subzone Boundary (No Sea)*, a polygon feature data set giving the URA 2019 Master Plan Planning Subzone boundaries.
+
+::: callout-note
+The reference material describes these as being available in kml or geojson format, and works through the kml version. I am using the geojson version instead, which changes how I extract the attribute fields later. This is explained in section 4.
+:::
+
+# 3. Installing and Loading the R Packages
+
+I need five R packages for this exercise:
+
+- **sf** to import, manage, and process vector-based geospatial data.
+- **spatstat** to perform 1st and 2nd order spatial point pattern analysis and derive kernel density estimation (KDE) layers.
+- **terra** to convert the image output produced by spatstat into raster format.
+- **tmap** to plot cartographic quality static and interactive point pattern maps.
+- **tidyverse** for general data wrangling.
+
+```{r}
+pacman::p_load(sf, terra, spatstat, tmap, tidyverse)
+```
+
+::: callout-note
+The reference material also loads **rvest** because it needs to scrape attribute fields out of a KML `Description` field. I found that my geojson files already store `REGION_N`, `PLN_AREA_N`, `SUBZONE_N`, and `SUBZONE_C` as normal columns, so I do not need rvest at all. This is covered in more detail in section 4.
+:::
+
+# 4. Importing and Wrangling Geospatial Data Sets
+
+::: callout-important
+### Note on the reference material
+
+The reference material works with the KML versions of these two data sets. KML stores extra attributes inside an HTML-like `Description` field, so it needs a custom `extract_kml_field()` function together with `rvest::read_html()` to pull `REGION_N`, `PLN_AREA_N`, `SUBZONE_N`, and `SUBZONE_C` back out as columns.
+
+I inspected my geojson files directly and found that both already store these as flat top-level properties, not nested inside a description field. This means the KML scraping step in the reference does not apply to my data at all, and running it on a geojson-derived sf object would fail because there is no `Description` column to parse. I am skipping that block entirely rather than adapting it, since it addresses a problem my data does not have.
+:::
+
+## 4.1 Importing the subzone boundary data
+
+Running `st_read()` on the geojson file gives me an sf object directly, with `REGION_N`, `PLN_AREA_N`, `SUBZONE_N`, and `SUBZONE_C` already present as columns. I noticed the geojson has no explicit `crs` block, which per the GeoJSON specification means the coordinates are in WGS84 (EPSG:4326). I transform straight to SVY21 (EPSG:3414) for consistency with the rest of the analysis.
+
+```{r}
+mpsz_sf <- st_read(dsn = "data/geospatial/MasterPlan2019SubzoneBoundaryNoSeaGEOJSON.geojson") %>%
+  st_transform(crs = 3414)
+```
+
+I noticed the geometries in this data set have no Z or M dimension, so `st_zm()` is not needed here. I am keeping this check explicit rather than assuming it, since running `st_zm()` on data that has no Z or M dimension is harmless but running it without checking would be guessing.
+
+```{r}
+# CHECK: confirm no Z/M dimension present after import
+st_dimension(mpsz_sf) %>% table()
+```
+
+Running this code produces the subzone polygons already labelled with the fields I need, so I do not need the `extract_kml_field()` function or the mutate step that follows it in the reference. I filter out the same three groups the reference excludes, since these are outlying island or grouped zones rather than the mainland planning areas I want to analyse.
+
+```{r}
+mpsz_cl <- mpsz_sf %>%
+  filter(SUBZONE_N != "SOUTHERN GROUP",
+         PLN_AREA_N != "WESTERN ISLANDS",
+         PLN_AREA_N != "NORTH-EASTERN ISLANDS")
+```
+
+I noticed the reference writes this object out to an rds file and reads it back in a separate chunk. Since my import step already runs quickly on geojson (no HTML parsing needed), I do not need that intermediate caching step and can keep using `mpsz_cl` directly.
+
+## 4.2 Importing the childcare services data
+
+```{r}
+childcare_sf <- st_read(dsn = "data/geospatial/ChildCareServices.geojson") %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+# CHECK: confirm no Z/M dimension present after import
+st_dimension(childcare_sf) %>% table()
+```
+
+This step shows me that the childcare point data also imports cleanly with its attribute columns intact (`NAME`, `ADDRESSPOSTALCODE`, and so on), with no KML description parsing required.
+
+## 4.3 Mapping the geospatial data sets
+
+I found it useful to plot both layers together to confirm they line up spatially before going further.
+
+```{r}
+tm_shape(mpsz_cl) +
+  tm_polygons() +
+tm_shape(childcare_sf) +
+  tm_dots()
+```
+
+Running this code produces a map where the childcare points fall neatly inside the subzone boundaries, which tells me both layers share a common spatial reference. This step is worth paying attention to, since if the layers did not overlap it would usually mean a CRS mismatch rather than a real spatial pattern.
+
+I can also prepare an interactive point symbol map.
+
+```{r}
+tmap_mode('view')
+tm_shape(childcare_sf) +
+  tm_dots()
+tmap_mode('plot')
+```
+
+::: callout-tip
+I noticed that in interactive mode, tmap uses the leaflet for R API. I can click each point to see its attributes and switch between ESRI.WorldGrayCanvas, OpenStreetMap, and ESRI.WorldTopoMap as the background layer. ESRI.WorldGrayCanvas is the default.
+:::
+
+::: callout-warning
+I am switching back to plot mode right after using view mode, since each interactive map consumes a connection and too many active interactive maps in one document can cause problems when publishing.
+:::
+
+# 5. Geospatial Data Wrangling for spatstat
+
+spatstat relies on its own data structures: **ppp** (planar point pattern) for point data and **owin** for observation windows. This step shows me how to convert my sf objects into these formats.
+
+## 5.1 Converting sf data frames to ppp class
+
+```{r}
+childcare_ppp <- as.ppp(childcare_sf)
+```
+
+```{r}
+class(childcare_ppp)
+```
+
+I found that this confirms the object is now in ppp class. I can look at its summary statistics directly.
+
+```{r}
+summary(childcare_ppp)
+```
+
+## 5.2 Creating the owin object
+
+It is good practice to confine the point pattern analysis to a defined study boundary. In spatstat this is represented by the owin object.
+
+```{r}
+sg_owin <- as.owin(mpsz_cl)
+```
+
+```{r}
+class(sg_owin)
+```
+
+I confirmed that `sg_owin` is indeed an owin object, and I can plot it directly.
+
+```{r}
+plot(sg_owin)
+```
+
+## 5.3 Combining point events and the owin object
+
+The last wrangling step is to keep only the childcare points that fall inside the Singapore boundary.
+
+```{r}
+childcareSG_ppp <- childcare_ppp[sg_owin]
+```
+
+```{r}
+childcareSG_ppp
+```
+
+Running this code produces a ppp object that carries both the point locations and the window information together.
+
+# 6. Clark-Evans Test for Nearest Neighbour Analysis
+
+Nearest Neighbour Analysis (NNA) calculates the average distance between each point and its closest neighbour to work out whether a point pattern is clustered, dispersed, or randomly distributed.
+
+::: callout-note
+NNA is the broad family of methods, while the Clark-Evans test is one specific test within it. It uses the Clark-Evans aggregation index R to quantify whether a pattern is clustered, random, or uniformly spaced.
+:::
+
+My hypotheses for this test are:
+
+- H0: the distribution of childcare services is randomly distributed.
+- H1: the distribution of childcare services is not randomly distributed.
+
+I am using a 95 percent confidence interval throughout.
+
+::: callout-important
+### Note on the reference material
+
+The reference material passes `clipregion="sg_owin"` as a quoted string in both `clarkevans.test()` calls. I checked the spatstat documentation and the `clipregion` argument expects an actual window object of class owin, not a character string naming one. Passing a string here does not raise an error because `correction="none"` means the clipregion argument is effectively unused in that call, but it is still factually wrong as written, and it would silently fail to apply a guard-region correction if someone changed the correction method later expecting clipregion to take effect. I am passing the unquoted object `sg_owin` instead.
+:::
+
+## 6.1 Clark-Evans test without CSR simulation
+
+```{r}
+clarkevans.test(childcareSG_ppp,
+                correction = "none",
+                clipregion = sg_owin,
+                alternative = c("clustered"))
+```
+
+::: callout-note
+### Quiz
+
+- What statistical conclusion can I draw from this test result?
+- How would I communicate this result to a non-technical audience?
+
+**My answer:** R is well below 1 with p < 2.2e-16, so I reject the null hypothesis. The childcare centres are significantly clustered, not randomly distributed. In plain terms, childcare centres tend to bunch together in certain areas rather than spread evenly across Singapore.
+:::
+
+## 6.2 Clark-Evans test with Monte Carlo simulation
+
+Here `method = "MonteCarlo"` is used, so the p-value is computed by comparing the observed R value against nsim simulated realisations of Complete Spatial Randomness.
+
+```{r}
+clarkevans.test(childcareSG_ppp,
+                correction = "none",
+                clipregion = sg_owin,
+                alternative = c("clustered"),
+                method = "MonteCarlo",
+                nsim = 99)
+```
+
+::: callout-note
+### Quiz
+
+- What statistical conclusion can I draw from this Monte Carlo version of the test?
+- How does this result compare with the asymptotic test in 6.1?
+
+**My answer:** Same R value, p = 0.01, so I still reject the null hypothesis and reach the same clustering conclusion as 6.1. The two p-values look very different, but that is because the Monte Carlo p-value is bounded below by roughly 1/(nsim+1), so with nsim = 99 it cannot go smaller than 0.01. Both tests agree on the direction and significance of the result.
+:::
+
+# 7. Kernel Density Estimation Method
+
+Kernel Density Estimation (KDE) turns discrete point data into a continuous density surface, which helps reveal clusters and variation in event occurrence without assuming a particular distribution in advance. I found this useful as an exploratory step before running more formal tests.
+
+## 7.1 Working with automatic bandwidth selection
+
+```{r}
+kde_SG_diggle <- density(childcareSG_ppp,
+                          sigma = bw.diggle,
+                          edge = TRUE,
+                          kernel = "gaussian")
+```
+
+::: callout-note
+The output of `density()` here is an **im** object, which represents a two-dimensional pixel image. Each pixel holds a density value.
+:::
+
+```{r}
+#| fig-height: 6
+plot(kde_SG_diggle)
+```
+
+```{r}
+summary(kde_SG_diggle)
+```
+
+::: callout-warning
+I noticed the density values are extremely small. This is because the coordinates are in metres under SVY21, so the density is expressed as points per square metre.
+:::
+
+I can retrieve the bandwidth chosen by `bw.diggle()` directly.
+
+```{r}
+bw <- bw.diggle(childcareSG_ppp)
+bw
+```
+
+## 7.2 Rescaling KDE values
+
+```{r}
+childcareSG_ppp_km <- rescale.ppp(childcareSG_ppp, 1000, "km")
+```
+
+```{r}
+kde_childcareSG_km <- density(childcareSG_ppp_km,
+                               sigma = bw.diggle,
+                               edge = TRUE,
+                               kernel = "gaussian")
+```
+
+```{r}
+#| fig-height: 6
+plot(kde_childcareSG_km)
+```
+
+I noticed the image itself looks identical to the metre-scale version. Only the density values in the legend change, since the unit of area has changed from square metres to square kilometres.
+
+## 7.3 Comparing automatic bandwidth methods
+
+Besides `bw.diggle()`, spatstat offers `bw.CvL()`, `bw.scott()`, and `bw.ppl()` as automatic bandwidth selectors.
+
+```{r}
+bw.CvL(childcareSG_ppp_km)
+```
+
+```{r}
+bw.scott(childcareSG_ppp_km)
+```
+
+```{r}
+bw.ppl(childcareSG_ppp_km)
+```
+
+```{r}
+bw.diggle(childcareSG_ppp_km)
+```
+
+I noted that Baddeley et al. (2016) recommend `bw.ppl()` when the pattern is mostly tight clusters, but suggest `bw.diggle()` works best when the goal is detecting a single tight cluster against a background of random noise.
+
+```{r}
+#| fig-width: 16
+#| fig-height: 6
+kde_childcareSG_ppl <- density(childcareSG_ppp_km,
+                                sigma = bw.ppl,
+                                edge = TRUE,
+                                kernel = "gaussian")
+par(mfrow = c(1, 2))
+plot(kde_childcareSG_km, main = "bw.diggle")
+plot(kde_childcareSG_ppl, main = "bw.ppl")
+```
+
+## 7.4 Comparing kernel methods
+
+The default kernel is gaussian, but epanechnikov, quartic, and disc are also available.
+
+```{r}
+#| fig-width: 16
+#| fig-height: 12
+par(mfrow = c(2, 2))
+plot(density(childcareSG_ppp_km, sigma = 0.2959712, edge = TRUE, kernel = "gaussian"),
+     main = "Gaussian")
+plot(density(childcareSG_ppp_km, sigma = 0.2959712, edge = TRUE, kernel = "epanechnikov"),
+     main = "Epanechnikov")
+plot(density(childcareSG_ppp_km, sigma = 0.2959712, edge = TRUE, kernel = "quartic"),
+     main = "Quartic")
+plot(density(childcareSG_ppp_km, sigma = 0.2959712, edge = TRUE, kernel = "disc"),
+     main = "Disc")
+```
+
+# 8. Fixed and Adaptive KDE
+
+## 8.1 Computing KDE with a fixed bandwidth
+
+I am using a bandwidth of 600 metres, which is 0.6 in kilometre units since `childcareSG_ppp_km` is already rescaled.
+
+```{r}
+#| fig-height: 6
+kde_childcareSG_fb <- density(childcareSG_ppp_km,
+                               sigma = 0.6,
+                               edge = TRUE,
+                               kernel = "gaussian")
+plot(kde_childcareSG_fb)
+```
+
+## 8.2 Computing KDE with an adaptive bandwidth
+
+Fixed bandwidth is sensitive to skewed distributions, such as urban versus rural density differences. Adaptive bandwidth is one way to address this.
+
+```{r}
+#| fig-height: 6
+kde_childcareSG_ab <- adaptive.density(childcareSG_ppp_km, method = "kernel")
+plot(kde_childcareSG_ab)
+```
+
+```{r}
+#| fig-width: 16
+#| fig-height: 6
+par(mfrow = c(1, 2))
+plot(kde_childcareSG_fb, main = "Fixed bandwidth")
+plot(kde_childcareSG_ab, main = "Adaptive bandwidth")
+```
+
+I noticed the adaptive version smooths less aggressively in dense areas and more aggressively in sparse areas, compared to the single fixed bandwidth version.
+
+# 9. Plotting Cartographic Quality KDE Maps
+
+## 9.1 Converting gridded output into a raster
+
+```{r}
+kde_childcareSG_bw_terra <- rast(kde_childcareSG_km)
+```
+
+```{r}
+class(kde_childcareSG_bw_terra)
+```
+
+```{r}
+kde_childcareSG_bw_terra
+```
+
+I noticed the crs property is empty at this point, since `rast()` does not carry over CRS information from an im object.
+
+## 9.2 Assigning the projection system
+
+```{r}
+crs(kde_childcareSG_bw_terra) <- "EPSG:3414"
+```
+
+```{r}
+kde_childcareSG_bw_terra
+```
+
+Running this code produces the same raster, but now with the coordinate reference listed as SVY21.
+
+## 9.3 Plotting the KDE map with tmap
+
+```{r}
+tm_shape(kde_childcareSG_bw_terra) +
+  tm_raster(col.scale = tm_scale_continuous(values = "viridis"),
+            col.legend = tm_legend(
+              title = "Density values",
+              title.size = 0.7,
+              text.size = 0.7,
+              bg.color = "white",
+              bg.alpha = 0.7,
+              position = tm_pos_in("right", "bottom"),
+              frame = TRUE)) +
+  tm_graticules(labels.size = 0.7) +
+  tm_compass() +
+  tm_layout(scale = 1.0)
+```
+
+I noticed the raster values are stored under the "layer.1" field name, which is what tmap uses to shade the pixels.
+
+# 10. First Order SPPA at the Planning Subzone Level
+
+In this section I am narrowing the analysis down to four planning areas: Punggol, Tampines, Choa Chu Kang, and Jurong West.
+
+## 10.1 Geospatial data wrangling
+
+### 10.1.1 Extracting the study areas
+
+```{r}
+pg <- mpsz_cl %>% filter(PLN_AREA_N == "PUNGGOL")
+tm <- mpsz_cl %>% filter(PLN_AREA_N == "TAMPINES")
+ck <- mpsz_cl %>% filter(PLN_AREA_N == "CHOA CHU KANG")
+jw <- mpsz_cl %>% filter(PLN_AREA_N == "JURONG WEST")
+```
+
+```{r}
+#| fig-width: 16
+#| fig-height: 12
+par(mfrow = c(2, 2))
+plot(st_geometry(pg), main = "Punggol")
+plot(st_geometry(tm), main = "Tampines")
+plot(st_geometry(ck), main = "Choa Chu Kang")
+plot(st_geometry(jw), main = "Jurong West")
+```
+
+### 10.1.2 Creating owin objects
+
+```{r}
+pg_owin <- as.owin(pg)
+tm_owin <- as.owin(tm)
+ck_owin <- as.owin(ck)
+jw_owin <- as.owin(jw)
+```
+
+### 10.1.3 Combining point events and owin objects
+
+```{r}
+childcare_pg_ppp <- childcare_ppp[pg_owin]
+childcare_tm_ppp <- childcare_ppp[tm_owin]
+childcare_ck_ppp <- childcare_ppp[ck_owin]
+childcare_jw_ppp <- childcare_ppp[jw_owin]
+```
+
+```{r}
+childcare_pg_ppp.km <- rescale.ppp(childcare_pg_ppp, 1000, "km")
+childcare_tm_ppp.km <- rescale.ppp(childcare_tm_ppp, 1000, "km")
+childcare_ck_ppp.km <- rescale.ppp(childcare_ck_ppp, 1000, "km")
+childcare_jw_ppp.km <- rescale.ppp(childcare_jw_ppp, 1000, "km")
+```
+
+```{r}
+#| fig-width: 16
+#| fig-height: 12
+par(mfrow = c(2, 2))
+plot(unmark(childcare_pg_ppp.km), main = "Punggol")
+plot(unmark(childcare_tm_ppp.km), main = "Tampines")
+plot(unmark(childcare_ck_ppp.km), main = "Choa Chu Kang")
+plot(unmark(childcare_jw_ppp.km), main = "Jurong West")
+```
+
+## 10.2 Clark-Evans test by planning area
+
+### 10.2.1 Choa Chu Kang planning area
+
+```{r}
+clarkevans.test(childcare_ck_ppp,
+                correction = "none",
+                clipregion = NULL,
+                alternative = c("two.sided"),
+                nsim = 999)
+```
+
+### 10.2.2 Tampines planning area
+
+```{r}
+clarkevans.test(childcare_tm_ppp,
+                correction = "none",
+                clipregion = NULL,
+                alternative = c("two.sided"),
+                nsim = 999)
+```
+
+I noticed these two planning areas can produce quite different R statistics from each other, which tells me the degree of clustering is not uniform across Singapore even within areas that both have childcare centres.
+
+## 10.3 Computing KDE surfaces by planning area
+
+```{r}
+#| fig-width: 16
+#| fig-height: 15
+par(mfrow = c(2, 2))
+plot(density(childcare_pg_ppp.km, sigma = bw.diggle, edge = TRUE, kernel = "gaussian"),
+     main = "Punggol")
+plot(density(childcare_tm_ppp.km, sigma = bw.diggle, edge = TRUE, kernel = "gaussian"),
+     main = "Tampines")
+plot(density(childcare_ck_ppp.km, sigma = bw.diggle, edge = TRUE, kernel = "gaussian"),
+     main = "Choa Chu Kang")
+plot(density(childcare_jw_ppp.km, sigma = bw.diggle, edge = TRUE, kernel = "gaussian"),
+     main = "Jurong West")
+```
+
+Running this code produces four separate KDE surfaces, each using its own `bw.diggle()` bandwidth rather than one shared bandwidth across all four areas. This step is worth paying attention to, since comparing the raw density values between panels directly would be misleading if the bandwidths differ substantially between areas.
+
+# 11. Extras
+
+This section goes a bit further than the reference material, while staying within the same data, packages, and conceptual domain of first-order SPPA.
+
+## 11.1 Quadrat analysis as a cross-check on Clark-Evans
+
+The lecture slides cover quadrat analysis and the Variance-Mean Ratio (VMR) as a way to test Complete Spatial Randomness, but the reference material did not show this. I found it worth trying `quadrat.test()` on the same `childcareSG_ppp` object I already tested with Clark-Evans, so I can compare the two conclusions side by side.
+
+```{r}
+qt <- quadrat.test(childcareSG_ppp, nx = 5, ny = 5)
+qt
+```
+
+```{r}
+plot(unmark(childcareSG_ppp), main = "Quadrat counts for childcare centres")
+plot(qt, add = TRUE, cex = 0.7, col = "red")
+```
+
+::: callout-tip
+### Why I wanted to explore this
+
+Clark-Evans and quadrat analysis test the same null hypothesis of Complete Spatial Randomness, but from different angles. Clark-Evans is distance-based and looks at nearest neighbour spacing, while quadrat analysis is count-based and looks at how evenly points are spread across a grid of cells. I found that when both tests agree, that gives me more confidence in the conclusion. When they disagree, it usually means the pattern is scale-dependent, for example clustered at a fine scale but more even at a coarse scale, which a single test on its own would not reveal.
+:::
+
+## 11.2 A more robust density comparison across planning areas
+
+Section 10.3 plots four KDE surfaces side by side, but each one uses its own `bw.diggle()` bandwidth, so the colour scales are not directly comparable panel to panel. I found it more defensible to compute a single shared bandwidth across the combined point pattern first, then reuse that same sigma value for all four areas.
+
+```{r}
+# combine all four ppp objects to get one shared bandwidth
+childcare_all_ppp.km <- superimpose(childcare_pg_ppp.km,
+                                     childcare_tm_ppp.km,
+                                     childcare_ck_ppp.km,
+                                     childcare_jw_ppp.km)
+shared_bw <- bw.diggle(childcare_all_ppp.km)
+shared_bw
+```
+
+```{r}
+#| fig-width: 16
+#| fig-height: 15
+par(mfrow = c(2, 2))
+plot(density(childcare_pg_ppp.km, sigma = shared_bw, edge = TRUE, kernel = "gaussian"),
+     main = "Punggol")
+plot(density(childcare_tm_ppp.km, sigma = shared_bw, edge = TRUE, kernel = "gaussian"),
+     main = "Tampines")
+plot(density(childcare_ck_ppp.km, sigma = shared_bw, edge = TRUE, kernel = "gaussian"),
+     main = "Choa Chu Kang")
+plot(density(childcare_jw_ppp.km, sigma = shared_bw, edge = TRUE, kernel = "gaussian"),
+     main = "Jurong West")
+```
+
+::: callout-tip
+### Why I wanted to explore this
+
+This step shows me that comparing density surfaces fairly across regions requires a shared bandwidth, not one independently optimised per region. Using per-area bandwidths, as in section 10.3, is a fragile pattern that can make two areas with genuinely similar density look visually different just because the bandwidth selector picked different sigma values. It is a small change but it changes what conclusions I am allowed to draw from the comparison.
+:::
+
+# Summary of Adjustments
+
+| Location in reference | Issue found | Correction applied |
+|------------------------|------------------------|------------------------|
+| Section 4 (Importing and Wrangling Geospatial Data Sets) | Reference assumes KML input requiring `extract_kml_field()` and rvest to extract `REGION_N`, `PLN_AREA_N`, `SUBZONE_N`, `SUBZONE_C` from a `Description` field | My geojson files already store these as flat columns, so the KML parsing step is skipped entirely as not applicable to my data format |
+| Section 6 (Clark-Evans Test), both calls | `clipregion="sg_owin"` passed as a quoted string instead of the owin object `sg_owin` | Changed to the unquoted object `clipregion = sg_owin`, since `clarkevans.test()` requires clipregion to be of class owin |
