@@ -221,6 +221,7 @@ I got curious about the `glocal = TRUE` argument used in the reference's K-funct
 args(envelope.ppp)
 ```
 
+```         
 function (Y, fun = Kest, nsim = 99, nrank = 1, ..., funargs = list(),
 funYargs = funargs, simulate = NULL, fix.n = FALSE, fix.marks = FALSE,
 verbose = TRUE, clipdata = TRUE, transform = NULL, global = FALSE,
@@ -230,7 +231,7 @@ savepatterns = FALSE, nsim2 = nsim, VARIANCE = FALSE, nSD = 2,
 Yname = NULL, maxnerr = nsim, rejectNA = FALSE, silent = FALSE,
 do.pwrong = FALSE, envir.simul = NULL)
 NULL
-
+```
 
 No `glocal` anywhere in this list, only `global`, defaulting to `FALSE`. To confirm this rather than just trust the printout, I ran the same envelope three ways on Choa Chu Kang with the same seed each time.
 
@@ -252,7 +253,6 @@ identical(test_glocal$hi, test_global_true$hi)
 
 Both checks return what I expected: `glocal = TRUE` matches `global = FALSE` exactly, and does not match `global = TRUE`. This confirms `glocal` was silently absorbed by `envelope()`'s `...` and ignored, so the reference's envelopes were pointwise all along, not global. I am using `global = TRUE` going forward so the code matches what the text describes.
 :::
-
 
 ### 5.3.1 Choa Chu Kang planning area
 
@@ -401,6 +401,6 @@ Reading significance off an envelope plot works well for a quick visual check, b
 # Summary of Adjustments
 
 | Location in reference | Issue found | Correction applied |
-|------------------------|------------------------|------------------------|
+|----|----|----|
 | Section 4 (Data Import and Preparation) | Reference assumes KML input requiring `extract_kml_field()` and rvest | My geojson files already store the needed fields as flat columns, so this step is skipped as not applicable to my data format |
-| Section 5.3 and 5.4 (K-function and L-function), all four `envelope()` calls | Argument `glocal = TRUE` used, which I did  not find documented spatstat argument | Changed to `global = TRUE`, the argument that showed in my call, switches the simulation envelope from pointwise to global |
+| Section 5.3 and 5.4 (K-function and L-function), all four `envelope()` calls | Argument `glocal = TRUE` used, which I did not find documented spatstat argument | Changed to `global = TRUE`, the argument that showed in my call, switches the simulation envelope from pointwise to global |
