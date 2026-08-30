@@ -401,6 +401,6 @@ Reading significance off an envelope plot works well for a quick visual check, b
 # Summary of Adjustments
 
 | Location in reference | Issue found | Correction applied |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Section 4 (Data Import and Preparation) | Reference assumes KML input requiring `extract_kml_field()` and rvest | My geojson files already store the needed fields as flat columns, so this step is skipped as not applicable to my data format |
 | Section 5.3 and 5.4 (K-function and L-function), all four `envelope()` calls | Argument `glocal = TRUE` used, which I did not find documented spatstat argument | Changed to `global = TRUE`, the argument that showed in my call, switches the simulation envelope from pointwise to global |
