@@ -5,11 +5,12 @@ date: "29 August 2026"
 date-modified: "last-modified"
 format: html
 editor: visual
-freeze: true
 execute:
   eval: true
   echo: true
   warning: false
+  message: false
+  freeze: true
 ---
 
 # 1. Learning Outcome
@@ -219,7 +220,7 @@ clarkevans.test(childcareSG_ppp,
 - What statistical conclusion can I draw from this test result?
 - How would I communicate this result to a non-technical audience?
 
-**My answer:** R is well below 1 with p < 2.2e-16, so I reject the null hypothesis. The childcare centres are significantly clustered, not randomly distributed. In plain terms, childcare centres tend to bunch together in certain areas rather than spread evenly across Singapore.
+**My answer:** R is well below 1 with p \< 2.2e-16, so I reject the null hypothesis. The childcare centres are significantly clustered, not randomly distributed. In plain terms, childcare centres tend to bunch together in certain areas rather than spread evenly across Singapore.
 :::
 
 ## 6.2 Clark-Evans test with Monte Carlo simulation

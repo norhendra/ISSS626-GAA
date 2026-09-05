@@ -5,11 +5,12 @@ date: "29 August 2026"
 date-modified: "last-modified"
 format: html
 editor: visual
-freeze: true
 execute:
   eval: true
   echo: true
   warning: false
+  message: false
+  freeze: true
 ---
 
 # 1. Learning Outcome
@@ -242,7 +243,6 @@ identical(test_glocal$hi, test_global_true$hi)
 ```
 
 Both checks return what I expected: `glocal = TRUE` matches `global = FALSE` exactly, and does not match `global = TRUE`. This confirms `glocal` was silently absorbed by `envelope()`'s `...` and ignored, so the reference's envelopes were pointwise all along, not global. I am using `global = TRUE` going forward so the code matches what the text describes.
-
 
 ### 5.3.1 Choa Chu Kang planning area
 

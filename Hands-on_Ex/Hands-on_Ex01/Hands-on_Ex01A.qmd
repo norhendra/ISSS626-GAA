@@ -3,6 +3,7 @@ title: "Hands-on Exercise 1A: Geospatial Data Science with R"
 format: html
 author: "Nor Hendra"
 date: "23 August 2026"
+date-modified: "last-modified"
 editor: visual
 freeze: true
 execute:
@@ -539,4 +540,3 @@ mpsz_region %>%
 plot(mpsz_region["PreSch Count"], 
      main = "Pre-school count by region")
 ```
-

@@ -82,7 +82,7 @@ Hands-on_Ex01/
 ::: callout-important
 ## Correction to the reference material
 
-Note the change of boundary vintage from Hands-on Exercise 1A. That exercise used the Master Plan **2014** boundary. This one uses the Master Plan **2019** boundary. 
+Note the change of boundary vintage from Hands-on Exercise 1A. That exercise used the Master Plan **2014** boundary. This one uses the Master Plan **2019** boundary.
 :::
 
 ## 3.2 Importing Geospatial Data into R
@@ -228,7 +228,7 @@ popdata2024 <- popdata %>%
 ::: callout-note
 Two smaller points on top of the main fix:
 
-- `across(all_of(...))` is the current tidyverse for summing a named set of columns. If any named column is missing, it would fail which is exactly the behaviour I want. 
+- `across(all_of(...))` is the current tidyverse for summing a named set of columns. If any named column is missing, it would fail which is exactly the behaviour I want.
 - The reference chapter's `summarise()` omits the `.groups` argument, which prints a grouping message and leaves the tibble grouped, so it then calls `ungroup()` on the next line. Passing `.groups = "drop"` does the same thing in one step and suppresses the message.
 :::
 
@@ -894,7 +894,7 @@ tmap_arrange(
 )
 ```
 
-The four maps use the same variable, the same palette, and the same number of classes, yet they tell noticeably different stories. Equal interval and standard deviation are both dominated by the outlier subzones and flatten almost everything else into one class. 
+The four maps use the same variable, the same palette, and the same number of classes, yet they tell noticeably different stories. Equal interval and standard deviation are both dominated by the outlier subzones and flatten almost everything else into one class.
 
 ## 9.3 Fixing the shared-scale problem in small multiples
 
@@ -990,7 +990,3 @@ tm_shape(mpsz_pop2024) +
              position = c("left", "bottom")) +
   tm_layout(frame = FALSE)
 ```
-
-
-
-
