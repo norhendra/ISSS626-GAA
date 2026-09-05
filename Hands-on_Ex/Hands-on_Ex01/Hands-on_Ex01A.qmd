@@ -5,11 +5,12 @@ author: "Nor Hendra"
 date: "23 August 2026"
 date-modified: "last-modified"
 editor: visual
-freeze: true
 execute:
   eval: true
   echo: true
   warning: false
+  message: false
+  freeze: true
 ---
 
 # 1. Learning Outcome
