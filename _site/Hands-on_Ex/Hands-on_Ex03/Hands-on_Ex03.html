@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Nor Hendra · ISSS626 Geospatial Analytics – Nor Hendra</title>
+<title>Hands-on_Ex03 – Nor Hendra</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,32 +26,65 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-983d5e7348da3dce19c411959767e89e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-7ba33f8fe4ec02a14535c028716f4e2e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-983d5e7348da3dce19c411959767e89e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-983d5e7348da3dce19c411959767e89e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7ba33f8fe4ec02a14535c028716f4e2e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-983d5e7348da3dce19c411959767e89e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -79,70 +112,12 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-image','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
       const bodyEl = window.document.querySelector("body");
@@ -311,9 +286,9 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="./" class="navbar-brand navbar-brand-logo">
-    <img src="./images/hendralogo.png" alt="Hendra Logo" class="navbar-logo light-content">
-    <img src="./images/hendralogo.png" alt="Hendra Logo" class="navbar-logo dark-content">
+    <a href="../../" class="navbar-brand navbar-brand-logo">
+    <img src="../../images/hendralogo.png" alt="Hendra Logo" class="navbar-logo light-content">
+    <img src="../../images/hendralogo.png" alt="Hendra Logo" class="navbar-logo dark-content">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -328,19 +303,19 @@ window.Quarto = {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercise">    
         <li>
-    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01A.html">
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01A.html">
  <span class="dropdown-text">Hands-on Exercise 1A</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01B.html">
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01B.html">
  <span class="dropdown-text">Hands-on Exercise 1B</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02A.html">
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02A.html">
  <span class="dropdown-text">Hands-on Exercise 2A</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02B.html">
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02B.html">
  <span class="dropdown-text">Hands-on Exercise 2B</span></a>
   </li>  
     </ul>
@@ -357,9 +332,11 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+<main class="content" id="quarto-document-content">
 
 <div id="site-preloader">
   <div class="preloader-inner">
@@ -470,416 +447,121 @@ window.Quarto = {
   })();
 </script>
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Hands-on_Ex03</h1>
+</div>
 
 
 
-<div class="hero hero-globe">
-  <div class="hero-copy">
-    <div class="eyebrow">ISSS626 · Singapore Management University</div>
-    <h1><span class="grad" data-text="Geospatial Analytics &amp; Applications">Geospatial Analytics &amp; Applications</span></h1>
-    <p>Hi, I am Nor Hendra. This site documents my coursework in geospatial data science: hands-on exercises, in-class exercises, and take-home assignments, all built with R.</p>
-    <div class="globe-actions">
-      <button id="locate-btn" class="globe-btn" type="button">
-        <svg viewbox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="10" r="3"></circle>
-          <path d="M12 21c-4-4.5-7-8-7-11a7 7 0 0 1 14 0c0 3-3 6.5-7 11z"></path>
-        </svg>
-        Locate me
-      </button>
-    </div>
+<div class="quarto-title-meta">
+
+    
+  
+    
   </div>
+  
 
-  <div class="hero-globe-viz">
-    <div id="globe-wrap">
-      <svg id="globe" role="img" aria-label="Interactive rotating globe"></svg>
-    </div>
-    <div class="globe-readout">
-      <span class="ro-dot"></span>
-      <span id="globe-coords" class="ro-coords">1.2966° N, 103.8500° E</span>
-      <span id="globe-zone" class="ro-zone">Tropical zone</span>
-    </div>
-    <span class="globe-hint">Drag to spin · tap to drop a pin</span>
-  </div>
+
+</header>
+
+
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> <span class="st">"/Users/norhendra/norhendra/ISSS626-GAA/Hands-on_Ex/Hands-on_Ex03/data/"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
-<script>
-(function () {
-  function initGlobe() {
-    if (typeof d3 === 'undefined') { setTimeout(initGlobe, 200); return; }
-
-    var svg = d3.select('#globe');
-    var wrap = document.getElementById('globe-wrap');
-    if (!svg.node() || !wrap) return;
-
-    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // state
-    var mLon = 103.8500, mLat = 1.2966;   // default: Singapore
-    var paused = false, resumeAt = 0;
-
-    // theme colors
-    function themeColors() {
-      var cs = getComputedStyle(document.body);
-      var g = function (n, f) { var v = cs.getPropertyValue(n).trim(); return v || f; };
-      return {
-        surface: g('--surface', '#ffffff'),
-        teal:    g('--teal',    '#17A398'),
-        tealDeep:g('--teal-deep','#0E7C74'),
-        violet:  g('--violet',  '#6C5CE7'),
-        cyan:    g('--cyan',    '#22D3EE'),
-        line:    g('--line',    '#E4E6E1'),
-        ink:     g('--ink',     '#16232B')
-      };
-    }
-    function isDark() { return document.body.classList.contains('quarto-dark'); }
-
-    // projection + path
-    var projection = d3.geoOrthographic().clipAngle(90).precision(0.3);
-    var path = d3.geoPath(projection);
-    var graticule = d3.geoGraticule10();
-
-    // svg scaffolding
-    var defs = svg.append('defs');
-    var oceanGrad = defs.append('radialGradient')
-      .attr('id', 'oceanGrad').attr('cx', '35%').attr('cy', '30%').attr('r', '75%');
-    var oStop1 = oceanGrad.append('stop').attr('offset', '0%');
-    var oStop2 = oceanGrad.append('stop').attr('offset', '100%');
-
-    var glow = defs.append('filter').attr('id', 'markerGlow')
-      .attr('x', '-80%').attr('y', '-80%').attr('width', '260%').attr('height', '260%');
-    glow.append('feGaussianBlur').attr('stdDeviation', '3').attr('result', 'b');
-    var fm = glow.append('feMerge');
-    fm.append('feMergeNode').attr('in', 'b');
-    fm.append('feMergeNode').attr('in', 'SourceGraphic');
-
-    var spherePath = svg.append('path').attr('class', 'g-sphere');
-    var haloPath   = svg.append('path').attr('class', 'g-halo');
-    var gratPath   = svg.append('path').attr('class', 'g-grat');
-    var landPath   = svg.append('path').attr('class', 'g-land');
-
-    var markerG = svg.append('g').attr('class', 'g-marker');
-    var ring = markerG.append('circle').attr('class', 'm-ring').attr('r', 6).attr('fill', 'none');
-    ring.append('animate').attr('attributeName', 'r').attr('values', '5;16').attr('dur', '2s').attr('repeatCount', 'indefinite');
-    ring.append('animate').attr('attributeName', 'opacity').attr('values', '0.9;0').attr('dur', '2s').attr('repeatCount', 'indefinite');
-    var dot = markerG.append('circle').attr('class', 'm-dot').attr('r', 4).attr('filter', 'url(#markerGlow)');
-
-    var width = 0, height = 0, radius = 0;
-
-    function applyColors() {
-      var c = themeColors();
-      var dark = isDark();
-      oStop1.attr('stop-color', dark ? '#12262A' : '#FFFFFF');
-      oStop2.attr('stop-color', dark ? '#0C1A1D' : '#E9F3F1');
-      spherePath.attr('fill', 'url(#oceanGrad)').attr('stroke', c.teal).attr('stroke-opacity', dark ? 0.5 : 0.35).attr('stroke-width', 1);
-      haloPath.attr('fill', 'none').attr('stroke', c.violet).attr('stroke-opacity', 0.25).attr('stroke-width', 6);
-      gratPath.attr('fill', 'none').attr('stroke', c.teal).attr('stroke-opacity', dark ? 0.18 : 0.14).attr('stroke-width', 0.5);
-      landPath.attr('fill', c.teal).attr('fill-opacity', dark ? 0.55 : 0.72).attr('stroke', dark ? '#0C1A1D' : '#FFFFFF').attr('stroke-opacity', 0.5).attr('stroke-width', 0.4);
-      ring.attr('stroke', c.cyan).attr('stroke-width', 2);
-      dot.attr('fill', c.cyan).attr('stroke', dark ? '#0C1A1D' : '#FFFFFF').attr('stroke-width', 1.5);
-    }
-
-    var landFeature = null;
-
-    function resize() {
-      width = Math.max(220, Math.min(wrap.clientWidth, 420));
-      height = width;
-      radius = width / 2 - 6;
-      svg.attr('viewBox', '0 0 ' + width + ' ' + height)
-         .attr('width', width).attr('height', height);
-      projection.scale(radius).translate([width / 2, height / 2]);
-      haloPath.attr('d', path({ type: 'Sphere' }));
-      redraw();
-    }
-
-    function redraw() {
-      spherePath.attr('d', path({ type: 'Sphere' }));
-      gratPath.attr('d', path(graticule));
-      if (landFeature) landPath.attr('d', path(landFeature));
-      updateMarker();
-    }
-
-    function updateMarker() {
-      var rot = projection.rotate();
-      var center = [-rot[0], -rot[1]];
-      var visible = d3.geoDistance([mLon, mLat], center) < Math.PI / 2;
-      if (visible) {
-        var p = projection([mLon, mLat]);
-        markerG.style('display', null).attr('transform', 'translate(' + p[0] + ',' + p[1] + ')');
-      } else {
-        markerG.style('display', 'none');
-      }
-    }
-
-    function zoneOf(lat) {
-      var a = Math.abs(lat);
-      if (a < 23.5) return 'Tropical zone';
-      if (a < 66.5) return 'Temperate zone';
-      return 'Polar zone';
-    }
-    function fmt(lon, lat) {
-      var ns = lat >= 0 ? 'N' : 'S';
-      var ew = lon >= 0 ? 'E' : 'W';
-      return Math.abs(lat).toFixed(4) + '° ' + ns + ', ' + Math.abs(lon).toFixed(4) + '° ' + ew;
-    }
-    function updateReadout() {
-      var co = document.getElementById('globe-coords');
-      var zo = document.getElementById('globe-zone');
-      if (co) co.textContent = fmt(mLon, mLat);
-      if (zo) zo.textContent = zoneOf(mLat);
-    }
-
-    function rotateTo(lon, lat) {
-      var r0 = projection.rotate();
-      var target = [-lon, -lat, 0];
-      if (reduceMotion) { projection.rotate(target); redraw(); return; }
-      d3.transition().duration(900).tween('rotate', function () {
-        var i = d3.interpolate(r0, target);
-        return function (t) { projection.rotate(i(t)); redraw(); };
-      });
-    }
-
-    function setMarker(lon, lat, spin) {
-      mLon = lon; mLat = lat;
-      updateReadout();
-      if (spin) rotateTo(lon, lat); else redraw();
-      paused = true; resumeAt = d3.now() + 2600;
-    }
-
-    // drag to spin, tap to drop a pin. native pointer events for mouse and touch
-    var svgNode = svg.node();
-    var dragging = false, activeId = null;
-    var startPx = 0, startPy = 0, rotAtStart = null, moved = 0, lastPt = [0, 0];
-
-    // map a pointer event to globe (viewBox) coordinates
-    function toGlobe(e) {
-      var rect = svgNode.getBoundingClientRect();
-      var sx = rect.width  ? width  / rect.width  : 1;
-      var sy = rect.height ? height / rect.height : 1;
-      return [(e.clientX - rect.left) * sx, (e.clientY - rect.top) * sy];
-    }
-
-    svgNode.addEventListener('pointerdown', function (e) {
-      dragging = true;
-      activeId = e.pointerId;
-      try { svgNode.setPointerCapture(e.pointerId); } catch (err) {}
-      paused = true;
-      rotAtStart = projection.rotate();
-      var pt = toGlobe(e);
-      startPx = pt[0]; startPy = pt[1]; moved = 0; lastPt = pt;
-      svg.style('cursor', 'grabbing');
-      e.preventDefault();
-    }, { passive: false });
-
-    svgNode.addEventListener('pointermove', function (e) {
-      if (!dragging || e.pointerId !== activeId) return;
-      var pt = toGlobe(e);
-      lastPt = pt;
-      var dx = pt[0] - startPx, dy = pt[1] - startPy;
-      moved = Math.max(moved, Math.hypot(dx, dy));
-      var k = 75 / projection.scale();
-      projection.rotate([
-        rotAtStart[0] + dx * k,
-        rotAtStart[1] - dy * k,
-        rotAtStart[2]
-      ]);
-      redraw();
-      e.preventDefault();
-    }, { passive: false });
-
-    function endPointer(e) {
-      if (!dragging) return;
-      dragging = false;
-      svg.style('cursor', 'grab');
-      var pt = lastPt;
-      if (moved < 6) {
-        var cx = width / 2, cy = height / 2;
-        if (Math.hypot(pt[0] - cx, pt[1] - cy) <= radius) {
-          var inv = projection.invert(pt);
-          if (inv && isFinite(inv[0]) && isFinite(inv[1])) {
-            setMarker(inv[0], inv[1], true);
-            return;
-          }
-        }
-      }
-      paused = true; resumeAt = d3.now() + 1500;
-    }
-    svgNode.addEventListener('pointerup', endPointer);
-    svgNode.addEventListener('pointercancel', function () {
-      dragging = false;
-      svg.style('cursor', 'grab');
-      paused = true; resumeAt = d3.now() + 1500;
-    });
-    svg.style('cursor', 'grab');
-
-    // auto-rotation
-    var last = d3.now();
-    d3.timer(function () {
-      var now = d3.now();
-      var diff = now - last; last = now;
-      if (resumeAt && now > resumeAt) { paused = false; resumeAt = 0; }
-      if (paused || reduceMotion) return;
-      var r = projection.rotate();
-      r[0] += diff * 0.008;
-      projection.rotate(r);
-      redraw();
-    });
-
-    // locate me
-    var locateBtn = document.getElementById('locate-btn');
-    if (locateBtn) {
-      locateBtn.addEventListener('click', function () {
-        if (!navigator.geolocation) { flashBtn('Not supported'); return; }
-        flashBtn('Locating…');
-        navigator.geolocation.getCurrentPosition(
-          function (pos) {
-            setMarker(pos.coords.longitude, pos.coords.latitude, true);
-            flashBtn('Located', true);
-          },
-          function () { flashBtn('Unavailable'); },
-          { timeout: 8000, enableHighAccuracy: false }
-        );
-      });
-    }
-    function flashBtn(msg, ok) {
-      if (!locateBtn) return;
-      locateBtn.classList.toggle('is-ok', !!ok);
-      if (locateBtn.lastChild) locateBtn.lastChild.textContent = ' ' + msg;
-      setTimeout(function () {
-        if (locateBtn.lastChild) locateBtn.lastChild.textContent = ' Locate me';
-        locateBtn.classList.remove('is-ok');
-      }, 2200);
-    }
-
-    // recolor on theme switch
-    new MutationObserver(applyColors)
-      .observe(document.body, { attributes: true, attributeFilter: ['class'] });
-
-    // boot
-    applyColors();
-    projection.rotate([-mLon, -15, 0]);
-    updateReadout();
-    resize();
-    window.addEventListener('resize', resize);
-
-    // land data, fall back to wireframe if it fails
-    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json')
-      .then(function (world) {
-        landFeature = topojson.feature(world, world.objects.land);
-        applyColors();
-        redraw();
-      })
-      .catch(function () { /* keep wireframe globe */ });
-  }
-
-  if (document.readyState !== 'loading') initGlobe();
-  else document.addEventListener('DOMContentLoaded', initGlobe);
-})();
-</script>
-<section id="latest-exercises" class="level2">
-<h2 class="anchored" data-anchor-id="latest-exercises">Latest Exercises</h2>
-
-
-
-</section>
-
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-listing-file-modified-sort="1788706092812" data-listing-reading-time-sort="1" data-listing-word-count-sort="130">
-<a href="./Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-on_Ex03
-</h5>
-<div class="card-attribution card-text-small start">
-<div class="listing-author">
-
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>kelurahan <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="fu">file.path</span>(data_dir, <span class="st">"Batas_Wilayah_KelurahanDesa_10K_AR.shp"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `Batas_Wilayah_KelurahanDesa_10K_AR' from data source 
+  `/Users/norhendra/norhendra/ISSS626-GAA/Hands-on_Ex/Hands-on_Ex03/data/Batas_Wilayah_KelurahanDesa_10K_AR.shp' 
+  using driver `ESRI Shapefile'
+Simple feature collection with 83518 features and 26 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY, XYZ
+Bounding box:  xmin: 94.97191 ymin: -11.00762 xmax: 141.02 ymax: 6.076832
+z_range:       zmin: 0 zmax: 1876.818
+Geodetic CRS:  WGS 84</code></pre>
 </div>
 </div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># See every unique province value as-is (spot typos, casing, trailing spaces)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(kelurahan<span class="sc">$</span>WADMPR))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Aceh"                       "Bali"                      
+ [3] "Banten"                     "Bengkulu"                  
+ [5] "Daerah Istimewa Yogyakarta" "DKI Jakarta"               
+ [7] "Gorontalo"                  "Jambi"                     
+ [9] "Jawa Barat"                 "Jawa Tengah"               
+[11] "Jawa Timur"                 "Kalimantan Barat"          
+[13] "Kalimantan Selatan"         "Kalimantan Tengah"         
+[15] "Kalimantan Timur"           "Kalimantan Utara"          
+[17] "Kepulauan Bangka Belitung"  "Kepulauan Riau"            
+[19] "Lampung"                    "Maluku"                    
+[21] "Maluku Utara"               "Nusa Tenggara Barat"       
+[23] "Nusa Tenggara Timur"        "Papua"                     
+[25] "Papua Barat"                "Papua Barat Daya"          
+[27] "Papua Pegunungan"           "Papua Selatan"             
+[29] "Papua Tengah"               "Riau"                      
+[31] "Sulawesi Barat"             "Sulawesi Selatan"          
+[33] "Sulawesi Tengah"            "Sulawesi Tenggara"         
+[35] "Sulawesi Utara"             "Sumatera Barat"            
+[37] "Sumatera Selatan"           "Sumatera Utara"            </code></pre>
 </div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="1" data-listing-date-sort="1787932800000" data-listing-file-modified-sort="1788590951015" data-listing-date-modified-sort="1788590951000" data-listing-reading-time-sort="19" data-listing-word-count-sort="3754">
-<a href="./Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02A.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img loading='lazy' src="Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02A_files/figure-html/unnamed-chunk-7-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-on Exercise 2A: 1st Order Spatial Point Patterns Analysis Method
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Nor Hendra
-</div>
-<div class="listing-date">
-Aug 29, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="2" data-listing-date-sort="1787932800000" data-listing-file-modified-sort="1788590958790" data-listing-date-modified-sort="1788590958000" data-listing-reading-time-sort="12" data-listing-word-count-sort="2204">
-<a href="./Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02B.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img loading='lazy' src="Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02B_files/figure-html/unnamed-chunk-7-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-on Exercise 2B: 2nd Order Spatial Point Patterns Analysis Methods
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Nor Hendra
-</div>
-<div class="listing-date">
-Aug 29, 2026
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Safer: fuzzy-search for anything containing "Bangka" regardless of</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># exact spelling/whitespace/case — this tells you the exact string to filter on</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span>(<span class="st">"Bangka"</span>, kelurahan<span class="sc">$</span>WADMPR, <span class="at">value =</span> <span class="cn">TRUE</span>, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> <span class="fu">unique</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Kepulauan Bangka Belitung"</code></pre>
 </div>
 </div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="3" data-listing-date-sort="1787414400000" data-listing-file-modified-sort="1788590938687" data-listing-date-modified-sort="1788590938000" data-listing-reading-time-sort="18" data-listing-word-count-sort="3521">
-<a href="./Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01A.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img loading='lazy' src="Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01A_files/figure-html/unnamed-chunk-8-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-on Exercise 1A: Geospatial Data Science with R
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Nor Hendra
-</div>
-<div class="listing-date">
-Aug 23, 2026
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Once you've confirmed the exact string from the chunk above, filter with it</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>babel <span class="ot">&lt;-</span> kelurahan[kelurahan<span class="sc">$</span>WADMPR <span class="sc">==</span> <span class="st">"Kepulauan Bangka Belitung"</span>, ]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(babel)   <span class="co"># sanity check — should be 393</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 394</code></pre>
 </div>
 </div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Look for duplicate names — a duplicate boundary would show up as a name appearing twice</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>babel<span class="sc">$</span>NAMOBJ[<span class="fu">duplicated</span>(babel<span class="sc">$</span>NAMOBJ) <span class="sc">|</span> <span class="fu">duplicated</span>(babel<span class="sc">$</span>NAMOBJ, <span class="at">fromLast =</span> <span class="cn">TRUE</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Dendang"                "Dukong"                 "Dukong"                
+ [4] "Ibul"                   "Mayang"                 "Nibung"                
+ [7] "Pasir Putih"            "Petaling"               "Simpang Tiga"          
+[10] "Area Tidak Terdefinisi" "Area Tidak Terdefinisi" "Beruas"                
+[13] "Dendang"                "Ibul"                   "Mayang"                
+[16] "Nibung"                 "Puput"                  "Riding Panjang"        
+[19] "Rukam"                  "Simpang Tiga"           "Air Duren"             
+[22] "Air Duren"              "Beruas"                 "Kayu Besi"             
+[25] "Kayu Besi"              "Pasir Garam"            "Pasir Garam"           
+[28] "Pasir Putih"            "Puput"                  "Riding Panjang"        
+[31] "Rukam"                  "Petaling"              </code></pre>
 </div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="4" data-listing-date-sort="1787414400000" data-listing-file-modified-sort="1788590776363" data-listing-date-modified-sort="1788590776000" data-listing-reading-time-sort="38" data-listing-word-count-sort="7454">
-<a href="./Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01B.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img loading='lazy' src="Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01B_files/figure-html/unnamed-chunk-13-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-on Exercise 1B: Thematic Mapping and GeoVisualisation with R
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Nor Hendra
-</div>
-<div class="listing-date">
-Aug 23, 2026
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Or check duplicate OBJECTIDs, which would be a clearer red flag</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">duplicated</span>(babel<span class="sc">$</span>OBJECTID))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
 </div>
 </div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>babel <span class="ot">&lt;-</span> <span class="fu">st_zm</span>(babel, <span class="at">drop =</span> <span class="cn">TRUE</span>, <span class="at">what =</span> <span class="st">"ZM"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">st_write</span>(babel, <span class="fu">file.path</span>(data_dir, <span class="st">"Kepulauan_Bangka_Belitung.shp"</span>), <span class="at">delete_layer =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Deleting layer `Kepulauan_Bangka_Belitung' using driver `ESRI Shapefile'
+Writing layer `Kepulauan_Bangka_Belitung' to data source 
+  `/Users/norhendra/norhendra/ISSS626-GAA/Hands-on_Ex/Hands-on_Ex03/data//Kepulauan_Bangka_Belitung.shp' using driver `ESRI Shapefile'
+Writing 394 features with 26 fields and geometry type Multi Polygon.</code></pre>
 </div>
-</div></a>
 </div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+
+
+
+</main> <!-- /main -->
 <script>
   (function () {
     function initReveal() {

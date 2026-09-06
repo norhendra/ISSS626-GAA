@@ -1,0 +1,54 @@
+---
+title: "Hands-on_Ex03"
+format: html
+---
+
+```{r}
+#| label: setup
+#| message: false
+
+library(sf)
+
+data_dir <- "/Users/norhendra/norhendra/ISSS626-GAA/Hands-on_Ex/Hands-on_Ex03/data/"
+```
+
+```{r}
+#| label: read-shapefile
+
+kelurahan <- st_read(file.path(data_dir, "Batas_Wilayah_KelurahanDesa_10K_AR.shp"))
+```
+
+```{r}
+#| label: confirm-spelling
+
+# See every unique province value as-is (spot typos, casing, trailing spaces)
+sort(unique(kelurahan$WADMPR))
+
+# Safer: fuzzy-search for anything containing "Bangka" regardless of
+# exact spelling/whitespace/case — this tells you the exact string to filter on
+grep("Bangka", kelurahan$WADMPR, value = TRUE, ignore.case = TRUE) |> unique()
+```
+
+```{r}
+#| label: filter-province
+
+# Once you've confirmed the exact string from the chunk above, filter with it
+babel <- kelurahan[kelurahan$WADMPR == "Kepulauan Bangka Belitung", ]
+
+nrow(babel)   # sanity check — should be 393
+```
+
+```{r}
+# Look for duplicate names — a duplicate boundary would show up as a name appearing twice
+babel$NAMOBJ[duplicated(babel$NAMOBJ) | duplicated(babel$NAMOBJ, fromLast = TRUE)]
+
+# Or check duplicate OBJECTIDs, which would be a clearer red flag
+sum(duplicated(babel$OBJECTID))
+```
+
+
+```{r}
+babel <- st_zm(babel, drop = TRUE, what = "ZM")
+
+st_write(babel, file.path(data_dir, "Kepulauan_Bangka_Belitung.shp"), delete_layer = TRUE)
+```
