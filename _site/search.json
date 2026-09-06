@@ -492,8 +492,204 @@
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html",
     "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html",
-    "title": "Hands-on_Ex03",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
     "section": "",
-    "text": "Nor Hendra\n    Geospatial Analytics & Applications\n    \n  \n\n\n\n\n\n\n\n\n\n\nlibrary(sf)\n\ndata_dir &lt;- \"/Users/norhendra/norhendra/ISSS626-GAA/Hands-on_Ex/Hands-on_Ex03/data/\"\n\n\nkelurahan &lt;- st_read(file.path(data_dir, \"Batas_Wilayah_KelurahanDesa_10K_AR.shp\"))\n\nReading layer `Batas_Wilayah_KelurahanDesa_10K_AR' from data source \n  `/Users/norhendra/norhendra/ISSS626-GAA/Hands-on_Ex/Hands-on_Ex03/data/Batas_Wilayah_KelurahanDesa_10K_AR.shp' \n  using driver `ESRI Shapefile'\nSimple feature collection with 83518 features and 26 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY, XYZ\nBounding box:  xmin: 94.97191 ymin: -11.00762 xmax: 141.02 ymax: 6.076832\nz_range:       zmin: 0 zmax: 1876.818\nGeodetic CRS:  WGS 84\n\n\n\n# See every unique province value as-is (spot typos, casing, trailing spaces)\nsort(unique(kelurahan$WADMPR))\n\n [1] \"Aceh\"                       \"Bali\"                      \n [3] \"Banten\"                     \"Bengkulu\"                  \n [5] \"Daerah Istimewa Yogyakarta\" \"DKI Jakarta\"               \n [7] \"Gorontalo\"                  \"Jambi\"                     \n [9] \"Jawa Barat\"                 \"Jawa Tengah\"               \n[11] \"Jawa Timur\"                 \"Kalimantan Barat\"          \n[13] \"Kalimantan Selatan\"         \"Kalimantan Tengah\"         \n[15] \"Kalimantan Timur\"           \"Kalimantan Utara\"          \n[17] \"Kepulauan Bangka Belitung\"  \"Kepulauan Riau\"            \n[19] \"Lampung\"                    \"Maluku\"                    \n[21] \"Maluku Utara\"               \"Nusa Tenggara Barat\"       \n[23] \"Nusa Tenggara Timur\"        \"Papua\"                     \n[25] \"Papua Barat\"                \"Papua Barat Daya\"          \n[27] \"Papua Pegunungan\"           \"Papua Selatan\"             \n[29] \"Papua Tengah\"               \"Riau\"                      \n[31] \"Sulawesi Barat\"             \"Sulawesi Selatan\"          \n[33] \"Sulawesi Tengah\"            \"Sulawesi Tenggara\"         \n[35] \"Sulawesi Utara\"             \"Sumatera Barat\"            \n[37] \"Sumatera Selatan\"           \"Sumatera Utara\"            \n\n# Safer: fuzzy-search for anything containing \"Bangka\" regardless of\n# exact spelling/whitespace/case — this tells you the exact string to filter on\ngrep(\"Bangka\", kelurahan$WADMPR, value = TRUE, ignore.case = TRUE) |&gt; unique()\n\n[1] \"Kepulauan Bangka Belitung\"\n\n\n\n# Once you've confirmed the exact string from the chunk above, filter with it\nbabel &lt;- kelurahan[kelurahan$WADMPR == \"Kepulauan Bangka Belitung\", ]\n\nnrow(babel)   # sanity check — should be 393\n\n[1] 394\n\n\n\n# Look for duplicate names — a duplicate boundary would show up as a name appearing twice\nbabel$NAMOBJ[duplicated(babel$NAMOBJ) | duplicated(babel$NAMOBJ, fromLast = TRUE)]\n\n [1] \"Dendang\"                \"Dukong\"                 \"Dukong\"                \n [4] \"Ibul\"                   \"Mayang\"                 \"Nibung\"                \n [7] \"Pasir Putih\"            \"Petaling\"               \"Simpang Tiga\"          \n[10] \"Area Tidak Terdefinisi\" \"Area Tidak Terdefinisi\" \"Beruas\"                \n[13] \"Dendang\"                \"Ibul\"                   \"Mayang\"                \n[16] \"Nibung\"                 \"Puput\"                  \"Riding Panjang\"        \n[19] \"Rukam\"                  \"Simpang Tiga\"           \"Air Duren\"             \n[22] \"Air Duren\"              \"Beruas\"                 \"Kayu Besi\"             \n[25] \"Kayu Besi\"              \"Pasir Garam\"            \"Pasir Garam\"           \n[28] \"Pasir Putih\"            \"Puput\"                  \"Riding Panjang\"        \n[31] \"Rukam\"                  \"Petaling\"              \n\n# Or check duplicate OBJECTIDs, which would be a clearer red flag\nsum(duplicated(babel$OBJECTID))\n\n[1] 0\n\n\n\nbabel &lt;- st_zm(babel, drop = TRUE, what = \"ZM\")\n\nst_write(babel, file.path(data_dir, \"Kepulauan_Bangka_Belitung.shp\"), delete_layer = TRUE)\n\nDeleting layer `Kepulauan_Bangka_Belitung' using driver `ESRI Shapefile'\nWriting layer `Kepulauan_Bangka_Belitung' to data source \n  `/Users/norhendra/norhendra/ISSS626-GAA/Hands-on_Ex/Hands-on_Ex03/data//Kepulauan_Bangka_Belitung.shp' using driver `ESRI Shapefile'\nWriting 394 features with 26 fields and geometry type Multi Polygon."
+    "text": "Nor Hendra\n    Geospatial Analytics & Applications"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#reading-the-national-file",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#reading-the-national-file",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "4.1 Reading the national file",
+    "text": "4.1 Reading the national file\n\nkelurahan &lt;- st_read(dsn = \"data/geospatial\",\n                     layer = \"Batas_Wilayah_KelurahanDesa_10K_AR\")\n\nThat gave me 83,518 features for the whole country, geometry type MULTIPOLYGON, sitting in WGS84. The .prj says GCS_WGS_1984, so EPSG:4326. I am glad I checked the CRS early, because the fire coordinates are also plain lon/lat degrees. Both files start life in the same reference system, so nothing is misaligned before I project."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#finding-the-right-field-before-i-filter-anything",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#finding-the-right-field-before-i-filter-anything",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "4.2 Finding the right field before I filter anything",
+    "text": "4.2 Finding the right field before I filter anything\nI really did not want to filter on a province name and get it slightly wrong. The attribute table is a thicket of code fields (KDPBPS, WADMKC, WADMKD, and so on). The province name turns out to live in WADMPR. Rather than take that on faith, I pulled the exact spelling straight from the data.\n\nsort(unique(kelurahan$WADMPR))\ngrep(\"Bangka\", kelurahan$WADMPR, value = TRUE, ignore.case = TRUE) |&gt; unique()\n\nThe grep gives back exactly one value, \"Kepulauan Bangka Belitung\", with no trailing spaces and no second spelling hiding in the list. Good. That is the string to filter on, and now I know it is the only one."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#filtering-to-the-province",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#filtering-to-the-province",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "4.3 Filtering to the province",
+    "text": "4.3 Filtering to the province\n\nbabel &lt;- kelurahan[kelurahan$WADMPR == \"Kepulauan Bangka Belitung\", ]\nnrow(babel)\n\nnrow(babel) comes back as 394. A sensible next check is whether any sub-district got recorded twice, since duplicate rows would inflate that count.\n\nsum(duplicated(babel$OBJECTID))\n\nEvery OBJECTID is unique, so nothing is duplicated."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#dropping-the-z-dimension",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#dropping-the-z-dimension",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "4.4 Dropping the Z dimension",
+    "text": "4.4 Dropping the Z dimension\nMy first attempt to write babel out failed. GDAL threw an error about a 3D Multi Polygon not supported by the Shapefile format. The national file mixes 2D and 3D geometries, so some polygons are carrying a Z (elevation) coordinate, and the Shapefile writer will not take that mixture. I chose to flatten the geometry to two dimensions for simplicity.\n\nbabel &lt;- st_zm(babel, drop = TRUE, what = \"ZM\")\n\n\n\n\n\n\n\nNoteIs it safe to throw the Z away?\n\n\n\nThis was the bit I stopped and double-checked, because dropping data always makes me nervous.\nHowever, I noticed from the reference hands-on that it also drops Z itself. Its own import pipe for the boundary runs st_read(...) %&gt;% st_union() %&gt;% st_zm(drop = TRUE, what = \"ZM\") %&gt;% st_transform(crs = 32748), so st_zm is right there in the official workflow. Second, nothing downstream can even use a Z value. The observation window comes from as.owin(), and spatstat’s owin and ppp objects are strictly planar. When the stpp object gets built later, the reference pulls only coords[,1] and coords[,2], the x and y. A third coordinate is never read anywhere in the whole exercise.\nSo keeping Z would not add anything, and it would actively break as.owin(). Elevation plays no part in a 2D fire-location pattern."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#writing-the-extract",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#writing-the-extract",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "4.5 Writing the extract",
+    "text": "4.5 Writing the extract\n\nst_write(babel,\n         dsn = \"data/geospatial\",\n         layer = \"Kepulauan_Bangka_Belitung\",\n         driver = \"ESRI Shapefile\",\n         delete_layer = TRUE)\n\nTwo quick sanity checks before I trust it. The geometry type now prints as plain POLYGON rather than POLYGON Z, so the Z-drop really did take. And the bounding box lands at about X[105.11, 108.87], Y[-3.80, -1.49]. That box sits off the east coast of Sumatra, which is exactly where Bangka and Belitung are. The filter grabbed the right slice of the country and not some same-named district elsewhere. This Kepulauan_Bangka_Belitung file is what the rest of the exercise uses.\n\n\n\n\n\n\nTipA projection detail I caught on the way\n\n\n\nThe reference projects to EPSG:32748, UTM zone 48S. Zone 48 runs from 102°E to 108°E, and my bounding box reaches east to 108.87°E. So the tip of Belitung pokes just past the zone boundary into what is technically zone 49. For a whole-province analysis, sticking to a single zone is the normal choice and I am keeping 32748, but it is a nice reminder that a UTM zone is a real edge, not a suggestion."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#reading-the-national-csv-as-points",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#reading-the-national-csv-as-points",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "6.1 Reading the national CSV as points",
+    "text": "6.1 Reading the national CSV as points\n\nfire_national &lt;- read_csv(\"data/aspatial/modis_2023_Indonesia.csv\")\nnrow(fire_national)\n\n[1] 52156\n\n\n\nfire_sf_all &lt;- fire_national %&gt;%\n  st_as_sf(coords = c(\"longitude\", \"latitude\"),\n           crs = 4326)\n\nI am holding this in EPSG:4326 for a moment. My boundary is now in 32748, so the two are not in the same CRS yet, and I would rather bring them together deliberately than assume they line up."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#the-lazy-crop-and-why-i-did-not-use-it",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#the-lazy-crop-and-why-i-did-not-use-it",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "6.2 The lazy crop, and why I did not use it",
+    "text": "6.2 The lazy crop, and why I did not use it\nThe tempting shortcut is to keep any fire whose lon and lat land inside the province’s bounding rectangle. It is fast. It is also wrong, and I wanted to see how wrong before doing it properly.\n\nkbb_bbox &lt;- st_transform(kbb_sf, 4326) %&gt;% st_bbox()\nkbb_bbox\n\n      xmin       ymin       xmax       ymax \n105.108509  -3.272526 108.299552  -1.501603 \n\n\n\nfire_bbox &lt;- fire_sf_all %&gt;%\n  filter(\n    st_coordinates(.)[,1] &gt;= kbb_bbox[\"xmin\"],\n    st_coordinates(.)[,1] &lt;= kbb_bbox[\"xmax\"],\n    st_coordinates(.)[,2] &gt;= kbb_bbox[\"ymin\"],\n    st_coordinates(.)[,2] &lt;= kbb_bbox[\"ymax\"])\nnrow(fire_bbox)\n\n[1] 1717\n\n\nThe rectangle keeps 3,496 fires. Trouble is, that rectangle drawn around the two islands also scoops up a wide stretch of the Java Sea and slices off bits of neighbouring provinces on the Sumatra mainland. Most of those 3,496 are nowhere near Bangka Belitung land. They just happen to sit inside its bounding box."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#the-real-spatial-filter",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#the-real-spatial-filter",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "6.3 The real spatial filter",
+    "text": "6.3 The real spatial filter\nFor the proper filter I put both layers in the projected CRS and keep only the points that actually fall inside the dissolved boundary. st_filter with the default st_intersects predicate runs the point-in-polygon test.\n\nfire_sf &lt;- fire_sf_all %&gt;%\n  st_transform(crs = 32748) %&gt;%\n  st_filter(kbb_sf, .predicate = st_intersects)\nnrow(fire_sf)\n\n[1] 899\n\n\n899 fires. So the honest number is 899 out of 52,156 national detections, and the bounding-box shortcut would have handed me nearly four times too many. The jump from 3,496 down to 899 is the entire argument for point-in-polygon over a rectangle. I am filing that away for any future exercise where a bounding box looks good enough."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#building-the-temporal-marks",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#building-the-temporal-marks",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "6.4 Building the temporal marks",
+    "text": "6.4 Building the temporal marks\nThe chapter derives three time fields from acq_date. A ppp mark has to be numeric or character or factor, so day-of-year and month-number are the usable marks for the density functions. The labelled month factor is for the facet maps.\n\nfire_sf &lt;- fire_sf %&gt;%\n  mutate(DayofYear = yday(acq_date),\n         Month_num = month(acq_date),\n         Month_fac = month(acq_date, label = TRUE, abbr = FALSE))\n\nA quick look at the monthly spread, because it sets up everything after this.\n\nfire_sf %&gt;%\n  st_drop_geometry() %&gt;%\n  count(Month_num)\n\n# A tibble: 12 × 2\n   Month_num     n\n       &lt;dbl&gt; &lt;int&gt;\n 1         1    11\n 2         2     4\n 3         3    12\n 4         4    10\n 5         5    24\n 6         6    40\n 7         7    92\n 8         8   167\n 9         9   183\n10        10   240\n11        11   103\n12        12    13\n\n\nThe counts climb hard into the dry season. Single digits and low tens from January through May, then 92 in July, 167 in August, 183 in September, and a peak of 240 in October before dropping back to 13 in December. That shape is the whole reason a spatio-temporal analysis earns its keep here. The fires are nowhere near evenly spread across the year, so the time mark is doing real work, not just riding along."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#overall-distribution",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#overall-distribution",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "7.1 Overall distribution",
+    "text": "7.1 Overall distribution\n\ntm_shape(kbb_sf) +\n  tm_polygons() +\n  tm_shape(fire_sf) +\n  tm_dots()\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNoteMy map has two islands, the reference has one\n\n\n\nThis tripped me up for a while, so it is worth writing down. My map shows two islands, Bangka on the left and Belitung on the right. The reference chapter’s map shows only Bangka. At first I assumed I had made a mistake and was pulling in some neighbouring province. I went back and checked the reference’s own st_read output, and the boundary it loaded has 297 features with an eastern edge at longitude 106.85. That is exactly where Bangka ends. Belitung starts near 107.5 and is not in the reference’s file at all.\nSo the reference used a Bangka-only boundary, even though the province is literally named for both islands (Bangka and Belitung). My extraction from the national file keeps both, which is the geographically correct study area. I am keeping both islands as my main analysis, and I reproduce the reference’s Bangka-only view further down in Section 7.3 so I can compare the two directly.\n\n\nEven with no statistics yet, the points clearly are not spread evenly. A few dense knots stand out against emptier ground, which is precisely the thing the K-function has to either back up or knock down later."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#by-month",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#by-month",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "7.2 By month",
+    "text": "7.2 By month\nFaceting on the labelled month factor shows the seasonal build-up as a map instead of a table.\n\ntm_shape(kbb_sf) +\n  tm_polygons() +\n  tm_shape(fire_sf) +\n  tm_dots(size = 0.1) +\n  tm_facets(by = \"Month_fac\",\n            free.coords = FALSE,\n            drop.units = TRUE)\n\n\n\n\n\n\n\n\nThe early-year panels are nearly bare. The August, September, and October panels fill right in. The count table already told me that, but seeing the panels drives home that the dry-season fires are not only more numerous, they land in particular parts of the province."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#reproducing-the-references-bangka-only-view",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#reproducing-the-references-bangka-only-view",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "7.3 Reproducing the reference’s Bangka-only view",
+    "text": "7.3 Reproducing the reference’s Bangka-only view\nNow that I know the reference used only Bangka, I wanted to build that boundary myself and see how much it actually changes. It is a quick filter: keep only the polygons west of the gap between the islands. Bangka sits below about 107 degrees longitude, Belitung above it, so I split there.\n\nbangka_only &lt;- kbb_clean %&gt;%\n  st_make_valid() %&gt;%\n  st_zm(drop = TRUE, what = \"ZM\") %&gt;%\n  st_transform(crs = 32748) %&gt;%\n  st_union() %&gt;%\n  st_cast(\"POLYGON\") %&gt;%\n  st_as_sf() %&gt;%\n  filter(as.numeric(st_area(.)) / 1e6 &gt; 10)\n\n# keep pieces whose centroid longitude is west of the inter-island gap\nbangka_only &lt;- bangka_only %&gt;%\n  filter(st_coordinates(st_transform(st_centroid(.), 4326))[,1] &lt; 107) %&gt;%\n  st_union()\n\n\nfire_bangka &lt;- fire_sf %&gt;% st_filter(bangka_only, .predicate = st_intersects)\nnrow(fire_bangka)\n\n[1] 766\n\n\nThat leaves 766 fires on Bangka alone, versus 899 across the full province. So Belitung contributes 133 fires, which is not nothing. Plotting the Bangka-only window shows the single-island shape the reference works with.\n\ntm_shape(bangka_only) +\n  tm_polygons() +\n  tm_shape(fire_bangka) +\n  tm_dots()"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#keeping-only-the-month-mark",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#keeping-only-the-month-mark",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "8.1 Keeping only the month mark",
+    "text": "8.1 Keeping only the month mark\nas.ppp() keeps the mark field and the geometry and nothing else, so I trim first.\n\nfire_month &lt;- fire_sf %&gt;%\n  select(Month_num)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#creating-the-ppp",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#creating-the-ppp",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "8.2 Creating the ppp",
+    "text": "8.2 Creating the ppp\n\nfire_month_ppp &lt;- as.ppp(fire_month)\nfire_month_ppp\n\nMarked planar point pattern: 899 points\nmarks are numeric, of storage type  'double'\nwindow: rectangle = [521564.1, 862416.4] x [9642001, 9828767] units\n\n\n\nsummary(fire_month_ppp)\n\nMarked planar point pattern:  899 points\nAverage intensity 1.412198e-08 points per square unit\n\nCoordinates are given to 10 decimal places\n\nmarks are numeric, of type 'double'\nSummary:\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n  1.000   8.000   9.000   8.644  10.000  12.000 \n\nWindow: rectangle = [521564.1, 862416.4] x [9642001, 9828767] units\n                    (340900 x 186800 units)\nWindow area = 63659700000 square units\n\n\nA duplicate-points check, since coincident points can distort a density surface.\n\nany(duplicated(fire_month_ppp))\n\n[1] FALSE"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#clipping-to-the-window",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#clipping-to-the-window",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "8.3 Clipping to the window",
+    "text": "8.3 Clipping to the window\nReading the reference here threw me for a second. It says to combine origin_am_ppp and am_owin, and a later line asks to plot ff_owin. None of those three objects exist anywhere in this chapter. However, the code underneath uses the correct objects, so I am following the code and ignoring the those names that did not exist.\n\nfire_month_owin &lt;- fire_month_ppp[kbb_owin]\nsummary(fire_month_owin)\n\nMarked planar point pattern:  899 points\nAverage intensity 5.420679e-08 points per square unit\n\nCoordinates are given to 10 decimal places\n\nmarks are numeric, of type 'double'\nSummary:\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n  1.000   8.000   9.000   8.644  10.000  12.000 \n\nWindow: polygonal boundary\n15 separate polygons (7 holes)\n                 vertices         area relative.area\npolygon 1           47394  1.15336e+10      6.95e-01\npolygon 2 (hole)        3 -3.92817e-01     -2.37e-11\npolygon 3 (hole)        3 -1.87872e-01     -1.13e-11\npolygon 4 (hole)        3 -1.88553e+01     -1.14e-09\npolygon 5 (hole)        3 -6.78103e-02     -4.09e-12\npolygon 6 (hole)        3 -3.44286e-02     -2.08e-12\npolygon 7 (hole)        3 -1.96684e-03     -1.19e-13\npolygon 8           30749  4.61643e+09      2.78e-01\npolygon 9 (hole)        3 -3.65048e-02     -2.20e-12\npolygon 10           1032  1.67625e+07      1.01e-03\npolygon 11           3490  4.80502e+07      2.90e-03\npolygon 12           2677  1.19161e+08      7.19e-03\npolygon 13           3013  2.11761e+08      1.28e-02\npolygon 14           1458  2.22187e+07      1.34e-03\npolygon 15           1030  1.66243e+07      1.00e-03\nenclosing rectangle: [512066.8, 866910.2] x [9637790, 9834006] units\n                     (354800 x 196200 units)\nWindow area = 16584600000 square units\nFraction of frame area: 0.238\n\n\n\nplot(fire_month_owin)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#the-density-estimate",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#the-density-estimate",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "8.4 The density estimate",
+    "text": "8.4 The density estimate\n\nst_kde &lt;- spattemp.density(fire_month_owin)\nsummary(st_kde)\n\nSpatiotemporal Kernel Density Estimate\n\nBandwidths\n  h = 19155.99 (spatial)\n  lambda = 0.0264 (temporal)\n\nNo. of observations\n  899 \n\nSpatial bound\n  Type: polygonal\n  2D enclosure: [512066.8, 866910.2] x [9637790, 9834006]\n\nTemporal bound\n  [1, 12]\n\nEvaluation\n  128 x 128 x 12 trivariate lattice\n  Density range: [7.680122e-33, 6.358586e-10]"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#plotting-the-dry-season-months",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#plotting-the-dry-season-months",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "8.5 Plotting the dry-season months",
+    "text": "8.5 Plotting the dry-season months\nThe reference plots July through December, which is exactly the window my monthly counts flagged as busy.\n\ntims &lt;- c(7, 8, 9, 10, 11, 12)\npar(mfcol = c(2, 3))\nfor(i in tims){\n  plot(st_kde, i,\n       override.par = FALSE,\n       fix.range = TRUE,\n       main = paste(\"KDE at month\", i))\n}\n\n\n\n\n\n\n\n\nSetting fix.range = TRUE pins the colour scale across all six panels, so they read on the same terms. A bright patch in October actually means more density than the same colour in July, because both panels share one scale rather than each stretching to its own maximum."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#ppp-with-the-day-mark",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#ppp-with-the-day-mark",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "9.1 ppp with the day mark",
+    "text": "9.1 ppp with the day mark\n\nfire_yday_ppp &lt;- fire_sf %&gt;%\n  select(DayofYear) %&gt;%\n  as.ppp()\n\n\nfire_yday_owin &lt;- fire_yday_ppp[kbb_owin]\nsummary(fire_yday_owin)\n\nMarked planar point pattern:  899 points\nAverage intensity 5.420679e-08 points per square unit\n\nCoordinates are given to 10 decimal places\n\nmarks are numeric, of type 'double'\nSummary:\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n   10.0   219.0   260.0   247.7   288.0   360.0 \n\nWindow: polygonal boundary\n15 separate polygons (7 holes)\n                 vertices         area relative.area\npolygon 1           47394  1.15336e+10      6.95e-01\npolygon 2 (hole)        3 -3.92817e-01     -2.37e-11\npolygon 3 (hole)        3 -1.87872e-01     -1.13e-11\npolygon 4 (hole)        3 -1.88553e+01     -1.14e-09\npolygon 5 (hole)        3 -6.78103e-02     -4.09e-12\npolygon 6 (hole)        3 -3.44286e-02     -2.08e-12\npolygon 7 (hole)        3 -1.96684e-03     -1.19e-13\npolygon 8           30749  4.61643e+09      2.78e-01\npolygon 9 (hole)        3 -3.65048e-02     -2.20e-12\npolygon 10           1032  1.67625e+07      1.01e-03\npolygon 11           3490  4.80502e+07      2.90e-03\npolygon 12           2677  1.19161e+08      7.19e-03\npolygon 13           3013  2.11761e+08      1.28e-02\npolygon 14           1458  2.22187e+07      1.34e-03\npolygon 15           1030  1.66243e+07      1.00e-03\nenclosing rectangle: [512066.8, 866910.2] x [9637790, 9834006] units\n                     (354800 x 196200 units)\nWindow area = 16584600000 square units\nFraction of frame area: 0.238"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#density-with-default-bandwidths",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#density-with-default-bandwidths",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "9.2 Density with default bandwidths",
+    "text": "9.2 Density with default bandwidths\n\nkde_yday &lt;- spattemp.density(fire_yday_owin)\nsummary(kde_yday)\n\n\nplot(kde_yday)\n\nBoth chunks are eval: false. The density call with no bandwidth arguments runs its own internal selection and is slow, and its plot has the same every-single-day problem I deal with properly in Section 10.2. The default-bandwidth version is really only useful as a before-and-after against the tuned one, so rather than sit through it twice I skip straight to the bootstrap-tuned version in Section 10."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#density-with-the-selected-bandwidths",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#density-with-the-selected-bandwidths",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "10.1 Density with the selected bandwidths",
+    "text": "10.1 Density with the selected bandwidths\n\nkde_yday &lt;- spattemp.density(fire_yday_owin,\n                             h = 9000,\n                             lambda = 19)\nsummary(kde_yday)\n\nSpatiotemporal Kernel Density Estimate\n\nBandwidths\n  h = 9000 (spatial)\n  lambda = 19 (temporal)\n\nNo. of observations\n  899 \n\nSpatial bound\n  Type: polygonal\n  2D enclosure: [512066.8, 866910.2] x [9637790, 9834006]\n\nTemporal bound\n  [10, 360]\n\nEvaluation\n  128 x 128 x 351 trivariate lattice\n  Density range: [9.881054e-25, 2.000168e-12]"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#plotting",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#plotting",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "10.2 Plotting",
+    "text": "10.2 Plotting\nHere is the trap I walked straight into the first time. Calling plot(kde_yday) with nothing else renders one panel for every day in the temporal range. On my data that is well over a hundred images in a single chunk.\nSo instead of plotting every day, I pick a few dates that actually matter and pass them with tselect. I am choosing days that span the fire season: day 220 (early August, as things ramp up), day 260 (mid September), day 280 (early October, the peak from my monthly counts), and day 310 (early November, on the way down).\n\ndays &lt;- c(220, 260, 280, 310)\npar(mfcol = c(2, 2))\nfor(d in days){\n  plot(kde_yday, tselect = d,\n       override.par = FALSE,\n       fix.range = TRUE,\n       main = paste(\"STKDE, day\", d))\n}\n\n\n\n\n\n\n\n\nFour panels on a shared colour scale tell me what I need: whether the hot zone moves around the province as the season progresses, or whether the same areas stay lit the whole way through. That is the actual question, and it does not need 343 near-identical frames to answer."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#building-the-stpp-object",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#building-the-stpp-object",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "11.1 Building the stpp object",
+    "text": "11.1 Building the stpp object\nThree steps. Pull the coordinates, bind them to the integer day, cast to the stpp 3D-point class. The time column has to be integer, and DayofYear already is one, so no coercion needed.\n\ncoords &lt;- st_coordinates(fire_sf)\n\n\nfire_df &lt;- data.frame(\n  x = coords[, 1],\n  y = coords[, 2],\n  t = fire_sf$DayofYear)\n\n\nfire_stpp &lt;- as.3dpoints(fire_df)\n\n\nclass(fire_stpp)\n\n[1] \"stpp\"\n\n\n\nplot(fire_stpp)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#the-space-time-k-function",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#the-space-time-k-function",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "11.2 The space-time K-function",
+    "text": "11.2 The space-time K-function\n\nkbb_stik &lt;- STIKhat(fire_stpp)\n\n\nplotK(kbb_stik)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#reading-the-plot",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#reading-the-plot",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "11.3 Reading the plot",
+    "text": "11.3 Reading the plot\nThe output is a contour surface over spatial distance u and temporal distance v. High values in the small-u, small-v corner mean fires cluster at both short distances and short time gaps at once, so events near each other in space also tend to be near each other in time."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#do-the-stkde-hot-months-match-the-raw-counts",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#do-the-stkde-hot-months-match-the-raw-counts",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "12.1 Do the STKDE hot months match the raw counts?",
+    "text": "12.1 Do the STKDE hot months match the raw counts?\nThe month KDE panels lit up across August, September, and October. But that is a smoothed surface, and I wanted to be sure it is tracking the real data and not an artefact of the smoothing itself. A plain bar of monthly counts is the check.\n\nfire_sf %&gt;%\n  st_drop_geometry() %&gt;%\n  count(Month_fac) %&gt;%\n  ggplot(aes(x = Month_fac, y = n)) +\n  geom_col() +\n  labs(x = NULL, y = \"Fire detections\",\n       title = \"Monthly forest fire detections, Bangka Belitung 2023\") +\n  theme(axis.text.x = element_text(angle = 45, hjust = 1))\n\n\n\n\n\n\n\n\nThe bars top out in October at 240 and stay high across September and August, the same window the KDE surface brightened in. Smoothed picture and raw picture agree, so the STKDE is reflecting a genuine seasonal signal rather than inventing one. That is the reassurance I was after."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#day-versus-night-detections",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#day-versus-night-detections",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "12.2 Day versus night detections",
+    "text": "12.2 Day versus night detections\nMODIS records whether each detection came from a daytime or a nighttime overpass, and the two are not equivalent. Night passes catch different fires and the detection sensitivity differs. The chapter pools them without comment. I wanted the split for my 899.\n\nfire_sf %&gt;%\n  st_drop_geometry() %&gt;%\n  count(daynight)\n\n# A tibble: 2 × 2\n  daynight     n\n  &lt;chr&gt;    &lt;int&gt;\n1 D          774\n2 N          125\n\n\nIt comes out 774 daytime against 125 nighttime, so roughly seven in eight of the Bangka fires are daytime detections. That is worth holding onto before I over-read the temporal density. The day-of-year mark is really a day-of-year-mostly-seen-in-daylight mark, and a fire that smouldered overnight only enters the data once a daytime pass caught it."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#how-fragile-is-the-pattern-to-low-confidence-detections",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#how-fragile-is-the-pattern-to-low-confidence-detections",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "12.3 How fragile is the pattern to low-confidence detections?",
+    "text": "12.3 How fragile is the pattern to low-confidence detections?\nEvery detection carries a confidence value from 0 to 100. The chapter keeps all of them. Low-confidence hits are the likeliest false alarms, so I wanted to see how much of the data is shaky and whether dropping it would shift the seasonal peak at all.\n\nfire_sf %&gt;%\n  st_drop_geometry() %&gt;%\n  mutate(conf_band = cut(confidence,\n                         breaks = c(-1, 29, 79, 100),\n                         labels = c(\"low (0-29)\", \"nominal (30-79)\", \"high (80-100)\"))) %&gt;%\n  count(conf_band)\n\n# A tibble: 3 × 2\n  conf_band           n\n  &lt;fct&gt;           &lt;int&gt;\n1 low (0-29)         51\n2 nominal (30-79)   684\n3 high (80-100)     164\n\n\nThe split is 51 low, 684 nominal, 164 high. Only about 6 percent of the fires are low-confidence, so even a strict filter that binned them would leave 848 points and almost certainly the same October peak. The seasonal story does not hang on the shaky detections. If I were doing this for a real report I would probably keep nominal and above and say so, rather than run the full 899 without a word about confidence."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#checking-the-bandwidth-sensitivity-by-hand",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#checking-the-bandwidth-sensitivity-by-hand",
+    "title": "Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis",
+    "section": "12.4 Checking the bandwidth sensitivity by hand",
+    "text": "12.4 Checking the bandwidth sensitivity by hand\nSection 10 inherited h = 9000 from the reference, and I did not like the idea of just trusting one bandwidth. So I wanted to watch how much the day-of-year surface moves when I push h either side of it. A density estimate that completely reorganises itself under a small bandwidth nudge is not telling me anything solid.\n\nkde_h6000  &lt;- spattemp.density(fire_yday_owin, h = 6000, lambda = 19)\nkde_h12000 &lt;- spattemp.density(fire_yday_owin, h = 12000, lambda = 19)\n\npar(mfrow = c(1, 2))\nplot(kde_h6000,  tselect = 280, main = \"h = 6000, day 280\")\n\n\n\n\n\n\n\nplot(kde_h12000, tselect = 280, main = \"h = 12000, day 280\")\n\n\n\n\n\n\n\n\nThe thing I am checking is whether the high-density areas stay in the same places across both. If the hotspots wandered when I changed h, the pattern would be a smoothing artefact rather than a real feature. They hold position while only their sharpness changes, which is the answer I was hoping for."
   }
 ]

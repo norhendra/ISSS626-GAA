@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Nor Hendra">
+<meta name="dcterms.date" content="2026-09-05">
 
-<title>Hands-on_Ex03 – Nor Hendra</title>
+<title>Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis – Nor Hendra</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -332,8 +334,70 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview-and-research-questions" id="toc-overview-and-research-questions" class="nav-link active" data-scroll-target="#overview-and-research-questions">1. Overview and Research Questions</a></li>
+  <li><a href="#the-data" id="toc-the-data" class="nav-link" data-scroll-target="#the-data">2. The Data</a></li>
+  <li><a href="#installing-and-loading-the-r-packages" id="toc-installing-and-loading-the-r-packages" class="nav-link" data-scroll-target="#installing-and-loading-the-r-packages">3. Installing and Loading the R Packages</a></li>
+  <li><a href="#extracting-the-study-area-from-the-national-boundary-file" id="toc-extracting-the-study-area-from-the-national-boundary-file" class="nav-link" data-scroll-target="#extracting-the-study-area-from-the-national-boundary-file">4. Extracting the Study Area from the National Boundary File</a>
+  <ul class="collapse">
+  <li><a href="#reading-the-national-file" id="toc-reading-the-national-file" class="nav-link" data-scroll-target="#reading-the-national-file">4.1 Reading the national file</a></li>
+  <li><a href="#finding-the-right-field-before-i-filter-anything" id="toc-finding-the-right-field-before-i-filter-anything" class="nav-link" data-scroll-target="#finding-the-right-field-before-i-filter-anything">4.2 Finding the right field before I filter anything</a></li>
+  <li><a href="#filtering-to-the-province" id="toc-filtering-to-the-province" class="nav-link" data-scroll-target="#filtering-to-the-province">4.3 Filtering to the province</a></li>
+  <li><a href="#dropping-the-z-dimension" id="toc-dropping-the-z-dimension" class="nav-link" data-scroll-target="#dropping-the-z-dimension">4.4 Dropping the Z dimension</a></li>
+  <li><a href="#writing-the-extract" id="toc-writing-the-extract" class="nav-link" data-scroll-target="#writing-the-extract">4.5 Writing the extract</a></li>
+  </ul></li>
+  <li><a href="#importing-and-preparing-the-study-area" id="toc-importing-and-preparing-the-study-area" class="nav-link" data-scroll-target="#importing-and-preparing-the-study-area">5. Importing and Preparing the Study Area</a></li>
+  <li><a href="#extracting-forest-fires-within-bangka-belitung" id="toc-extracting-forest-fires-within-bangka-belitung" class="nav-link" data-scroll-target="#extracting-forest-fires-within-bangka-belitung">6. Extracting Forest Fires within Bangka Belitung</a>
+  <ul class="collapse">
+  <li><a href="#reading-the-national-csv-as-points" id="toc-reading-the-national-csv-as-points" class="nav-link" data-scroll-target="#reading-the-national-csv-as-points">6.1 Reading the national CSV as points</a></li>
+  <li><a href="#the-lazy-crop-and-why-i-did-not-use-it" id="toc-the-lazy-crop-and-why-i-did-not-use-it" class="nav-link" data-scroll-target="#the-lazy-crop-and-why-i-did-not-use-it">6.2 The lazy crop, and why I did not use it</a></li>
+  <li><a href="#the-real-spatial-filter" id="toc-the-real-spatial-filter" class="nav-link" data-scroll-target="#the-real-spatial-filter">6.3 The real spatial filter</a></li>
+  <li><a href="#building-the-temporal-marks" id="toc-building-the-temporal-marks" class="nav-link" data-scroll-target="#building-the-temporal-marks">6.4 Building the temporal marks</a></li>
+  </ul></li>
+  <li><a href="#visualising-the-fire-points" id="toc-visualising-the-fire-points" class="nav-link" data-scroll-target="#visualising-the-fire-points">7. Visualising the Fire Points</a>
+  <ul class="collapse">
+  <li><a href="#overall-distribution" id="toc-overall-distribution" class="nav-link" data-scroll-target="#overall-distribution">7.1 Overall distribution</a></li>
+  <li><a href="#by-month" id="toc-by-month" class="nav-link" data-scroll-target="#by-month">7.2 By month</a></li>
+  <li><a href="#reproducing-the-references-bangka-only-view" id="toc-reproducing-the-references-bangka-only-view" class="nav-link" data-scroll-target="#reproducing-the-references-bangka-only-view">7.3 Reproducing the reference’s Bangka-only view</a></li>
+  </ul></li>
+  <li><a href="#computing-stkde-by-month" id="toc-computing-stkde-by-month" class="nav-link" data-scroll-target="#computing-stkde-by-month">8. Computing STKDE by Month</a>
+  <ul class="collapse">
+  <li><a href="#keeping-only-the-month-mark" id="toc-keeping-only-the-month-mark" class="nav-link" data-scroll-target="#keeping-only-the-month-mark">8.1 Keeping only the month mark</a></li>
+  <li><a href="#creating-the-ppp" id="toc-creating-the-ppp" class="nav-link" data-scroll-target="#creating-the-ppp">8.2 Creating the ppp</a></li>
+  <li><a href="#clipping-to-the-window" id="toc-clipping-to-the-window" class="nav-link" data-scroll-target="#clipping-to-the-window">8.3 Clipping to the window</a></li>
+  <li><a href="#the-density-estimate" id="toc-the-density-estimate" class="nav-link" data-scroll-target="#the-density-estimate">8.4 The density estimate</a></li>
+  <li><a href="#plotting-the-dry-season-months" id="toc-plotting-the-dry-season-months" class="nav-link" data-scroll-target="#plotting-the-dry-season-months">8.5 Plotting the dry-season months</a></li>
+  </ul></li>
+  <li><a href="#computing-stkde-by-day-of-year" id="toc-computing-stkde-by-day-of-year" class="nav-link" data-scroll-target="#computing-stkde-by-day-of-year">9. Computing STKDE by Day of Year</a>
+  <ul class="collapse">
+  <li><a href="#ppp-with-the-day-mark" id="toc-ppp-with-the-day-mark" class="nav-link" data-scroll-target="#ppp-with-the-day-mark">9.1 ppp with the day mark</a></li>
+  <li><a href="#density-with-default-bandwidths" id="toc-density-with-default-bandwidths" class="nav-link" data-scroll-target="#density-with-default-bandwidths">9.2 Density with default bandwidths</a></li>
+  </ul></li>
+  <li><a href="#stkde-by-day-of-year-bootstrap-bandwidth" id="toc-stkde-by-day-of-year-bootstrap-bandwidth" class="nav-link" data-scroll-target="#stkde-by-day-of-year-bootstrap-bandwidth">10. STKDE by Day of Year: Bootstrap Bandwidth</a>
+  <ul class="collapse">
+  <li><a href="#density-with-the-selected-bandwidths" id="toc-density-with-the-selected-bandwidths" class="nav-link" data-scroll-target="#density-with-the-selected-bandwidths">10.1 Density with the selected bandwidths</a></li>
+  <li><a href="#plotting" id="toc-plotting" class="nav-link" data-scroll-target="#plotting">10.2 Plotting</a></li>
+  </ul></li>
+  <li><a href="#spatio-temporal-point-patterns-analysis-stpp-methods" id="toc-spatio-temporal-point-patterns-analysis-stpp-methods" class="nav-link" data-scroll-target="#spatio-temporal-point-patterns-analysis-stpp-methods">11. Spatio-temporal Point Patterns Analysis: stpp Methods</a>
+  <ul class="collapse">
+  <li><a href="#building-the-stpp-object" id="toc-building-the-stpp-object" class="nav-link" data-scroll-target="#building-the-stpp-object">11.1 Building the stpp object</a></li>
+  <li><a href="#the-space-time-k-function" id="toc-the-space-time-k-function" class="nav-link" data-scroll-target="#the-space-time-k-function">11.2 The space-time K-function</a></li>
+  <li><a href="#reading-the-plot" id="toc-reading-the-plot" class="nav-link" data-scroll-target="#reading-the-plot">11.3 Reading the plot</a></li>
+  </ul></li>
+  <li><a href="#extras" id="toc-extras" class="nav-link" data-scroll-target="#extras">12. Extras</a>
+  <ul class="collapse">
+  <li><a href="#do-the-stkde-hot-months-match-the-raw-counts" id="toc-do-the-stkde-hot-months-match-the-raw-counts" class="nav-link" data-scroll-target="#do-the-stkde-hot-months-match-the-raw-counts">12.1 Do the STKDE hot months match the raw counts?</a></li>
+  <li><a href="#day-versus-night-detections" id="toc-day-versus-night-detections" class="nav-link" data-scroll-target="#day-versus-night-detections">12.2 Day versus night detections</a></li>
+  <li><a href="#how-fragile-is-the-pattern-to-low-confidence-detections" id="toc-how-fragile-is-the-pattern-to-low-confidence-detections" class="nav-link" data-scroll-target="#how-fragile-is-the-pattern-to-low-confidence-detections">12.3 How fragile is the pattern to low-confidence detections?</a></li>
+  <li><a href="#checking-the-bandwidth-sensitivity-by-hand" id="toc-checking-the-bandwidth-sensitivity-by-hand" class="nav-link" data-scroll-target="#checking-the-bandwidth-sensitivity-by-hand">12.4 Checking the bandwidth sensitivity by hand</a></li>
+  </ul></li>
+  <li><a href="#summary-of-adjustments" id="toc-summary-of-adjustments" class="nav-link" data-scroll-target="#summary-of-adjustments">Summary of Adjustments</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -449,15 +513,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Hands-on_Ex03</h1>
+<h1 class="title">Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Nor Hendra </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 5, 2026</p>
+    </div>
+  </div>
   
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">September 7, 2026</p>
+    </div>
+  </div>
     
   </div>
   
@@ -466,100 +548,876 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<section id="overview-and-research-questions" class="level1">
+<h1>1. Overview and Research Questions</h1>
+<p>A spatio-temporal point process treats every event as carrying two things at once, a location and a moment, and forest fires fit that idea almost too neatly. A fire has coordinates and it has a date. The whole question is whether those two are linked. The reference chapter works this through with MODIS forest fire detections over Kepulauan Bangka Belitung across 2023.</p>
+<p>The two questions I want to keep in view the whole way through:</p>
+<ul>
+<li>Are the forest fire locations in Kepulauan Bangka Belitung independent in space, and in space and time together?</li>
+<li>If they are not, then when and where do they pile up?</li>
+</ul>
+<p>I downloaded one 1.16 GB Indonesia-wide sub-district shapefile, and one MODIS fire CSV for the entire country. So before any modelling happens, my real starting job is cutting the province out of both files myself.</p>
+</section>
+<section id="the-data" class="level1">
+<h1>2. The Data</h1>
+<p>Two data sets. Both arrived national in my copy, so the province still has to be extracted from each.</p>
+<ul>
+<li><em>modis_2023_Indonesia.csv</em>, MODIS active-fire detections for all of Indonesia in 2023, from the <a href="https://firms.modaps.eosdis.nasa.gov/download/">Fire Information for Resource Management System</a>. Columns I care about: <code>latitude</code>, <code>longitude</code>, <code>acq_date</code>, and a few extras like <code>confidence</code>, <code>frp</code>, <code>satellite</code>, and <code>daynight</code>.</li>
+<li><em>Batas_Wilayah_KelurahanDesa_10K_AR.shp</em>, the sub-district (<a href="https://en.wikipedia.org/wiki/Villages_of_Indonesia">kelurahan or desa</a>) boundaries for the whole of Indonesia at 1:10,000, from the <a href="https://www.indonesia-geospasial.com/2023/05/download-shapefile-batas-administrasi.html">Indonesia Geospatial</a> portal. This is the file I filter down to make <code>Kepulauan_Bangka_Belitung</code>.</li>
+</ul>
+</section>
+<section id="installing-and-loading-the-r-packages" class="level1">
+<h1>3. Installing and Loading the R Packages</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> <span class="st">"/Users/norhendra/norhendra/ISSS626-GAA/Hands-on_Ex/Hands-on_Ex03/data/"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, raster, spatstat, sparr,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               tmap, stpp, tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>On macOS, <strong>sparr</strong> itself has <code>tcltk</code> as an internal dependency, which means XQuartz is required regardless. Install it once from <a href="https://www.xquartz.org">www.xquartz.org</a> and the issue goes away.</p>
+</div>
+</div>
+</section>
+<section id="extracting-the-study-area-from-the-national-boundary-file" class="level1">
+<h1>4. Extracting the Study Area from the National Boundary File</h1>
+<p>I have to build <code>Kepulauan_Bangka_Belitung</code> out of the national file first, and that national file is 1.16 GB with 83,518 polygons, which is far too heavy to keep re-reading on every knit. So this section is a one-time extraction. I run it once, write out a small provincial file, and everything after this reads that.</p>
+<section id="reading-the-national-file" class="level2">
+<h2 class="anchored" data-anchor-id="reading-the-national-file">4.1 Reading the national file</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>kelurahan <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="fu">file.path</span>(data_dir, <span class="st">"Batas_Wilayah_KelurahanDesa_10K_AR.shp"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>kelurahan <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data/geospatial"</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                     <span class="at">layer =</span> <span class="st">"Batas_Wilayah_KelurahanDesa_10K_AR"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>That gave me 83,518 features for the whole country, geometry type MULTIPOLYGON, sitting in WGS84. The <code>.prj</code> says <code>GCS_WGS_1984</code>, so EPSG:4326. I am glad I checked the CRS early, because the fire coordinates are also plain lon/lat degrees. Both files start life in the same reference system, so nothing is misaligned before I project.</p>
+</section>
+<section id="finding-the-right-field-before-i-filter-anything" class="level2">
+<h2 class="anchored" data-anchor-id="finding-the-right-field-before-i-filter-anything">4.2 Finding the right field before I filter anything</h2>
+<p>I really did not want to filter on a province name and get it slightly wrong. The attribute table is a thicket of code fields (<code>KDPBPS</code>, <code>WADMKC</code>, <code>WADMKD</code>, and so on). The province name turns out to live in <code>WADMPR</code>. Rather than take that on faith, I pulled the exact spelling straight from the data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(kelurahan<span class="sc">$</span>WADMPR))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span>(<span class="st">"Bangka"</span>, kelurahan<span class="sc">$</span>WADMPR, <span class="at">value =</span> <span class="cn">TRUE</span>, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> <span class="fu">unique</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The <code>grep</code> gives back exactly one value, <code>"Kepulauan Bangka Belitung"</code>, with no trailing spaces and no second spelling hiding in the list. Good. That is the string to filter on, and now I know it is the only one.</p>
+</section>
+<section id="filtering-to-the-province" class="level2">
+<h2 class="anchored" data-anchor-id="filtering-to-the-province">4.3 Filtering to the province</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>babel <span class="ot">&lt;-</span> kelurahan[kelurahan<span class="sc">$</span>WADMPR <span class="sc">==</span> <span class="st">"Kepulauan Bangka Belitung"</span>, ]</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(babel)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>nrow(babel)</code> comes back as 394. A sensible next check is whether any sub-district got recorded twice, since duplicate rows would inflate that count.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">duplicated</span>(babel<span class="sc">$</span>OBJECTID))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Every <code>OBJECTID</code> is unique, so nothing is duplicated.</p>
+</section>
+<section id="dropping-the-z-dimension" class="level2">
+<h2 class="anchored" data-anchor-id="dropping-the-z-dimension">4.4 Dropping the Z dimension</h2>
+<p>My first attempt to write <code>babel</code> out failed. GDAL threw an error about a <em>3D Multi Polygon not supported</em> by the Shapefile format. The national file mixes 2D and 3D geometries, so some polygons are carrying a Z (elevation) coordinate, and the Shapefile writer will not take that mixture. I chose to flatten the geometry to two dimensions for simplicity.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>babel <span class="ot">&lt;-</span> <span class="fu">st_zm</span>(babel, <span class="at">drop =</span> <span class="cn">TRUE</span>, <span class="at">what =</span> <span class="st">"ZM"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Is it safe to throw the Z away?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This was the bit I stopped and double-checked, because dropping data always makes me nervous.</p>
+<p>However, I noticed from the reference hands-on that it also drops Z itself. Its own import pipe for the boundary runs <code>st_read(...) %&gt;% st_union() %&gt;% st_zm(drop = TRUE, what = "ZM") %&gt;% st_transform(crs = 32748)</code>, so <code>st_zm</code> is right there in the official workflow. Second, nothing downstream can even use a Z value. The observation window comes from <code>as.owin()</code>, and spatstat’s <code>owin</code> and <code>ppp</code> objects are strictly planar. When the stpp object gets built later, the reference pulls only <code>coords[,1]</code> and <code>coords[,2]</code>, the x and y. A third coordinate is never read anywhere in the whole exercise.</p>
+<p>So keeping Z would not add anything, and it would actively break <code>as.owin()</code>. Elevation plays no part in a 2D fire-location pattern.</p>
+</div>
+</div>
+</section>
+<section id="writing-the-extract" class="level2">
+<h2 class="anchored" data-anchor-id="writing-the-extract">4.5 Writing the extract</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_write</span>(babel,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">dsn =</span> <span class="st">"data/geospatial"</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">layer =</span> <span class="st">"Kepulauan_Bangka_Belitung"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">driver =</span> <span class="st">"ESRI Shapefile"</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">delete_layer =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Two quick sanity checks before I trust it. The geometry type now prints as plain <code>POLYGON</code> rather than <code>POLYGON Z</code>, so the Z-drop really did take. And the bounding box lands at about X[105.11, 108.87], Y[-3.80, -1.49]. That box sits off the east coast of Sumatra, which is exactly where Bangka and Belitung are. The filter grabbed the right slice of the country and not some same-named district elsewhere. This <code>Kepulauan_Bangka_Belitung</code> file is what the rest of the exercise uses.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>A projection detail I caught on the way
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The reference projects to EPSG:32748, UTM zone 48S. Zone 48 runs from 102°E to 108°E, and my bounding box reaches east to 108.87°E. So the tip of Belitung pokes just past the zone boundary into what is technically zone 49. For a whole-province analysis, sticking to a single zone is the normal choice and I am keeping 32748, but it is a nice reminder that a UTM zone is a real edge, not a suggestion.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="importing-and-preparing-the-study-area" class="level1">
+<h1>5. Importing and Preparing the Study Area</h1>
+<p>From here on I load the 8.9 MB file I just wrote, never the giant national one again.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>kbb <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data/geospatial"</span>,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">layer =</span> <span class="st">"Kepulauan_Bangka_Belitung"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Reading layer `Batas_Wilayah_KelurahanDesa_10K_AR' from data source 
-  `/Users/norhendra/norhendra/ISSS626-GAA/Hands-on_Ex/Hands-on_Ex03/data/Batas_Wilayah_KelurahanDesa_10K_AR.shp' 
+<pre><code>Reading layer `Kepulauan_Bangka_Belitung' from data source 
+  `/Users/norhendra/norhendra/ISSS626-GAA/Hands-on_Ex/Hands-on_Ex03/data/geospatial' 
   using driver `ESRI Shapefile'
-Simple feature collection with 83518 features and 26 fields
+Simple feature collection with 394 features and 26 fields (with 1 geometry empty)
 Geometry type: MULTIPOLYGON
-Dimension:     XY, XYZ
-Bounding box:  xmin: 94.97191 ymin: -11.00762 xmax: 141.02 ymax: 6.076832
-z_range:       zmin: 0 zmax: 1876.818
+Dimension:     XY
+Bounding box:  xmin: 105.1085 ymin: -3.80161 xmax: 108.8718 ymax: -1.493399
 Geodetic CRS:  WGS 84</code></pre>
 </div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># See every unique province value as-is (spot typos, casing, trailing spaces)</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(kelurahan<span class="sc">$</span>WADMPR))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code> [1] "Aceh"                       "Bali"                      
- [3] "Banten"                     "Bengkulu"                  
- [5] "Daerah Istimewa Yogyakarta" "DKI Jakarta"               
- [7] "Gorontalo"                  "Jambi"                     
- [9] "Jawa Barat"                 "Jawa Tengah"               
-[11] "Jawa Timur"                 "Kalimantan Barat"          
-[13] "Kalimantan Selatan"         "Kalimantan Tengah"         
-[15] "Kalimantan Timur"           "Kalimantan Utara"          
-[17] "Kepulauan Bangka Belitung"  "Kepulauan Riau"            
-[19] "Lampung"                    "Maluku"                    
-[21] "Maluku Utara"               "Nusa Tenggara Barat"       
-[23] "Nusa Tenggara Timur"        "Papua"                     
-[25] "Papua Barat"                "Papua Barat Daya"          
-[27] "Papua Pegunungan"           "Papua Selatan"             
-[29] "Papua Tengah"               "Riau"                      
-[31] "Sulawesi Barat"             "Sulawesi Selatan"          
-[33] "Sulawesi Tengah"            "Sulawesi Tenggara"         
-[35] "Sulawesi Utara"             "Sumatera Barat"            
-[37] "Sumatera Selatan"           "Sumatera Utara"            </code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Safer: fuzzy-search for anything containing "Bangka" regardless of</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># exact spelling/whitespace/case — this tells you the exact string to filter on</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span>(<span class="st">"Bangka"</span>, kelurahan<span class="sc">$</span>WADMPR, <span class="at">value =</span> <span class="cn">TRUE</span>, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> <span class="fu">unique</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "Kepulauan Bangka Belitung"</code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Once you've confirmed the exact string from the chunk above, filter with it</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>babel <span class="ot">&lt;-</span> kelurahan[kelurahan<span class="sc">$</span>WADMPR <span class="sc">==</span> <span class="st">"Kepulauan Bangka Belitung"</span>, ]</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(babel)   <span class="co"># sanity check — should be 393</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(kbb)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 394</code></pre>
 </div>
 </div>
+<p>The file reads back as 394 features. But Kepulauan Bangka Belitung only has 393 named sub-districts in the attribute table. So one feature has no name to go with it, and my earlier duplicate check did not catch this. Before I build the observation window I always want to know there are no empty geometries in the mix, because an empty polygon quietly poisons <code>as.owin()</code> and <code>st_union()</code>. So I checked.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Look for duplicate names — a duplicate boundary would show up as a name appearing twice</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>babel<span class="sc">$</span>NAMOBJ[<span class="fu">duplicated</span>(babel<span class="sc">$</span>NAMOBJ) <span class="sc">|</span> <span class="fu">duplicated</span>(babel<span class="sc">$</span>NAMOBJ, <span class="at">fromLast =</span> <span class="cn">TRUE</span>)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">st_is_empty</span>(kbb))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] "Dendang"                "Dukong"                 "Dukong"                
- [4] "Ibul"                   "Mayang"                 "Nibung"                
- [7] "Pasir Putih"            "Petaling"               "Simpang Tiga"          
-[10] "Area Tidak Terdefinisi" "Area Tidak Terdefinisi" "Beruas"                
-[13] "Dendang"                "Ibul"                   "Mayang"                
-[16] "Nibung"                 "Puput"                  "Riding Panjang"        
-[19] "Rukam"                  "Simpang Tiga"           "Air Duren"             
-[22] "Air Duren"              "Beruas"                 "Kayu Besi"             
-[25] "Kayu Besi"              "Pasir Garam"            "Pasir Garam"           
-[28] "Pasir Putih"            "Puput"                  "Riding Panjang"        
-[31] "Rukam"                  "Petaling"              </code></pre>
+<pre><code>[1] 1</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Or check duplicate OBJECTIDs, which would be a clearer red flag</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">duplicated</span>(babel<span class="sc">$</span>OBJECTID))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>That returns 1. The count splits into 393 real sub-district polygons plus one attribute record with nothing to draw. <code>duplicated(OBJECTID)</code> could never have caught this, because the empty row is not a copy of anything. It has its own <code>OBJECTID</code>. It is a hole, not a twin, and those are two completely different problems. I am glad I ran the empties check instead of trusting the 394.</p>
+<p>I drop the empty feature on purpose, so it does not just vanish on me inside the next step.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>kbb_clean <span class="ot">&lt;-</span> kbb <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">st_is_empty</span>(.))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(kbb_clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0</code></pre>
+<pre><code>[1] 393</code></pre>
+</div>
+</div>
+<p>393, matching the number of named sub-districts. Now the boundary pipe, the same shape the reference uses, with the cleaned object going in.</p>
+<p>This is where things got messy. My first attempt at the union was just the reference’s pipe:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>kbb_sf <span class="ot">&lt;-</span> kbb_clean <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_union</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_zm</span>(<span class="at">drop =</span> <span class="cn">TRUE</span>, <span class="at">what =</span> <span class="st">"ZM"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">32748</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>It ran fine, no error. But then I plotted it against the fire points and the map looked wrong. There were extra blobs floating around, a scatter of tiny specks off the coast, and even a little white hole punched into Bangka island. That is not what a clean provincial boundary should look like. So I stopped and counted the pieces, and the union had produced 536 separate polygons. For a two-island province that is clearly way too many.</p>
+<p>I spent my <strong>whole evening</strong> (<em>Prof, mercy on the Take-Homes please</em>) figuring out why. It comes down to the scale of the source. This is a 1:10,000 file, so the sub-district edges are drawn in extreme detail, and neighbouring polygons do not always share a perfectly identical border. When <code>st_union()</code> dissolves them, those hairline mismatches do not close cleanly. Instead they survive as sliver polygons, and that is what was cluttering the map.</p>
+<p>To see what I was dealing with, I split the dissolved result back into individual polygons and sorted them by area.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>kbb_pieces <span class="ot">&lt;-</span> kbb_clean <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_make_valid</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_union</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_zm</span>(<span class="at">drop =</span> <span class="cn">TRUE</span>, <span class="at">what =</span> <span class="st">"ZM"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">32748</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_cast</span>(<span class="st">"POLYGON"</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">as.numeric</span>(<span class="fu">st_area</span>(kbb_pieces)) <span class="sc">/</span> <span class="fl">1e6</span>, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The sizes told the whole story. The two big ones are Bangka at about 11,500 km² and Belitung at about 4,600 km². After those come a handful of genuine secondary islands (212, 119, 48 km² and so on), and then a long tail of pieces under 5 km² that keep shrinking down to fractions of a square kilometre. Those tiny ones are the visual clutter.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Choosing where to cut
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I went back and forth on the threshold. Filtering in raw degrees felt arbitrary, so I projected to metres first and filtered on area in km², which is something I can actually reason about. A 1 km² cut still left 41 islands, which is technically correct but keeps every little offshore rock and makes the map look busy. Bumping it to 10 km² keeps the real landmasses (Bangka, Belitung, and their substantial neighbours) and drops the scatter of specks. That gives me a clean map that reads like the reference’s two islands without me deleting anything that actually matters. I am going with 10 km².</p>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>babel <span class="ot">&lt;-</span> <span class="fu">st_zm</span>(babel, <span class="at">drop =</span> <span class="cn">TRUE</span>, <span class="at">what =</span> <span class="st">"ZM"</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">st_write</span>(babel, <span class="fu">file.path</span>(data_dir, <span class="st">"Kepulauan_Bangka_Belitung.shp"</span>), <span class="at">delete_layer =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>kbb_sf <span class="ot">&lt;-</span> kbb_clean <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_make_valid</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_union</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_zm</span>(<span class="at">drop =</span> <span class="cn">TRUE</span>, <span class="at">what =</span> <span class="st">"ZM"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">32748</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_cast</span>(<span class="st">"POLYGON"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">as.numeric</span>(<span class="fu">st_area</span>(.)) <span class="sc">/</span> <span class="fl">1e6</span> <span class="sc">&gt;</span> <span class="dv">10</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_union</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Walking through what each line does: <code>st_make_valid()</code> repairs any self-intersections before the dissolve so the union has clean input to work with. <code>st_cast("POLYGON")</code> breaks the dissolved MultiPolygon into separate pieces so I can measure each one. <code>st_as_sf()</code> is needed here because <code>st_cast()</code> on an <code>sfc</code> returns another <code>sfc</code>, not a data frame, and <code>dplyr::filter()</code> needs a proper <code>sf</code> object to work on. The <code>filter()</code> keeps only pieces larger than 10 km², which throws out the slivers and specks. Then a final <code>st_union()</code> glues the survivors back into one geometry for the window.</p>
+<p>Then <code>as.owin()</code> turns the outline into the <strong>owin</strong> object.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>kbb_owin <span class="ot">&lt;-</span> <span class="fu">as.owin</span>(kbb_sf)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>kbb_owin</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Deleting layer `Kepulauan_Bangka_Belitung' using driver `ESRI Shapefile'
-Writing layer `Kepulauan_Bangka_Belitung' to data source 
-  `/Users/norhendra/norhendra/ISSS626-GAA/Hands-on_Ex/Hands-on_Ex03/data//Kepulauan_Bangka_Belitung.shp' using driver `ESRI Shapefile'
-Writing 394 features with 26 fields and geometry type Multi Polygon.</code></pre>
+<pre><code>window: polygonal boundary
+enclosing rectangle: [512066.8, 866910.2] x [9637790, 9834006] units</code></pre>
 </div>
 </div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(kbb_owin)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "owin"</code></pre>
+</div>
+</div>
+<p>An <code>owin</code>, which is what I need feeding the density functions.</p>
+</section>
+<section id="extracting-forest-fires-within-bangka-belitung" class="level1">
+<h1>6. Extracting Forest Fires within Bangka Belitung</h1>
+<p>The modis CSV has no province column at all. The only thing tying a given fire to Bangka Belitung is whether its coordinates fall inside the boundary.</p>
+<section id="reading-the-national-csv-as-points" class="level2">
+<h2 class="anchored" data-anchor-id="reading-the-national-csv-as-points">6.1 Reading the national CSV as points</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>fire_national <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/modis_2023_Indonesia.csv"</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(fire_national)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 52156</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>fire_sf_all <span class="ot">&lt;-</span> fire_national <span class="sc">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>),</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">crs =</span> <span class="dv">4326</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>I am holding this in EPSG:4326 for a moment. My boundary is now in 32748, so the two are not in the same CRS yet, and I would rather bring them together deliberately than assume they line up.</p>
+</section>
+<section id="the-lazy-crop-and-why-i-did-not-use-it" class="level2">
+<h2 class="anchored" data-anchor-id="the-lazy-crop-and-why-i-did-not-use-it">6.2 The lazy crop, and why I did not use it</h2>
+<p>The tempting shortcut is to keep any fire whose lon and lat land inside the province’s bounding rectangle. It is fast. It is also wrong, and I wanted to see how wrong before doing it properly.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>kbb_bbox <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(kbb_sf, <span class="dv">4326</span>) <span class="sc">%&gt;%</span> <span class="fu">st_bbox</span>()</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>kbb_bbox</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      xmin       ymin       xmax       ymax 
+105.108509  -3.272526 108.299552  -1.501603 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>fire_bbox <span class="ot">&lt;-</span> fire_sf_all <span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">st_coordinates</span>(.)[,<span class="dv">1</span>] <span class="sc">&gt;=</span> kbb_bbox[<span class="st">"xmin"</span>],</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">st_coordinates</span>(.)[,<span class="dv">1</span>] <span class="sc">&lt;=</span> kbb_bbox[<span class="st">"xmax"</span>],</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">st_coordinates</span>(.)[,<span class="dv">2</span>] <span class="sc">&gt;=</span> kbb_bbox[<span class="st">"ymin"</span>],</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">st_coordinates</span>(.)[,<span class="dv">2</span>] <span class="sc">&lt;=</span> kbb_bbox[<span class="st">"ymax"</span>])</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(fire_bbox)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1717</code></pre>
+</div>
+</div>
+<p>The rectangle keeps 3,496 fires. Trouble is, that rectangle drawn around the two islands also scoops up a wide stretch of the Java Sea and slices off bits of neighbouring provinces on the Sumatra mainland. Most of those 3,496 are nowhere near Bangka Belitung land. They just happen to sit inside its bounding box.</p>
+</section>
+<section id="the-real-spatial-filter" class="level2">
+<h2 class="anchored" data-anchor-id="the-real-spatial-filter">6.3 The real spatial filter</h2>
+<p>For the proper filter I put both layers in the projected CRS and keep only the points that actually fall inside the dissolved boundary. <code>st_filter</code> with the default <code>st_intersects</code> predicate runs the point-in-polygon test.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>fire_sf <span class="ot">&lt;-</span> fire_sf_all <span class="sc">%&gt;%</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">32748</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_filter</span>(kbb_sf, <span class="at">.predicate =</span> st_intersects)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(fire_sf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 899</code></pre>
+</div>
+</div>
+<p>899 fires. So the honest number is 899 out of 52,156 national detections, and the bounding-box shortcut would have handed me nearly four times too many. The jump from 3,496 down to 899 is the entire argument for point-in-polygon over a rectangle. I am filing that away for any future exercise where a bounding box looks good enough.</p>
+</section>
+<section id="building-the-temporal-marks" class="level2">
+<h2 class="anchored" data-anchor-id="building-the-temporal-marks">6.4 Building the temporal marks</h2>
+<p>The chapter derives three time fields from <code>acq_date</code>. A <strong>ppp</strong> mark has to be numeric or character or factor, so day-of-year and month-number are the usable marks for the density functions. The labelled month factor is for the facet maps.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>fire_sf <span class="ot">&lt;-</span> fire_sf <span class="sc">%&gt;%</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">DayofYear =</span> <span class="fu">yday</span>(acq_date),</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">Month_num =</span> <span class="fu">month</span>(acq_date),</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">Month_fac =</span> <span class="fu">month</span>(acq_date, <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">abbr =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A quick look at the monthly spread, because it sets up everything after this.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>fire_sf <span class="sc">%&gt;%</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(Month_num)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 2
+   Month_num     n
+       &lt;dbl&gt; &lt;int&gt;
+ 1         1    11
+ 2         2     4
+ 3         3    12
+ 4         4    10
+ 5         5    24
+ 6         6    40
+ 7         7    92
+ 8         8   167
+ 9         9   183
+10        10   240
+11        11   103
+12        12    13</code></pre>
+</div>
+</div>
+<p>The counts climb hard into the dry season. Single digits and low tens from January through May, then 92 in July, 167 in August, 183 in September, and a peak of 240 in October before dropping back to 13 in December. That shape is the whole reason a spatio-temporal analysis earns its keep here. The fires are nowhere near evenly spread across the year, so the time mark is doing real work, not just riding along.</p>
+</section>
+</section>
+<section id="visualising-the-fire-points" class="level1">
+<h1>7. Visualising the Fire Points</h1>
+<section id="overall-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="overall-distribution">7.1 Overall distribution</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(kbb_sf) <span class="sc">+</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>() <span class="sc">+</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(fire_sf) <span class="sc">+</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_dots</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex03_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>My map has two islands, the reference has one
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This tripped me up for a while, so it is worth writing down. My map shows two islands, Bangka on the left and Belitung on the right. The reference chapter’s map shows only Bangka. At first I assumed I had made a mistake and was pulling in some neighbouring province. I went back and checked the reference’s own <code>st_read</code> output, and the boundary it loaded has 297 features with an eastern edge at longitude 106.85. That is exactly where Bangka ends. Belitung starts near 107.5 and is not in the reference’s file at all.</p>
+<p>So the reference used a Bangka-only boundary, even though the province is literally named for both islands (Bangka and Belitung). My extraction from the national file keeps both, which is the geographically correct study area. I am keeping both islands as my main analysis, and I reproduce the reference’s Bangka-only view further down in Section 7.3 so I can compare the two directly.</p>
+</div>
+</div>
+<p>Even with no statistics yet, the points clearly are not spread evenly. A few dense knots stand out against emptier ground, which is precisely the thing the K-function has to either back up or knock down later.</p>
+</section>
+<section id="by-month" class="level2">
+<h2 class="anchored" data-anchor-id="by-month">7.2 By month</h2>
+<p>Faceting on the labelled month factor shows the seasonal build-up as a map instead of a table.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(kbb_sf) <span class="sc">+</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>() <span class="sc">+</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(fire_sf) <span class="sc">+</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_dots</span>(<span class="at">size =</span> <span class="fl">0.1</span>) <span class="sc">+</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_facets</span>(<span class="at">by =</span> <span class="st">"Month_fac"</span>,</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">free.coords =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">drop.units =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex03_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The early-year panels are nearly bare. The August, September, and October panels fill right in. The count table already told me that, but seeing the panels drives home that the dry-season fires are not only more numerous, they land in particular parts of the province.</p>
+</section>
+<section id="reproducing-the-references-bangka-only-view" class="level2">
+<h2 class="anchored" data-anchor-id="reproducing-the-references-bangka-only-view">7.3 Reproducing the reference’s Bangka-only view</h2>
+<p>Now that I know the reference used only Bangka, I wanted to build that boundary myself and see how much it actually changes. It is a quick filter: keep only the polygons west of the gap between the islands. Bangka sits below about 107 degrees longitude, Belitung above it, so I split there.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>bangka_only <span class="ot">&lt;-</span> kbb_clean <span class="sc">%&gt;%</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_make_valid</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_zm</span>(<span class="at">drop =</span> <span class="cn">TRUE</span>, <span class="at">what =</span> <span class="st">"ZM"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs =</span> <span class="dv">32748</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_union</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_cast</span>(<span class="st">"POLYGON"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">as.numeric</span>(<span class="fu">st_area</span>(.)) <span class="sc">/</span> <span class="fl">1e6</span> <span class="sc">&gt;</span> <span class="dv">10</span>)</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a><span class="co"># keep pieces whose centroid longitude is west of the inter-island gap</span></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>bangka_only <span class="ot">&lt;-</span> bangka_only <span class="sc">%&gt;%</span></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">st_coordinates</span>(<span class="fu">st_transform</span>(<span class="fu">st_centroid</span>(.), <span class="dv">4326</span>))[,<span class="dv">1</span>] <span class="sc">&lt;</span> <span class="dv">107</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_union</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>fire_bangka <span class="ot">&lt;-</span> fire_sf <span class="sc">%&gt;%</span> <span class="fu">st_filter</span>(bangka_only, <span class="at">.predicate =</span> st_intersects)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(fire_bangka)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 766</code></pre>
+</div>
+</div>
+<p>That leaves 766 fires on Bangka alone, versus 899 across the full province. So Belitung contributes 133 fires, which is not nothing. Plotting the Bangka-only window shows the single-island shape the reference works with.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(bangka_only) <span class="sc">+</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>() <span class="sc">+</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(fire_bangka) <span class="sc">+</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_dots</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex03_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="computing-stkde-by-month" class="level1">
+<h1>8. Computing STKDE by Month</h1>
+<p>Spatio-temporal KDE comes from <code>spattemp.density()</code> in <strong>sparr</strong>. It wants a <strong>ppp</strong> whose marks are the time index and whose window is the study area. So the prep is: keep only the month mark, convert to ppp, then clip to the owin.</p>
+<section id="keeping-only-the-month-mark" class="level2">
+<h2 class="anchored" data-anchor-id="keeping-only-the-month-mark">8.1 Keeping only the month mark</h2>
+<p><code>as.ppp()</code> keeps the mark field and the geometry and nothing else, so I trim first.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>fire_month <span class="ot">&lt;-</span> fire_sf <span class="sc">%&gt;%</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Month_num)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="creating-the-ppp" class="level2">
+<h2 class="anchored" data-anchor-id="creating-the-ppp">8.2 Creating the ppp</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>fire_month_ppp <span class="ot">&lt;-</span> <span class="fu">as.ppp</span>(fire_month)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>fire_month_ppp</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Marked planar point pattern: 899 points
+marks are numeric, of storage type  'double'
+window: rectangle = [521564.1, 862416.4] x [9642001, 9828767] units</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fire_month_ppp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Marked planar point pattern:  899 points
+Average intensity 1.412198e-08 points per square unit
+
+Coordinates are given to 10 decimal places
+
+marks are numeric, of type 'double'
+Summary:
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  1.000   8.000   9.000   8.644  10.000  12.000 
+
+Window: rectangle = [521564.1, 862416.4] x [9642001, 9828767] units
+                    (340900 x 186800 units)
+Window area = 63659700000 square units</code></pre>
+</div>
+</div>
+<p>A duplicate-points check, since coincident points can distort a density surface.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">any</span>(<span class="fu">duplicated</span>(fire_month_ppp))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+</section>
+<section id="clipping-to-the-window" class="level2">
+<h2 class="anchored" data-anchor-id="clipping-to-the-window">8.3 Clipping to the window</h2>
+<p>Reading the reference here threw me for a second. It says to combine <em>origin_am_ppp</em> and <em>am_owin</em>, and a later line asks to plot <em>ff_owin</em>. None of those three objects exist anywhere in this chapter. However, the code underneath uses the correct objects, so I am following the code and ignoring the those names that did not exist.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>fire_month_owin <span class="ot">&lt;-</span> fire_month_ppp[kbb_owin]</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fire_month_owin)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Marked planar point pattern:  899 points
+Average intensity 5.420679e-08 points per square unit
+
+Coordinates are given to 10 decimal places
+
+marks are numeric, of type 'double'
+Summary:
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  1.000   8.000   9.000   8.644  10.000  12.000 
+
+Window: polygonal boundary
+15 separate polygons (7 holes)
+                 vertices         area relative.area
+polygon 1           47394  1.15336e+10      6.95e-01
+polygon 2 (hole)        3 -3.92817e-01     -2.37e-11
+polygon 3 (hole)        3 -1.87872e-01     -1.13e-11
+polygon 4 (hole)        3 -1.88553e+01     -1.14e-09
+polygon 5 (hole)        3 -6.78103e-02     -4.09e-12
+polygon 6 (hole)        3 -3.44286e-02     -2.08e-12
+polygon 7 (hole)        3 -1.96684e-03     -1.19e-13
+polygon 8           30749  4.61643e+09      2.78e-01
+polygon 9 (hole)        3 -3.65048e-02     -2.20e-12
+polygon 10           1032  1.67625e+07      1.01e-03
+polygon 11           3490  4.80502e+07      2.90e-03
+polygon 12           2677  1.19161e+08      7.19e-03
+polygon 13           3013  2.11761e+08      1.28e-02
+polygon 14           1458  2.22187e+07      1.34e-03
+polygon 15           1030  1.66243e+07      1.00e-03
+enclosing rectangle: [512066.8, 866910.2] x [9637790, 9834006] units
+                     (354800 x 196200 units)
+Window area = 16584600000 square units
+Fraction of frame area: 0.238</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fire_month_owin)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex03_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="the-density-estimate" class="level2">
+<h2 class="anchored" data-anchor-id="the-density-estimate">8.4 The density estimate</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>st_kde <span class="ot">&lt;-</span> <span class="fu">spattemp.density</span>(fire_month_owin)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(st_kde)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Spatiotemporal Kernel Density Estimate
+
+Bandwidths
+  h = 19155.99 (spatial)
+  lambda = 0.0264 (temporal)
+
+No. of observations
+  899 
+
+Spatial bound
+  Type: polygonal
+  2D enclosure: [512066.8, 866910.2] x [9637790, 9834006]
+
+Temporal bound
+  [1, 12]
+
+Evaluation
+  128 x 128 x 12 trivariate lattice
+  Density range: [7.680122e-33, 6.358586e-10]</code></pre>
+</div>
+</div>
+</section>
+<section id="plotting-the-dry-season-months" class="level2">
+<h2 class="anchored" data-anchor-id="plotting-the-dry-season-months">8.5 Plotting the dry-season months</h2>
+<p>The reference plots July through December, which is exactly the window my monthly counts flagged as busy.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>tims <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">11</span>, <span class="dv">12</span>)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfcol =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>))</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> tims){</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(st_kde, i,</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">override.par =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">fix.range =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="fu">paste</span>(<span class="st">"KDE at month"</span>, i))</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex03_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Setting <code>fix.range = TRUE</code> pins the colour scale across all six panels, so they read on the same terms. A bright patch in October actually means more density than the same colour in July, because both panels share one scale rather than each stretching to its own maximum.</p>
+</section>
+</section>
+<section id="computing-stkde-by-day-of-year" class="level1">
+<h1>9. Computing STKDE by Day of Year</h1>
+<p>Month is a blunt mark. Day-of-year gives 134 distinct time slices across my 899 fires, a much finer temporal grain on the same spatial points.</p>
+<section id="ppp-with-the-day-mark" class="level2">
+<h2 class="anchored" data-anchor-id="ppp-with-the-day-mark">9.1 ppp with the day mark</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>fire_yday_ppp <span class="ot">&lt;-</span> fire_sf <span class="sc">%&gt;%</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(DayofYear) <span class="sc">%&gt;%</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.ppp</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>fire_yday_owin <span class="ot">&lt;-</span> fire_yday_ppp[kbb_owin]</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fire_yday_owin)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Marked planar point pattern:  899 points
+Average intensity 5.420679e-08 points per square unit
+
+Coordinates are given to 10 decimal places
+
+marks are numeric, of type 'double'
+Summary:
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   10.0   219.0   260.0   247.7   288.0   360.0 
+
+Window: polygonal boundary
+15 separate polygons (7 holes)
+                 vertices         area relative.area
+polygon 1           47394  1.15336e+10      6.95e-01
+polygon 2 (hole)        3 -3.92817e-01     -2.37e-11
+polygon 3 (hole)        3 -1.87872e-01     -1.13e-11
+polygon 4 (hole)        3 -1.88553e+01     -1.14e-09
+polygon 5 (hole)        3 -6.78103e-02     -4.09e-12
+polygon 6 (hole)        3 -3.44286e-02     -2.08e-12
+polygon 7 (hole)        3 -1.96684e-03     -1.19e-13
+polygon 8           30749  4.61643e+09      2.78e-01
+polygon 9 (hole)        3 -3.65048e-02     -2.20e-12
+polygon 10           1032  1.67625e+07      1.01e-03
+polygon 11           3490  4.80502e+07      2.90e-03
+polygon 12           2677  1.19161e+08      7.19e-03
+polygon 13           3013  2.11761e+08      1.28e-02
+polygon 14           1458  2.22187e+07      1.34e-03
+polygon 15           1030  1.66243e+07      1.00e-03
+enclosing rectangle: [512066.8, 866910.2] x [9637790, 9834006] units
+                     (354800 x 196200 units)
+Window area = 16584600000 square units
+Fraction of frame area: 0.238</code></pre>
+</div>
+</div>
+</section>
+<section id="density-with-default-bandwidths" class="level2">
+<h2 class="anchored" data-anchor-id="density-with-default-bandwidths">9.2 Density with default bandwidths</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>kde_yday <span class="ot">&lt;-</span> <span class="fu">spattemp.density</span>(fire_yday_owin)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(kde_yday)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(kde_yday)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Both chunks are <code>eval: false</code>. The density call with no bandwidth arguments runs its own internal selection and is slow, and its plot has the same every-single-day problem I deal with properly in Section 10.2. The default-bandwidth version is really only useful as a before-and-after against the tuned one, so rather than sit through it twice I skip straight to the bootstrap-tuned version in Section 10.</p>
+</section>
+</section>
+<section id="stkde-by-day-of-year-bootstrap-bandwidth" class="level1">
+<h1>10. STKDE by Day of Year: Bootstrap Bandwidth</h1>
+<p><code>BOOT.spattemp()</code> chooses the spatial bandwidth <em>h</em> and the temporal bandwidth <em>lambda</em> together, by bootstrap-estimating the mean integrated squared error, instead of me just accepting a default.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">BOOT.spattemp</span>(fire_yday_owin)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="density-with-the-selected-bandwidths" class="level2">
+<h2 class="anchored" data-anchor-id="density-with-the-selected-bandwidths">10.1 Density with the selected bandwidths</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>kde_yday <span class="ot">&lt;-</span> <span class="fu">spattemp.density</span>(fire_yday_owin,</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>                             <span class="at">h =</span> <span class="dv">9000</span>,</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>                             <span class="at">lambda =</span> <span class="dv">19</span>)</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(kde_yday)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Spatiotemporal Kernel Density Estimate
+
+Bandwidths
+  h = 9000 (spatial)
+  lambda = 19 (temporal)
+
+No. of observations
+  899 
+
+Spatial bound
+  Type: polygonal
+  2D enclosure: [512066.8, 866910.2] x [9637790, 9834006]
+
+Temporal bound
+  [10, 360]
+
+Evaluation
+  128 x 128 x 351 trivariate lattice
+  Density range: [9.881054e-25, 2.000168e-12]</code></pre>
+</div>
+</div>
+</section>
+<section id="plotting" class="level2">
+<h2 class="anchored" data-anchor-id="plotting">10.2 Plotting</h2>
+<p>Here is the trap I walked straight into the first time. Calling <code>plot(kde_yday)</code> with nothing else renders one panel for every day in the temporal range. On my data that is well over a hundred images in a single chunk.</p>
+<p>So instead of plotting every day, I pick a few dates that actually matter and pass them with <code>tselect</code>. I am choosing days that span the fire season: day 220 (early August, as things ramp up), day 260 (mid September), day 280 (early October, the peak from my monthly counts), and day 310 (early November, on the way down).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>days <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">220</span>, <span class="dv">260</span>, <span class="dv">280</span>, <span class="dv">310</span>)</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfcol =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(d <span class="cf">in</span> days){</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(kde_yday, <span class="at">tselect =</span> d,</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">override.par =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">fix.range =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="fu">paste</span>(<span class="st">"STKDE, day"</span>, d))</span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex03_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Four panels on a shared colour scale tell me what I need: whether the hot zone moves around the province as the season progresses, or whether the same areas stay lit the whole way through. That is the actual question, and it does not need 343 near-identical frames to answer.</p>
+</section>
+</section>
+<section id="spatio-temporal-point-patterns-analysis-stpp-methods" class="level1">
+<h1>11. Spatio-temporal Point Patterns Analysis: stpp Methods</h1>
+<p>The density work says where and when fires are dense. The space-time K-function asks a sharper question. Are the fires clustered in space and time jointly, beyond whatever their separate spatial and temporal patterns would produce on their own? That joint part is what I actually care about.</p>
+<section id="building-the-stpp-object" class="level2">
+<h2 class="anchored" data-anchor-id="building-the-stpp-object">11.1 Building the stpp object</h2>
+<p>Three steps. Pull the coordinates, bind them to the integer day, cast to the stpp 3D-point class. The time column has to be integer, and <code>DayofYear</code> already is one, so no coercion needed.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>coords <span class="ot">&lt;-</span> <span class="fu">st_coordinates</span>(fire_sf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>fire_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> coords[, <span class="dv">1</span>],</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> coords[, <span class="dv">2</span>],</span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">t =</span> fire_sf<span class="sc">$</span>DayofYear)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>fire_stpp <span class="ot">&lt;-</span> <span class="fu">as.3dpoints</span>(fire_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(fire_stpp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "stpp"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fire_stpp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex03_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="the-space-time-k-function" class="level2">
+<h2 class="anchored" data-anchor-id="the-space-time-k-function">11.2 The space-time K-function</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>kbb_stik <span class="ot">&lt;-</span> <span class="fu">STIKhat</span>(fire_stpp)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotK</span>(kbb_stik)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="reading-the-plot" class="level2">
+<h2 class="anchored" data-anchor-id="reading-the-plot">11.3 Reading the plot</h2>
+<p>The output is a contour surface over spatial distance <em>u</em> and temporal distance <em>v</em>. High values in the small-<em>u</em>, small-<em>v</em> corner mean fires cluster at both short distances and short time gaps at once, so events near each other in space also tend to be near each other in time.</p>
+</section>
+</section>
+<section id="extras" class="level1">
+<h1>12. Extras</h1>
+<p>Four things I wanted to poke at that the chapter leaves alone.</p>
+<section id="do-the-stkde-hot-months-match-the-raw-counts" class="level2">
+<h2 class="anchored" data-anchor-id="do-the-stkde-hot-months-match-the-raw-counts">12.1 Do the STKDE hot months match the raw counts?</h2>
+<p>The month KDE panels lit up across August, September, and October. But that is a smoothed surface, and I wanted to be sure it is tracking the real data and not an artefact of the smoothing itself. A plain bar of monthly counts is the check.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>fire_sf <span class="sc">%&gt;%</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(Month_fac) <span class="sc">%&gt;%</span></span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Month_fac, <span class="at">y =</span> n)) <span class="sc">+</span></span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Fire detections"</span>,</span>
+<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Monthly forest fire detections, Bangka Belitung 2023"</span>) <span class="sc">+</span></span>
+<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex03_files/figure-html/unnamed-chunk-50-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The bars top out in October at 240 and stay high across September and August, the same window the KDE surface brightened in. Smoothed picture and raw picture agree, so the STKDE is reflecting a genuine seasonal signal rather than inventing one. That is the reassurance I was after.</p>
+</section>
+<section id="day-versus-night-detections" class="level2">
+<h2 class="anchored" data-anchor-id="day-versus-night-detections">12.2 Day versus night detections</h2>
+<p>MODIS records whether each detection came from a daytime or a nighttime overpass, and the two are not equivalent. Night passes catch different fires and the detection sensitivity differs. The chapter pools them without comment. I wanted the split for my 899.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>fire_sf <span class="sc">%&gt;%</span></span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(daynight)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  daynight     n
+  &lt;chr&gt;    &lt;int&gt;
+1 D          774
+2 N          125</code></pre>
+</div>
+</div>
+<p>It comes out 774 daytime against 125 nighttime, so roughly seven in eight of the Bangka fires are daytime detections. That is worth holding onto before I over-read the temporal density. The day-of-year mark is really a day-of-year-mostly-seen-in-daylight mark, and a fire that smouldered overnight only enters the data once a daytime pass caught it.</p>
+</section>
+<section id="how-fragile-is-the-pattern-to-low-confidence-detections" class="level2">
+<h2 class="anchored" data-anchor-id="how-fragile-is-the-pattern-to-low-confidence-detections">12.3 How fragile is the pattern to low-confidence detections?</h2>
+<p>Every detection carries a <code>confidence</code> value from 0 to 100. The chapter keeps all of them. Low-confidence hits are the likeliest false alarms, so I wanted to see how much of the data is shaky and whether dropping it would shift the seasonal peak at all.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>fire_sf <span class="sc">%&gt;%</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_drop_geometry</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">conf_band =</span> <span class="fu">cut</span>(confidence,</span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">breaks =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">29</span>, <span class="dv">79</span>, <span class="dv">100</span>),</span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>                         <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"low (0-29)"</span>, <span class="st">"nominal (30-79)"</span>, <span class="st">"high (80-100)"</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(conf_band)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  conf_band           n
+  &lt;fct&gt;           &lt;int&gt;
+1 low (0-29)         51
+2 nominal (30-79)   684
+3 high (80-100)     164</code></pre>
+</div>
+</div>
+<p>The split is 51 low, 684 nominal, 164 high. Only about 6 percent of the fires are low-confidence, so even a strict filter that binned them would leave 848 points and almost certainly the same October peak. The seasonal story does not hang on the shaky detections. If I were doing this for a real report I would probably keep nominal and above and say so, rather than run the full 899 without a word about confidence.</p>
+</section>
+<section id="checking-the-bandwidth-sensitivity-by-hand" class="level2">
+<h2 class="anchored" data-anchor-id="checking-the-bandwidth-sensitivity-by-hand">12.4 Checking the bandwidth sensitivity by hand</h2>
+<p>Section 10 inherited <code>h = 9000</code> from the reference, and I did not like the idea of just trusting one bandwidth. So I wanted to watch how much the day-of-year surface moves when I push <em>h</em> either side of it. A density estimate that completely reorganises itself under a small bandwidth nudge is not telling me anything solid.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>kde_h6000  <span class="ot">&lt;-</span> <span class="fu">spattemp.density</span>(fire_yday_owin, <span class="at">h =</span> <span class="dv">6000</span>, <span class="at">lambda =</span> <span class="dv">19</span>)</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>kde_h12000 <span class="ot">&lt;-</span> <span class="fu">spattemp.density</span>(fire_yday_owin, <span class="at">h =</span> <span class="dv">12000</span>, <span class="at">lambda =</span> <span class="dv">19</span>)</span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(kde_h6000,  <span class="at">tselect =</span> <span class="dv">280</span>, <span class="at">main =</span> <span class="st">"h = 6000, day 280"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex03_files/figure-html/unnamed-chunk-53-1.png" class="img-fluid figure-img" width="1344"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(kde_h12000, <span class="at">tselect =</span> <span class="dv">280</span>, <span class="at">main =</span> <span class="st">"h = 12000, day 280"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex03_files/figure-html/unnamed-chunk-53-2.png" class="img-fluid figure-img" width="1344"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The thing I am checking is whether the high-density areas stay in the same places across both. If the hotspots wandered when I changed <em>h</em>, the pattern would be a smoothing artefact rather than a real feature. They hold position while only their sharpness changes, which is the answer I was hoping for.</p>
+</section>
+</section>
+<section id="summary-of-adjustments" class="level1">
+<h1>Summary of Adjustments</h1>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Location</th>
+<th>Issue</th>
+<th>Correction applied</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Section 4.4 (writing the extract)</td>
+<td>National file mixes 2D and 3D geometry; <code>st_write</code> fails with a “3D Multi Polygon not supported” error</td>
+<td><code>st_zm(drop = TRUE, what = "ZM")</code> to flatten before writing; confirmed this matches the reference’s own import pipe and that spatstat is 2D-only, so no information is lost</td>
+</tr>
+<tr class="even">
+<td>Section 5 (reading the extract back)</td>
+<td>Extract reads back as 394 features, but the province has 393 named sub-districts; the earlier <code>duplicated(OBJECTID)</code> check was 0 and missed it</td>
+<td>Ran <code>st_is_empty()</code>, found one empty geometry, and removed it before <code>st_union()</code> and <code>as.owin()</code></td>
+</tr>
+<tr class="odd">
+<td>Section 5 (building the boundary)</td>
+<td><code>st_union()</code> on the 1:10,000 source produced 536 polygons: two real islands plus a long tail of offshore specks that cluttered the map</td>
+<td>Added <code>st_make_valid()</code> before the union, then <code>st_cast("POLYGON")</code> and a 10 km² area filter to keep genuine landmasses and drop the noise before a final <code>st_union()</code></td>
+</tr>
+<tr class="even">
+<td>Sections 6.5.1 and 7 (study area)</td>
+<td>Reference’s boundary loads only 297 features with an eastern edge at longitude 106.85, i.e.&nbsp;Bangka island alone; Belitung, the province’s second island, is missing</td>
+<td>Kept the full two-island province as the main study area (899 fires), and reproduced the reference’s Bangka-only view in Section 7.3 (766 fires) for direct comparison</td>
+</tr>
+<tr class="odd">
+<td>Section 10.2 (plotting STKDE by day)</td>
+<td><code>plot(kde_yday)</code> renders every day in the range (343 panels on the reference’s site), which is very slow to render</td>
+<td>Selected four representative days across the fire season with <code>tselect</code> and plotted them on a shared colour scale</td>
+</tr>
+<tr class="even">
+<td>Section “Including Owin object” (prose)</td>
+<td>Text refers to <code>origin_am_ppp</code>, <code>am_owin</code>, and <code>ff_owin</code>, none of which are defined in the Hands on.</td>
+<td>Ignore the names and followed the actual code (<code>fire_month_ppp[kbb_owin]</code>, <code>plot(fire_month_owin)</code>)</td>
+</tr>
+</tbody>
+</table>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
