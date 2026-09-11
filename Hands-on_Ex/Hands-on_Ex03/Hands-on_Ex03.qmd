@@ -117,7 +117,7 @@ st_write(babel,
 Two quick sanity checks before I trust it. The geometry type now prints as plain `POLYGON` rather than `POLYGON Z`, so the Z-drop really did take. And the bounding box lands at about X\[105.11, 108.87\], Y\[-3.80, -1.49\]. That box sits off the east coast of Sumatra, which is exactly where Bangka and Belitung are. The filter grabbed the right slice of the country and not some same-named district elsewhere. This `Kepulauan_Bangka_Belitung` file is what the rest of the exercise uses.
 
 ::: callout-tip
-### A projection detail I caught on the way 
+### A projection detail I caught on the way
 
 The reference projects to EPSG:32748, UTM zone 48S. Zone 48 runs from 102°E to 108°E, and my bounding box reaches east to 108.87°E. So the tip of Belitung pokes just past the zone boundary into what is technically zone 49. For a whole-province analysis, sticking to a single zone is the normal choice and I am keeping 32748, but it is a nice reminder that a UTM zone is a real edge, not a suggestion.
 :::
@@ -612,7 +612,7 @@ The thing I am checking is whether the high-density areas stay in the same place
 # Summary of Adjustments
 
 | Location | Issue | Correction applied |
-|------------------------|------------------------|------------------------|
+|----|----|----|
 | Section 4.4 (writing the extract) | National file mixes 2D and 3D geometry; `st_write` fails with a "3D Multi Polygon not supported" error | `st_zm(drop = TRUE, what = "ZM")` to flatten before writing; confirmed this matches the reference's own import pipe and that spatstat is 2D-only, so no information is lost |
 | Section 5 (reading the extract back) | Extract reads back as 394 features, but the province has 393 named sub-districts; the earlier `duplicated(OBJECTID)` check was 0 and missed it | Ran `st_is_empty()`, found one empty geometry, and removed it before `st_union()` and `as.owin()` |
 | Section 5 (building the boundary) | `st_union()` on the 1:10,000 source produced 536 polygons: two real islands plus a long tail of offshore specks that cluttered the map | Added `st_make_valid()` before the union, then `st_cast("POLYGON")` and a 10 km² area filter to keep genuine landmasses and drop the noise before a final `st_union()` |
