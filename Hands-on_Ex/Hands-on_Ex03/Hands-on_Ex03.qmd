@@ -271,9 +271,13 @@ The chapter derives three time fields from `acq_date`. A **ppp** mark has to be 
 
 ```{r}
 fire_sf <- fire_sf %>%
-  mutate(DayofYear = yday(acq_date),
+  mutate(acq_date  = as.Date(acq_date),
+         DayofYear = yday(acq_date),
          Month_num = month(acq_date),
          Month_fac = month(acq_date, label = TRUE, abbr = FALSE))
+
+# confirm no NAs crept in
+sum(is.na(fire_sf$DayofYear))
 ```
 
 A quick look at the monthly spread, because it sets up everything after this.
@@ -367,7 +371,7 @@ Spatio-temporal KDE comes from `spattemp.density()` in **sparr**. It wants a **p
 
 ```{r}
 fire_month <- fire_sf %>%
-  select(Month_num)
+  dplyr::select(Month_num)
 ```
 
 ## 8.2 Creating the ppp
@@ -434,7 +438,7 @@ Month is a blunt mark. Day-of-year gives 134 distinct time slices across my 899 
 
 ```{r}
 fire_yday_ppp <- fire_sf %>%
-  select(DayofYear) %>%
+  dplyr::select(DayofYear) %>%
   as.ppp()
 ```
 
@@ -512,17 +516,20 @@ coords <- st_coordinates(fire_sf)
 ```
 
 ```{r}
+
+fire_sf_wgs <- st_transform(fire_sf, 4326)
+coords <- st_coordinates(fire_sf_wgs)
+
 fire_df <- data.frame(
   x = coords[, 1],
   y = coords[, 2],
-  t = fire_sf$DayofYear)
+  t = fire_sf_wgs$DayofYear)
+
+sum(is.na(fire_df$t))   # should be 0
 ```
 
 ```{r}
 fire_stpp <- as.3dpoints(fire_df)
-```
-
-```{r}
 class(fire_stpp)
 ```
 
@@ -533,11 +540,37 @@ plot(fire_stpp)
 ## 11.2 The space-time K-function
 
 ```{r}
-kbb_stik <- STIKhat(fire_stpp)
+kbb_hull <- kbb_sf %>%
+  st_transform(4326) %>%
+  st_convex_hull()
+
+s_region_raw <- st_coordinates(kbb_hull)[, c("X", "Y")]
+s_region_matrix <- s_region_raw[-nrow(s_region_raw), ]
+
+kbb_stik <- STIKhat(fire_stpp,
+                    s.region = s_region_matrix,
+                    t.region = c(min(fire_df$t), max(fire_df$t)),
+                    infectious = TRUE)
 ```
 
 ```{r}
-plotK(kbb_stik)
+#| fig-height: 6
+#| fig-width: 8
+u <- kbb_stik$dist
+v <- kbb_stik$times
+K <- kbb_stik$Khat
+
+L_mat <- sqrt(K / pi) - outer(u, rep(1, length(v)))
+
+expand.grid(u = u, v = v) |>
+  mutate(L = as.vector(L_mat)) |>
+  ggplot(aes(x = u, y = v, z = L)) +
+  geom_contour_filled(bins = 20) +
+  labs(x = "Spatial distance (u)",
+       y = "Temporal distance (v)",
+       title = "Space-time L-function (Bangka Belitung fires 2023)",
+       fill = "L(u,v)") +
+  theme_minimal()
 ```
 
 ## 11.3 Reading the plot
@@ -612,7 +645,7 @@ The thing I am checking is whether the high-density areas stay in the same place
 # Summary of Adjustments
 
 | Location | Issue | Correction applied |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Section 4.4 (writing the extract) | National file mixes 2D and 3D geometry; `st_write` fails with a "3D Multi Polygon not supported" error | `st_zm(drop = TRUE, what = "ZM")` to flatten before writing; confirmed this matches the reference's own import pipe and that spatstat is 2D-only, so no information is lost |
 | Section 5 (reading the extract back) | Extract reads back as 394 features, but the province has 393 named sub-districts; the earlier `duplicated(OBJECTID)` check was 0 and missed it | Ran `st_is_empty()`, found one empty geometry, and removed it before `st_union()` and `as.owin()` |
 | Section 5 (building the boundary) | `st_union()` on the 1:10,000 source produced 536 polygons: two real islands plus a long tail of offshore specks that cluttered the map | Added `st_make_valid()` before the union, then `st_cast("POLYGON")` and a 10 km² area filter to keep genuine landmasses and drop the noise before a final `st_union()` |
