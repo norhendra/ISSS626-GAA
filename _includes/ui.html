@@ -1,3 +1,46 @@
+<!-- Announcement banner -->
+<div id="announcement-banner" style="
+  background-color: #90EE90;
+  color: #000000;
+  font-weight: 600;
+  padding: 8px 0;
+  font-size: 1rem;
+  font-family: inherit;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  z-index: 9999;
+  border-bottom: 1px solid #333;
+">
+  <div id="announcement-text" style="
+    display: inline-block;
+    animation: marquee 15s linear infinite;
+    padding-left: 100%;
+  ">
+    📣 Hands-on Exercise 3 fix pushed on 12 Sep 2026 for spatio-temporal K-function rendering corrected
+  </div>
+</div>
+
+<style>
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+#announcement-banner:hover #announcement-text {
+  animation-play-state: paused;
+}
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const banner = document.getElementById("announcement-banner");
+    const navbar = document.querySelector(".navbar");
+    if (navbar && banner) {
+      navbar.parentNode.insertBefore(banner, navbar.nextSibling);
+    }
+  });
+</script>
+
 <button id="back-to-top" aria-label="Back to top" title="Back to top">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
