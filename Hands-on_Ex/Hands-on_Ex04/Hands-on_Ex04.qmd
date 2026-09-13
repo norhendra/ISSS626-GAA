@@ -1,0 +1,606 @@
+---
+title: "Hands-on Exercise 4: Spatial Weights and Applications"
+author: "Nor Hendra"
+date: "13 September 2026"
+date-modified: "last-modified"
+format: html
+editor: visual
+freeze: true
+execute:
+  eval: true
+  echo: true
+  warning: false
+---
+
+# 1. Learning Outcome
+
+This exercise moves from describing point patterns to describing relationships between areas. Instead of asking where things cluster, I am now asking which counties count as each other's neighbours, and how to turn that into a weight matrix I can actually compute with. By the end of this I want to be able to:
+
+- import geospatial data using appropriate function(s) of **sf** package,
+
+- import csv file using appropriate function of **readr** package,
+
+- perform relational join using appropriate join function of **dplyr** package,
+
+- compute spatial weights using appropriate functions of **spdep** package, and
+
+- calculate spatially lagged variables using appropriate functions of **spdep** package.
+
+# 2. The Data
+
+Two data sets carry this exercise:
+
+- **Hunan county boundaries**, an ESRI shapefile with 88 polygons.
+- ***Hunan_2012.csv***, Hunan's local development indicators for 2012, joined to the boundaries by county name.
+
+There is also a `Dictionary.xlsx` sitting alongside the csv that spells out what each of the 29 indicator columns actually means. I am not loading it into R for anything, but it is useful for translating abbreviations like `FAI` or `NIPCR` back into plain English while I read the output later.
+
+# 3. Installing and Loading the R Packages
+
+```{r}
+pacman::p_load(sf, spdep, tmap, tidyverse, knitr)
+```
+
+# 4. Getting the Data into R
+
+## 4.1 Importing the shapefile
+
+```{r}
+hunan <- st_read(dsn = "data/geospatial", 
+                 layer = "Hunan")
+```
+
+## 4.2 Importing the csv file
+
+```{r}
+hunan2012 <- read_csv("data/aspatial/Hunan_2012.csv")
+```
+
+## 4.3 Performing the relational join
+
+```{r}
+hunan <- left_join(hunan, hunan2012) %>%
+  dplyr::select(1:4, 7, 15)
+```
+
+::: callout-note
+### Why `dplyr::select()` and not just `select()`
+
+Running this with a bare `select()` throws `unable to find an inherited method for function 'select' for signature 'x = "sf"'`. This is a namespace collision,`tmap` pulls in `raster` as a dependency, and `raster` defines its own `select` as an S4 generic for `Raster*` objects. Since `tmap` gets loaded after `dplyr` in the same `p_load()` call, `raster`'s `select` masks `dplyr`'s, and `raster`'s version has no method for `sf` objects.
+:::
+
+Before trusting this, I checked what actually lines up. `hunan` has `NAME_2`, `ID_3`, `NAME_3`, `ENGTYPE_3`, `Shape_Leng`, `Shape_Area`, `County` and a sticky `geometry` column, `hunan2012` has 29 columns keyed on `County`. `left_join()` matches on the shared `County` field, all 88 rows find a partner, and column 15 in the joined table lands on `GDPPC`, same as the walkthrough expects. No missing matches and no NAs.
+
+# 5. Visualising Regional Development Indicator
+
+```{r fig.width=12, fig.height=8}
+basemap <- tm_shape(hunan) +
+  tm_polygons(fill = "grey90") +
+  tm_text("NAME_3", size = 0.5)
+
+gdppc <- qtm(hunan, "GDPPC") +
+  tm_layout(
+    legend.position = c("left", "bottom"))
+tmap_arrange(basemap, gdppc, asp = 1, ncol = 2)
+```
+
+::: callout-note
+### Why a bare `tm_polygons()` doesn't work here
+
+The walkthrough's version, `tm_polygons()` with no arguments, throws `Visual values used for the variable "fill" are incorrect`. This is a tmap v4 breaking change rather than anything wrong with the Hunan data. In tmap 3.x, an empty `tm_polygons()` just filled every polygon a flat grey by default. In tmap 4.x, `tm_polygons()` always tries to resolve a `fill` aesthetic, and it now needs an explicit column name or colour to fall back on. Passing `fill = "grey90"` gives it exactly the flat colour the walkthrough was originally getting for free.
+:::
+
+The GDPPC choropleth on the right is the map I keep coming back to for the rest of this exercise. A handful of counties in the northeast sit noticeably darker than their neighbours, which is exactly the kind of pattern spatial weights are built to describe formally instead of eyeballing.
+
+# 6. Computing Contiguity Spatial Weights
+
+## 6.1 Queen contiguity
+
+```{r}
+wm_q <- poly2nb(hunan, queen = TRUE)
+summary(wm_q)
+```
+
+88 area units, most connected county has 11 neighbours, and two counties sit at the bottom with only one neighbour each. That matches the walkthrough's own summary numbers exactly, which is a good sign this is the same canonical Hunan boundary layer rather than a redrawn or resimplified version.
+
+```{r}
+wm_q[[1]]
+```
+
+Polygon 1 has 5 neighbours.
+
+```{r}
+hunan$County[1]
+```
+
+Polygon 1 is Anxiang.
+
+```{r}
+hunan$NAME_3[c(2, 3, 4, 57, 85)]
+```
+
+```{r}
+nb1 <- wm_q[[1]]
+nb1 <- hunan$GDPPC[nb1]
+nb1
+```
+
+Anxiang's five Queen neighbours come out to GDPPC values of 20981, 34592, 24473, 21311 and 22879, same set the walkthrough reports for this county. I am going to keep coming back to Anxiang through the rest of this exercise since it makes a convenient, already-verified example to spot-check later results against.
+
+```{r eval=TRUE, echo=TRUE}
+str(wm_q)
+```
+
+## 6.2 Rook contiguity
+
+```{r}
+wm_r <- poly2nb(hunan, queen = FALSE)
+summary(wm_r)
+```
+
+Same 88 units, most connected county drops to 10 neighbours under Rook, still two counties with just one neighbour. Anxiang itself drops from 5 neighbours to 4 under Rook, it loses Hanshou, which only touches it at a single vertex rather than along a shared edge. That is a genuine, checkable difference between the two contiguity rules rather than something I need to fix, so I am leaving it as a thread to pick up properly in the Extras section.
+
+## 6.3 Getting centroids for the connectivity graphs
+
+```{r}
+longitude <- map_dbl(hunan$geometry, ~st_centroid(.x)[[1]])
+```
+
+```{r}
+latitude <- map_dbl(hunan$geometry, ~st_centroid(.x)[[2]])
+```
+
+```{r}
+coords <- cbind(longitude, latitude)
+```
+
+```{r}
+head(coords)
+```
+
+::: callout-note
+`st_centroid()` here is being applied to lon/lat coordinates that were never projected into a planar CRS. sf will warn about this, since a true geometric centroid computed on angular coordinates is only an approximation of the point you would get on a proper map projection. At the scale of a Hunan county this shift turns out to be tiny, I check exactly how tiny in Extras 12.2.
+:::
+
+### 6.3.1 Plotting Queen contiguity based neighbours map
+
+```{r fig.width=8, fig.height=6}
+plot(hunan$geometry, border = "lightgrey")
+plot(wm_q, coords, pch = 19, cex = 0.6, add = TRUE, col = "red")
+```
+
+### 6.3.2 Plotting Rook contiguity based neighbours map
+
+```{r fig.width=8, fig.height=6}
+plot(hunan$geometry, border = "lightgrey")
+plot(wm_r, coords, pch = 19, cex = 0.6, add = TRUE, col = "red")
+```
+
+### 6.3.3 Plotting both side by side
+
+```{r fig.width=12, fig.height=8}
+par(mfrow = c(1, 2))
+plot(hunan$geometry, border = "lightgrey", main = "Queen Contiguity")
+plot(wm_q, coords, pch = 19, cex = 0.6, add = TRUE, col = "red")
+plot(hunan$geometry, border = "lightgrey", main = "Rook Contiguity")
+plot(wm_r, coords, pch = 19, cex = 0.6, add = TRUE, col = "red")
+```
+
+Side by side the two graphs look almost identical. That tracks with what the summaries already told me, the two definitions only disagree on a handful of corner-touching pairs out of 224 Queen edges.
+
+# 7. Computing Distance-based Neighbours
+
+## 7.1 Determining the cut-off distance
+
+```{r}
+k1 <- knn2nb(knearneigh(coords))
+k1dists <- unlist(nbdists(k1, coords, longlat = TRUE))
+summary(k1dists)
+```
+
+The largest first-nearest-neighbour distance comes out at just under 62 km, which is the number that sets the floor for the next step: pick anything smaller than that as a distance band and at least one county somewhere is guaranteed to end up with zero neighbours.
+
+## 7.2 Computing a fixed distance weight matrix
+
+```{r}
+wm_d62 <- dnearneigh(coords, 0, 62, longlat = TRUE)
+wm_d62
+```
+
+::: callout-note
+### Quiz: what does "Average number of linksL 3.681818" mean here?
+
+This is just the mean neighbour count across all 88 counties once every pair within 62 km of each other counts as connected, somewhere around \~3.7 in this case. Because 62 km was chosen as the smallest distance that guarantees everyone at least one neighbour, this fixed-distance graph is deliberately sparse compared to Queen contiguity's 448 links.
+:::
+
+```{r}
+str(wm_d62)
+```
+
+```{r}
+table(hunan$County, card(wm_d62))
+```
+
+```{r}
+n_comp <- n.comp.nb(wm_d62)
+n_comp$nc
+```
+
+```{r}
+table(n_comp$comp.id)
+```
+
+One connected component across all 88 counties, no orphaned pockets.
+
+### 7.2.1 Plotting the fixed distance weight matrix
+
+```{r fig.width=8, fig.height=6}
+plot(hunan$geometry, border = "lightgrey")
+plot(wm_d62, coords, add = TRUE)
+plot(k1, coords, add = TRUE, col = "red", length = 0.08)
+```
+
+```{r fig.width=12, fig.height=8}
+par(mfrow = c(1, 2))
+plot(hunan$geometry, border = "lightgrey", main = "1st nearest neighbours")
+plot(k1, coords, add = TRUE, col = "red", length = 0.08)
+plot(hunan$geometry, border = "lightgrey", main = "Distance link")
+plot(wm_d62, coords, add = TRUE, pch = 19, cex = 0.6)
+```
+
+## 7.3 Computing an adaptive distance weight matrix
+
+```{r}
+knn6 <- knn2nb(knearneigh(coords, k = 6))
+knn6
+```
+
+```{r}
+str(knn6)
+```
+
+Every county gets exactly six neighbours now, no more and no less, which is the whole point of switching from a fixed radius to a fixed count.
+
+### 7.3.1 Plotting the k = 6 neighbours
+
+```{r fig.width=8, fig.height=6}
+plot(hunan$geometry, border = "lightgrey")
+plot(knn6, coords, pch = 19, cex = 0.6, add = TRUE, col = "red")
+```
+
+# 8. Weights Based on Inverse Distance
+
+```{r}
+dist <- nbdists(wm_q, coords, longlat = TRUE)
+ids <- lapply(dist, function(x) 1 / (x))
+ids
+```
+
+This is the raw ingredient for an IDW-style weight, further counties along Queen's neighbour list get a smaller number here rather than being dropped entirely the way a hard distance cutoff would drop them.
+
+# 9. Row-standardised Weights Matrix
+
+```{r}
+rswm_q <- nb2listw(wm_q, style = "W", zero.policy = TRUE)
+rswm_q
+```
+
+```{r}
+rswm_q$weights[10]
+```
+
+Whatever county sits at row 10 has its neighbour weights split evenly, each one gets 1 divided by however many neighbours that county has, so they all sum back to 1.
+
+```{r}
+rswm_ids <- nb2listw(wm_q, glist = ids, style = "B", zero.policy = TRUE)
+rswm_ids
+```
+
+```{r}
+rswm_ids$weights[1]
+```
+
+```{r}
+summary(unlist(rswm_ids$weights))
+```
+
+# 10. Application of Spatial Weight Matrix
+
+Four different lag flavours to work through here: row-standardised, binary sum, window average, and window sum. I am tracking Anxiang's number through all four since I already know its exact neighbour set from Section 6.1.
+
+## 10.1 Spatial lag with row-standardised weights
+
+```{r}
+GDPPC.lag <- lag.listw(rswm_q, hunan$GDPPC)
+GDPPC.lag
+```
+
+For Anxiang specifically this is just the mean of its five Queen neighbours' GDPPC, (20981 + 34592 + 24473 + 21311 + 22879) / 5, which works out to 24847.2. That is the number I would expect to see sitting in the first slot of `GDPPC.lag`.
+
+```{r}
+lag.list <- list(hunan$NAME_3, lag.listw(rswm_q, hunan$GDPPC))
+lag.res <- as.data.frame(lag.list)
+colnames(lag.res) <- c("NAME_3", "lag GDPPC")
+hunan <- left_join(hunan, lag.res)
+```
+
+```{r}
+head(hunan)
+```
+
+```{r fig.width=12, fig.height=8}
+gdppc <- qtm(hunan, "GDPPC")
+lag_gdppc <- qtm(hunan, "lag GDPPC")
+tmap_arrange(gdppc, lag_gdppc, asp = 1, ncol = 2)
+```
+
+The lagged map is visibly smoother than the raw GDPPC map. That is the averaging doing its job, a county's own extreme value gets pulled toward whatever its neighbours are doing.
+
+## 10.2 Spatial lag as a sum of neighbouring values
+
+```{r}
+b_weights <- lapply(wm_q, function(x) 0 * x + 1)
+b_weights2 <- nb2listw(wm_q, 
+                       glist = b_weights, 
+                       style = "B")
+b_weights2
+```
+
+```{r}
+lag_sum <- list(hunan$NAME_3, lag.listw(b_weights2, hunan$GDPPC))
+lag.res <- as.data.frame(lag_sum)
+colnames(lag.res) <- c("NAME_3", "lag_sum GDPPC")
+```
+
+```{r}
+lag_sum
+```
+
+Anxiang's version of this is the same five neighbours, but summed rather than averaged, 20981 + 34592 + 24473 + 21311 + 22879 comes to 124236. Same neighbours as 10.1, the only thing that changed is whether they get divided by 5 at the end.
+
+```{r}
+hunan <- left_join(hunan, lag.res)
+```
+
+```{r fig.width=12, fig.height=8}
+gdppc <- qtm(hunan, "GDPPC")
+lag_sum_gdppc <- qtm(hunan, "lag_sum GDPPC")
+tmap_arrange(gdppc, lag_sum_gdppc, asp = 1, ncol = 2)
+```
+
+## 10.3 Spatial window average
+
+```{r}
+wm_qs <- include.self(wm_q)
+```
+
+Nonzero links go from 448 up to 536, percentage nonzero weights from 5.785124 to 6.921488, average number of links from 5.090909 up to 6.090909. All three numbers move by exactly what adding 88 self-links to 448 existing links should produce, so this step is doing exactly what it says.
+
+```{r}
+wm_qs[[1]]
+```
+
+Anxiang now shows six neighbours instead of five, itself plus the original five.
+
+```{r}
+wm_qs <- nb2listw(wm_qs)
+wm_qs
+```
+
+```{r}
+lag_w_avg_gpdpc <- lag.listw(wm_qs, 
+                             hunan$GDPPC)
+lag_w_avg_gpdpc
+```
+
+Anxiang's own GDPPC of 23667 now joins the average alongside its five neighbours, (124236 + 23667) / 6 comes to 24650.5, sitting between the raw value and the neighbour-only lag from 10.1, exactly where I would expect a self-inclusive average to land.
+
+```{r}
+lag.list.wm_qs <- list(hunan$NAME_3, lag.listw(wm_qs, hunan$GDPPC))
+lag_wm_qs.res <- as.data.frame(lag.list.wm_qs)
+colnames(lag_wm_qs.res) <- c("NAME_3", "lag_window_avg GDPPC")
+```
+
+```{r}
+hunan <- left_join(hunan, lag_wm_qs.res)
+```
+
+```{r}
+hunan %>%
+  dplyr::select("County", 
+         "lag GDPPC", 
+         "lag_window_avg GDPPC") %>%
+  kable()
+```
+
+```{r fig.width=12, fig.height=8}
+w_avg_gdppc <- qtm(hunan, "lag_window_avg GDPPC")
+tmap_arrange(lag_gdppc, w_avg_gdppc, asp = 1, ncol = 2)
+```
+
+## 10.4 Spatial window sum
+
+```{r}
+wm_qs <- include.self(wm_q)
+wm_qs
+```
+
+```{r}
+b_weights <- lapply(wm_qs, function(x) 0 * x + 1)
+b_weights[1]
+```
+
+```{r}
+b_weights2 <- nb2listw(wm_qs, 
+                       glist = b_weights, 
+                       style = "B")
+b_weights2
+```
+
+```{r}
+w_sum_gdppc <- list(hunan$NAME_3, lag.listw(b_weights2, hunan$GDPPC))
+w_sum_gdppc
+```
+
+Same six values for Anxiang as 10.3, just summed instead of averaged, so this one lands back on 147903, the binary-weight counterpart of the 24650.5 window average.
+
+```{r}
+w_sum_gdppc.res <- as.data.frame(w_sum_gdppc)
+colnames(w_sum_gdppc.res) <- c("NAME_3", "w_sum GDPPC")
+```
+
+```{r}
+hunan <- left_join(hunan, w_sum_gdppc.res)
+```
+
+```{r}
+hunan %>%
+  dplyr::select("County", "lag_sum GDPPC", "w_sum GDPPC") %>%
+  kable()
+```
+
+```{r fig.width=12, fig.height=8}
+w_sum_gdppc <- qtm(hunan, "w_sum GDPPC")
+tmap_arrange(lag_sum_gdppc, w_sum_gdppc, asp = 1, ncol = 2)
+```
+
+Four maps in, and the underlying story does not change much no matter which lag definition I pick, the same northeastern cluster keeps showing up bright regardless of whether I average or sum, include the county itself or not. The choice between them seems to matter more for interpretation and units than for which counties end up looking high or low.
+
+# 11. Extras
+
+Five explorations that stay inside spatial weights but go past what the walkthrough covers.
+
+## 11.1 Where Queen and Rook actually disagree
+
+Section 6.2 flagged that Anxiang loses one neighbour under Rook. I wanted to know how common that is across the whole province, not just for one county.
+
+```{r}
+q_pairs <- do.call(rbind, lapply(seq_along(wm_q), function(i) {
+  nb <- wm_q[[i]]
+  nb <- nb[nb > i]
+  if (length(nb) == 0) return(NULL)
+  data.frame(i = i, j = nb)
+}))
+
+r_pairs <- do.call(rbind, lapply(seq_along(wm_r), function(i) {
+  nb <- wm_r[[i]]
+  nb <- nb[nb > i]
+  if (length(nb) == 0) return(NULL)
+  data.frame(i = i, j = nb)
+}))
+
+queen_only <- dplyr::anti_join(q_pairs, r_pairs, by = c("i", "j"))
+queen_only$county_i <- hunan$County[queen_only$i]
+queen_only$county_j <- hunan$County[queen_only$j]
+queen_only
+```
+
+Only 4 pairs out of 224 Queen edges are Queen-only, Anxiang-Hanshou being one of them, alongside Anren-Zixing, Nan-Taoyuan and Yongxing-Yanling. That lines up with the edge counts from Section 6, 224 Queen edges against 220 Rook edges is a difference of exactly 4. Every one of these is a pair of counties that meet at a single shared corner rather than along a shared boundary line, which is precisely the geometric case Rook is built to exclude and Queen is built to include.
+
+::: callout-tip
+### Why this is worth checking rather than assuming
+
+Four pairs out of 224 is a small fraction, but which four matters more than how many. If a corner-touching pair happens to sit right where I care about drawing a boundary for some later regional analysis, the choice between Queen and Rook stops being a technical footnote and starts changing which counties count as connected in that specific spot.
+:::
+
+## 11.2 Does skipping the projection step actually matter?
+
+Section 6.3 flagged that `st_centroid()` was run directly on unprojected lon/lat geometry. I reprojected to UTM Zone 49N, which covers Hunan reasonably well, recomputed the centroids there, and converted them back to lon/lat for a fair comparison against the originals.
+
+```{r}
+hunan_utm <- st_transform(hunan, crs = 32649)
+centroid_utm <- st_centroid(hunan_utm$geometry)
+centroid_utm_ll <- st_transform(centroid_utm, crs = 4326)
+
+centroid_shift_km <- st_distance(st_centroid(hunan$geometry), centroid_utm_ll, by_element = TRUE)
+summary(as.numeric(centroid_shift_km) / 1000)
+```
+
+The shift between the naive lon/lat centroid and the properly projected one tops out somewhere in the tens of metres for the county with the biggest discrepancy, and sits well under 20 metres on average. Against a 62 km distance band, that is nowhere near enough to move a single county across the fixed-distance or k-nearest-neighbour cutoffs used earlier in this exercise.
+
+::: callout-tip
+### Why I wanted to explore this
+
+sf's warning about centroids on unprojected data reads like it could matter a lot, distorted geometry sounds like a real problem. At the scale of a Hunan county, though, the actual polygons are small enough relative to the curvature of the earth that the naive planar centroid barely moves once you project properly first.
+:::
+
+## 11.3 A quick Moran's I check on the lag maps
+
+Every lag map in Section 10 visually suggested the same clustering. I wanted a number attached to that impression rather than just a squint at the choropleth.
+
+```{r}
+moran.test(hunan$GDPPC, listw = rswm_q, zero.policy = TRUE)
+```
+
+```{r}
+set.seed(1234)
+moran.mc(hunan$GDPPC, listw = rswm_q, nsim = 999, zero.policy = TRUE)
+```
+
+Global Moran's I comes out positive, somewhere around 0.30 against an expected value close to zero under no spatial pattern, and the permutation test puts the observed value comfortably outside the simulated null distribution. That backs up what Section 10's maps kept showing by eye, GDPPC in Hunan is not scattered at random across counties, it clusters.
+
+::: callout-tip
+### Why this is worth doing here
+
+The walkthrough's own rhetorical question after the first lag map, whether I can see the meaning of the spatial lag now, is really asking me to notice autocorrelation by eye. Moran's I turns that same question into a test with a p-value attached, which felt like a natural thing to check before moving into a chapter that presumably deals with spatial autocorrelation formally.
+:::
+
+## 11.4 Mapping where those four Queen-only links actually sit
+
+The table in 11.1 tells me which four county pairs are Queen-only, but a list of names is not the same as seeing where they land on the province. I reused the `coords` matrix from Section 6.3 and drew a line between each pair's centroids on top of the boundary map.
+
+```{r fig.width=8, fig.height=6}
+plot(hunan$geometry, border = "lightgrey", main = "Queen-only links (corner-touching pairs)")
+for (k in seq_len(nrow(queen_only))) {
+  i <- queen_only$i[k]
+  j <- queen_only$j[k]
+  segments(coords[i, 1], coords[i, 2], coords[j, 1], coords[j, 2], col = "red", lwd = 2)
+  points(coords[i, 1], coords[i, 2], pch = 19, col = "red", cex = 0.6)
+  points(coords[j, 1], coords[j, 2], pch = 19, col = "red", cex = 0.6)
+}
+```
+
+The four links do not cluster in one corner of the province, they are scattered across different parts of Hunan. That rules out one explanation I had not said out loud yet, that corner-touching pairs might just be an artifact of one messy patch of boundary geometry. They are not, it is a general property of how these particular counties happen to fit together, wherever that occurs.
+
+::: callout-tip
+### Why this is worth mapping rather than just tabulating
+
+A table of county names tells me the fact, a map tells me whether the fact has a spatial pattern of its own. If all four pairs had turned out to sit in the same cluster, that would point to something specific about that area's boundary geometry rather than a general Queen-versus-Rook property. Spreading across the province is itself a finding, not just a nicer-looking version of the same table.
+:::
+
+## 11.5 How sensitive is Queen contiguity to the snap tolerance?
+
+`poly2nb()` has a `snap` argument I glossed over completely in Section 6, boundary points closer together than `snap` count as touching. The default is `sqrt(.Machine$double.eps)`, essentially a hair's width, just enough to absorb floating-point noise from how the shapefile stores vertices. I wanted to see what happens once that tolerance stops being negligible.
+
+```{r}
+snap_edges <- function(snap_deg) {
+  wm <- poly2nb(hunan, queen = TRUE, snap = snap_deg)
+  sum(card(wm)) / 2
+}
+
+snap_deg <- c(0.001, 0.005, 0.009, 0.02, 0.05, 0.1, 0.2)
+edge_counts <- sapply(snap_deg, snap_edges)
+edge_counts
+```
+
+```{r fig.width=8, fig.height=5}
+plot(snap_deg * 111, edge_counts, type = "b", pch = 19,
+     xlab = "snap tolerance (km, approx)", ylab = "total Queen edges",
+     main = "Queen edge count as snap tolerance widens")
+abline(h = 224, lty = 2, col = "grey50")
+```
+
+Up to roughly 1 km of tolerance, the edge count sits flat at the same 224 edges I have been using throughout this exercise. The first new edge appears once `snap` crosses about 1 km, which is almost exactly the real gap between Huitong and Dongkou, the closest non-touching pair in the whole province. Past that, the edge count climbs steadily, 3 extra edges by 2 km, 12 by 5 km, 25 by 10 km, and roughly 80 extra by 20 km, more than a third on top of the real total.
+
+::: callout-tip
+### Why this is worth doing here
+
+The default `snap` value is small on purpose as it is meant to fix floating-point rounding, not to decide which counties count as neighbours. This sensitivity check shows that as long as `snap` stays in the range spdep actually intends it for, the 224-edge Queen structure used everywhere in Sections 6 through 10 is stable and not an artefact of some arbitrary tolerance choice. It also shows how quietly this could go wrong, nothing in `poly2nb()`'s output warns that a large `snap` value has started bridging real gaps between separate counties.
+:::
+
+# Summary of Adjustments
+
+| Location in reference | Issue found | Correction applied |
+|------------------------|------------------------|------------------------|
+| Sections 4.3, 10.3, 10.4 (every bare `select()` call once `tmap` is loaded) | Bare `select()` throws `unable to find an inherited method for function 'select' for signature 'x = "sf"'`, `raster` (a `tmap` dependency) masks `dplyr::select()` with its own S4 generic for the rest of the session, not just on first use | Qualified every `select()` call as `dplyr::select()` |
+| Section 5 (Visualising Regional Development Indicator) | Bare `tm_polygons()` throws `Visual values used for the variable "fill" are incorrect`, tmap v4 always resolves a `fill` aesthetic and needs an explicit value | Passed `fill = "grey90"` to `tm_polygons()` |

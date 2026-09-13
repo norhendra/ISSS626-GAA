@@ -8,9 +8,9 @@
   font-family: inherit;
   overflow: hidden;
   white-space: nowrap;
-  position: relative;
-  z-index: 9999;
   border-bottom: 1px solid #333;
+  z-index: 1030;
+  position: relative;
 ">
   <div id="announcement-text" style="
     display: inline-block;
@@ -28,6 +28,12 @@
 }
 #announcement-banner:hover #announcement-text {
   animation-play-state: paused;
+}
+.navbar {
+  z-index: 1040 !important;
+}
+.navbar .dropdown-menu {
+  z-index: 1050 !important;
 }
 </style>
 
@@ -91,7 +97,6 @@
         });
         el.textContent = now + ' SGT';
       } catch (e) {
-        // fallback
         el.textContent = new Date().toLocaleTimeString();
       }
     }
