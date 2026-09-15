@@ -5,11 +5,11 @@
 .DS_Store
 .quarto
 
-
 /.quarto/
 **/*.quarto_ipynb
 /data
 data/
 /Take-home_Ex/Take-home_Ex01/Take-home_Ex01.qmd
-/_site/Take-home_Ex/Take-home_Ex01//_site/Take-home_Ex/Take-home_Ex01/
+/Take-home_Ex/Take-home_Ex01/Take-home_Ex01_files/
 /Take-home_Ex/Take-home_Ex01/Take-home_Ex01_cache/
+/_site/Take-home_Ex/Take-home_Ex01/
