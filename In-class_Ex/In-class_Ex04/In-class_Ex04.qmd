@@ -146,7 +146,7 @@ hunan_gstat <- cbind(hunan_sf,gwstat_df)
 # 8. Visualising geographically weighted summary statistics 
 
 ```{r}
-#| fig-height: 10
+#| fig-height: 8
 #| fig-width: 6
 tm_shape(hunan_gstat) +
   tm_polygons(fill = "GDPPC_LM",
@@ -160,5 +160,3 @@ tm_shape(hunan_gstat) +
   tm_title("Distribution of geographically weighted mean") +
   tm_layout(legend.position = c("left","bottom"))
 ```
-              )
-              ))
