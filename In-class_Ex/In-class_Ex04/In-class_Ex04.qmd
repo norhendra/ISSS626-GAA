@@ -1,0 +1,164 @@
+---
+title: "In-class Exercise 4"
+author: "Nor Hendra"
+date: "19 September 2026"
+date-modified: "last-modified"
+format: html
+editor: visual
+execute:
+  eval: true
+  echo: true
+  warning: false
+  message: false
+  freeze: true
+---
+
+# 1. Loading the Package
+::: {style ="font-size: 1.50em"}
+```{r}
+pacman::p_load(sf, spdep, tmap, tidyverse, knitr, GWmodel, ggstatsplot)
+```
+:::
+
+# 2. Preparing the Data
+::: panel-tabset
+### 2.1 Loading the Data
+
+```{r}
+hunan <- st_read(dsn = "data/geospatial", 
+                 layer = "Hunan")
+```
+
+### 2.2 Importing the csv file
+
+```{r}
+hunan2012 <- read_csv("data/aspatial/Hunan_2012.csv")
+```
+
+### 2.3 Performing the relational join
+
+```{r}
+hunan_sf <- left_join(hunan, hunan2012) %>%
+  dplyr::select(1:3, 7, 15, 16, 31, 32)
+```
+:::
+
+# 3. Mapping GDPPC
+
+```{r}
+#| fig-width: 16
+#| fig-height: 6
+
+basemap <- tm_shape(hunan_sf) +
+  tm_polygons() +
+  tm_text("NAME_3", size=0.5)
+
+gdppc <- qtm(hunan_sf, "GDPPC") +
+  tm_layout(
+    legend.position = c("left", "bottom"))  
+tmap_arrange(basemap, gdppc, asp=1, ncol=2)
+```
+
+# 4. Converting to SpatialPolygonDataFrame
+
+```{r}
+hunan_sp <- hunan_sf %>%
+  as_Spatial()
+```
+
+# 5. GSSW with bandwidth (adaptive/fixed)
+
+## 5.1 Determine adaptive bandwidth
+
+::: panel-tabset
+### Cross-validation
+```{r}
+bw_CV <- bw.gwr(GDPPC ~ 1,
+            data = hunan_sp,
+            approach = "CV",
+            adaptive = TRUE,
+            kernel = "bisquare",
+            longlat = T)
+```
+### AICc
+
+```{r}
+bw_AIC <- bw.gwr(GDPPC ~ 1,
+            data = hunan_sp,
+            approach = "AICc",
+            adaptive = TRUE,
+            kernel = "bisquare",
+            longlat = T)
+```
+:::
+
+## 5.2 Determine fixed bandwidth
+
+::: panel-tabset
+### Cross-validation
+```{r}
+bw_CV_fix <- bw.gwr(GDPPC ~ 1,
+            data = hunan_sp,
+            approach = "CV",
+            adaptive = FALSE,
+            kernel = "bisquare",
+            longlat = T)
+```
+### AICc
+
+```{r}
+bw_AIC_fix <- bw.gwr(GDPPC ~ 1,
+            data = hunan_sp,
+            approach = "AICc",
+            adaptive = FALSE,
+            kernel = "bisquare",
+            longlat = T)
+```
+:::
+
+# 6. Computing geographically weighted summary statistics
+
+The code chunk below computes geographically wieghted summary statistics by using gwss() of GWmodel package. The analysis is performed using adaptive distance weighted. The distance is derived using AICc method and the kernel method used is bisquare.
+```{r}
+gwstat <- gwss (data = hunan_sp,
+                vars = "GDPPC",
+                bw = bw_AIC,
+                kernel = "bisquare",
+                quantile = TRUE,
+                adaptive = TRUE,
+                longlat = T)
+```
+
+# 7. Preparing the output data
+
+Code chunk is used to extract SDF data table from gwss object output from gwss() for subsequent geovilisation. It will be converted into data.frame by using as.data.frame().
+
+```{r}
+gwstat_df <- as.data.frame(gwstat$SDF)
+```
+
+Next, cbind() used to append the newly derived data.frame onto hunan_sf sf data.frame.
+
+```{r}
+hunan_gstat <- cbind(hunan_sf,gwstat_df)
+```
+
+# 8. Visualising geographically weighted summary statistics 
+
+```{r}
+#| fig-height: 10
+#| fig-width: 6
+tm_shape(hunan_gstat) +
+  tm_polygons(fill = "GDPPC_LM",
+              fill.scale = tm_scale_intervals(
+                style = "quantile",
+                n = 5,
+                values = "brewer.reds"),
+              fill.legend = tm_legend(
+                title = "local Mean")) +
+  tm_borders(fill_alpha =0.5) +
+  tm_title("Distribution of geographically weighted mean") +
+  tm_layout(legend.position = c("left","bottom"))
+```
+              )
+              ))

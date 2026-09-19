@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Nor Hendra">
+<meta name="dcterms.date" content="2026-09-19">
 
-<title>Nor Hendra · ISSS626 Geospatial Analytics – Nor Hendra</title>
+<title>In-class Exercise 4 – Nor Hendra</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,32 +28,65 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-983d5e7348da3dce19c411959767e89e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-7ba33f8fe4ec02a14535c028716f4e2e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-983d5e7348da3dce19c411959767e89e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-983d5e7348da3dce19c411959767e89e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-7ba33f8fe4ec02a14535c028716f4e2e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-983d5e7348da3dce19c411959767e89e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -79,70 +114,12 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-image','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
       const bodyEl = window.document.querySelector("body");
@@ -311,9 +288,9 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="./" class="navbar-brand navbar-brand-logo">
-    <img src="./images/hendralogo.png" alt="Hendra Logo" class="navbar-logo light-content">
-    <img src="./images/hendralogo.png" alt="Hendra Logo" class="navbar-logo dark-content">
+    <a href="../../" class="navbar-brand navbar-brand-logo">
+    <img src="../../images/hendralogo.png" alt="Hendra Logo" class="navbar-logo light-content">
+    <img src="../../images/hendralogo.png" alt="Hendra Logo" class="navbar-logo dark-content">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -328,27 +305,27 @@ window.Quarto = {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercise">    
         <li>
-    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01A.html">
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01A.html">
  <span class="dropdown-text">Hands-on Exercise 1A</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01B.html">
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01B.html">
  <span class="dropdown-text">Hands-on Exercise 1B</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02A.html">
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02A.html">
  <span class="dropdown-text">Hands-on Exercise 2A</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02B.html">
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02B.html">
  <span class="dropdown-text">Hands-on Exercise 2B</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html">
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html">
  <span class="dropdown-text">Hands-on Exercise 3</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html">
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html">
  <span class="dropdown-text">Hands-on Exercise 4</span></a>
   </li>  
     </ul>
@@ -359,7 +336,7 @@ window.Quarto = {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">    
         <li>
-    <a class="dropdown-item" href="./In-class_Ex/In-class_Ex04/In-class_Ex04.html">
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex04/In-class_Ex04.html">
  <span class="dropdown-text">In-class Exercise 4</span></a>
   </li>  
     </ul>
@@ -376,9 +353,28 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#loading-the-package" id="toc-loading-the-package" class="nav-link active" data-scroll-target="#loading-the-package">1. Loading the Package</a></li>
+  <li><a href="#preparing-the-data" id="toc-preparing-the-data" class="nav-link" data-scroll-target="#preparing-the-data">2. Preparing the Data</a></li>
+  <li><a href="#mapping-gdppc" id="toc-mapping-gdppc" class="nav-link" data-scroll-target="#mapping-gdppc">3. Mapping GDPPC</a></li>
+  <li><a href="#converting-to-spatialpolygondataframe" id="toc-converting-to-spatialpolygondataframe" class="nav-link" data-scroll-target="#converting-to-spatialpolygondataframe">4. Converting to SpatialPolygonDataFrame</a></li>
+  <li><a href="#gssw-with-bandwidth-adaptivefixed" id="toc-gssw-with-bandwidth-adaptivefixed" class="nav-link" data-scroll-target="#gssw-with-bandwidth-adaptivefixed">5. GSSW with bandwidth (adaptive/fixed)</a>
+  <ul class="collapse">
+  <li><a href="#determine-adaptive-bandwidth" id="toc-determine-adaptive-bandwidth" class="nav-link" data-scroll-target="#determine-adaptive-bandwidth">5.1 Determine adaptive bandwidth</a></li>
+  <li><a href="#determine-fixed-bandwidth" id="toc-determine-fixed-bandwidth" class="nav-link" data-scroll-target="#determine-fixed-bandwidth">5.2 Determine fixed bandwidth</a></li>
+  </ul></li>
+  <li><a href="#computing-geographically-weighted-summary-statistics" id="toc-computing-geographically-weighted-summary-statistics" class="nav-link" data-scroll-target="#computing-geographically-weighted-summary-statistics">6. Computing geographically weighted summary statistics</a></li>
+  <li><a href="#preparing-the-output-data" id="toc-preparing-the-output-data" class="nav-link" data-scroll-target="#preparing-the-output-data">7. Preparing the output data</a></li>
+  <li><a href="#visualising-geographically-weighted-summary-statistics" id="toc-visualising-geographically-weighted-summary-statistics" class="nav-link" data-scroll-target="#visualising-geographically-weighted-summary-statistics">8. Visualising geographically weighted summary statistics</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+<main class="content" id="quarto-document-content">
 
 <div id="site-preloader">
   <div class="preloader-inner">
@@ -489,457 +485,294 @@ window.Quarto = {
   })();
 </script>
 
-
-
-
-<div class="hero hero-globe">
-  <div class="hero-copy">
-    <div class="eyebrow">ISSS626 · Singapore Management University</div>
-    <h1><span class="grad" data-text="Geospatial Analytics &amp; Applications">Geospatial Analytics &amp; Applications</span></h1>
-    <p>Hi, I am Nor Hendra. This site documents my coursework in geospatial data science: hands-on exercises, in-class exercises, and take-home assignments, all built with R.</p>
-    <div class="globe-actions">
-      <button id="locate-btn" class="globe-btn" type="button">
-        <svg viewbox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="12" cy="10" r="3"></circle>
-          <path d="M12 21c-4-4.5-7-8-7-11a7 7 0 0 1 14 0c0 3-3 6.5-7 11z"></path>
-        </svg>
-        Locate me
-      </button>
-    </div>
-  </div>
-
-  <div class="hero-globe-viz">
-    <div id="globe-wrap">
-      <svg id="globe" role="img" aria-label="Interactive rotating globe"></svg>
-    </div>
-    <div class="globe-readout">
-      <span class="ro-dot"></span>
-      <span id="globe-coords" class="ro-coords">1.2966° N, 103.8500° E</span>
-      <span id="globe-zone" class="ro-zone">Tropical zone</span>
-    </div>
-    <span class="globe-hint">Drag to spin · tap to drop a pin</span>
-  </div>
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">In-class Exercise 4</h1>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
-<script>
-(function () {
-  function initGlobe() {
-    if (typeof d3 === 'undefined') { setTimeout(initGlobe, 200); return; }
 
-    var svg = d3.select('#globe');
-    var wrap = document.getElementById('globe-wrap');
-    if (!svg.node() || !wrap) return;
 
-    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // state
-    var mLon = 103.8500, mLat = 1.2966;   // default: Singapore
-    var paused = false, resumeAt = 0;
+<div class="quarto-title-meta">
 
-    // theme colors
-    function themeColors() {
-      var cs = getComputedStyle(document.body);
-      var g = function (n, f) { var v = cs.getPropertyValue(n).trim(); return v || f; };
-      return {
-        surface: g('--surface', '#ffffff'),
-        teal:    g('--teal',    '#17A398'),
-        tealDeep:g('--teal-deep','#0E7C74'),
-        violet:  g('--violet',  '#6C5CE7'),
-        cyan:    g('--cyan',    '#22D3EE'),
-        line:    g('--line',    '#E4E6E1'),
-        ink:     g('--ink',     '#16232B')
-      };
-    }
-    function isDark() { return document.body.classList.contains('quarto-dark'); }
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Nor Hendra </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 19, 2026</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">September 19, 2026</p>
+    </div>
+  </div>
+    
+  </div>
+  
 
-    // projection + path
-    var projection = d3.geoOrthographic().clipAngle(90).precision(0.3);
-    var path = d3.geoPath(projection);
-    var graticule = d3.geoGraticule10();
 
-    // svg scaffolding
-    var defs = svg.append('defs');
-    var oceanGrad = defs.append('radialGradient')
-      .attr('id', 'oceanGrad').attr('cx', '35%').attr('cy', '30%').attr('r', '75%');
-    var oStop1 = oceanGrad.append('stop').attr('offset', '0%');
-    var oStop2 = oceanGrad.append('stop').attr('offset', '100%');
+</header>
 
-    var glow = defs.append('filter').attr('id', 'markerGlow')
-      .attr('x', '-80%').attr('y', '-80%').attr('width', '260%').attr('height', '260%');
-    glow.append('feGaussianBlur').attr('stdDeviation', '3').attr('result', 'b');
-    var fm = glow.append('feMerge');
-    fm.append('feMergeNode').attr('in', 'b');
-    fm.append('feMergeNode').attr('in', 'SourceGraphic');
 
-    var spherePath = svg.append('path').attr('class', 'g-sphere');
-    var haloPath   = svg.append('path').attr('class', 'g-halo');
-    var gratPath   = svg.append('path').attr('class', 'g-grat');
-    var landPath   = svg.append('path').attr('class', 'g-land');
-
-    var markerG = svg.append('g').attr('class', 'g-marker');
-    var ring = markerG.append('circle').attr('class', 'm-ring').attr('r', 6).attr('fill', 'none');
-    ring.append('animate').attr('attributeName', 'r').attr('values', '5;16').attr('dur', '2s').attr('repeatCount', 'indefinite');
-    ring.append('animate').attr('attributeName', 'opacity').attr('values', '0.9;0').attr('dur', '2s').attr('repeatCount', 'indefinite');
-    var dot = markerG.append('circle').attr('class', 'm-dot').attr('r', 4).attr('filter', 'url(#markerGlow)');
-
-    var width = 0, height = 0, radius = 0;
-
-    function applyColors() {
-      var c = themeColors();
-      var dark = isDark();
-      oStop1.attr('stop-color', dark ? '#12262A' : '#FFFFFF');
-      oStop2.attr('stop-color', dark ? '#0C1A1D' : '#E9F3F1');
-      spherePath.attr('fill', 'url(#oceanGrad)').attr('stroke', c.teal).attr('stroke-opacity', dark ? 0.5 : 0.35).attr('stroke-width', 1);
-      haloPath.attr('fill', 'none').attr('stroke', c.violet).attr('stroke-opacity', 0.25).attr('stroke-width', 6);
-      gratPath.attr('fill', 'none').attr('stroke', c.teal).attr('stroke-opacity', dark ? 0.18 : 0.14).attr('stroke-width', 0.5);
-      landPath.attr('fill', c.teal).attr('fill-opacity', dark ? 0.55 : 0.72).attr('stroke', dark ? '#0C1A1D' : '#FFFFFF').attr('stroke-opacity', 0.5).attr('stroke-width', 0.4);
-      ring.attr('stroke', c.cyan).attr('stroke-width', 2);
-      dot.attr('fill', c.cyan).attr('stroke', dark ? '#0C1A1D' : '#FFFFFF').attr('stroke-width', 1.5);
-    }
-
-    var landFeature = null;
-
-    function resize() {
-      width = Math.max(220, Math.min(wrap.clientWidth, 420));
-      height = width;
-      radius = width / 2 - 6;
-      svg.attr('viewBox', '0 0 ' + width + ' ' + height)
-         .attr('width', width).attr('height', height);
-      projection.scale(radius).translate([width / 2, height / 2]);
-      haloPath.attr('d', path({ type: 'Sphere' }));
-      redraw();
-    }
-
-    function redraw() {
-      spherePath.attr('d', path({ type: 'Sphere' }));
-      gratPath.attr('d', path(graticule));
-      if (landFeature) landPath.attr('d', path(landFeature));
-      updateMarker();
-    }
-
-    function updateMarker() {
-      var rot = projection.rotate();
-      var center = [-rot[0], -rot[1]];
-      var visible = d3.geoDistance([mLon, mLat], center) < Math.PI / 2;
-      if (visible) {
-        var p = projection([mLon, mLat]);
-        markerG.style('display', null).attr('transform', 'translate(' + p[0] + ',' + p[1] + ')');
-      } else {
-        markerG.style('display', 'none');
-      }
-    }
-
-    function zoneOf(lat) {
-      var a = Math.abs(lat);
-      if (a < 23.5) return 'Tropical zone';
-      if (a < 66.5) return 'Temperate zone';
-      return 'Polar zone';
-    }
-    function fmt(lon, lat) {
-      var ns = lat >= 0 ? 'N' : 'S';
-      var ew = lon >= 0 ? 'E' : 'W';
-      return Math.abs(lat).toFixed(4) + '° ' + ns + ', ' + Math.abs(lon).toFixed(4) + '° ' + ew;
-    }
-    function updateReadout() {
-      var co = document.getElementById('globe-coords');
-      var zo = document.getElementById('globe-zone');
-      if (co) co.textContent = fmt(mLon, mLat);
-      if (zo) zo.textContent = zoneOf(mLat);
-    }
-
-    function rotateTo(lon, lat) {
-      var r0 = projection.rotate();
-      var target = [-lon, -lat, 0];
-      if (reduceMotion) { projection.rotate(target); redraw(); return; }
-      d3.transition().duration(900).tween('rotate', function () {
-        var i = d3.interpolate(r0, target);
-        return function (t) { projection.rotate(i(t)); redraw(); };
-      });
-    }
-
-    function setMarker(lon, lat, spin) {
-      mLon = lon; mLat = lat;
-      updateReadout();
-      if (spin) rotateTo(lon, lat); else redraw();
-      paused = true; resumeAt = d3.now() + 2600;
-    }
-
-    // drag to spin, tap to drop a pin. native pointer events for mouse and touch
-    var svgNode = svg.node();
-    var dragging = false, activeId = null;
-    var startPx = 0, startPy = 0, rotAtStart = null, moved = 0, lastPt = [0, 0];
-
-    // map a pointer event to globe (viewBox) coordinates
-    function toGlobe(e) {
-      var rect = svgNode.getBoundingClientRect();
-      var sx = rect.width  ? width  / rect.width  : 1;
-      var sy = rect.height ? height / rect.height : 1;
-      return [(e.clientX - rect.left) * sx, (e.clientY - rect.top) * sy];
-    }
-
-    svgNode.addEventListener('pointerdown', function (e) {
-      dragging = true;
-      activeId = e.pointerId;
-      try { svgNode.setPointerCapture(e.pointerId); } catch (err) {}
-      paused = true;
-      rotAtStart = projection.rotate();
-      var pt = toGlobe(e);
-      startPx = pt[0]; startPy = pt[1]; moved = 0; lastPt = pt;
-      svg.style('cursor', 'grabbing');
-      e.preventDefault();
-    }, { passive: false });
-
-    svgNode.addEventListener('pointermove', function (e) {
-      if (!dragging || e.pointerId !== activeId) return;
-      var pt = toGlobe(e);
-      lastPt = pt;
-      var dx = pt[0] - startPx, dy = pt[1] - startPy;
-      moved = Math.max(moved, Math.hypot(dx, dy));
-      var k = 75 / projection.scale();
-      projection.rotate([
-        rotAtStart[0] + dx * k,
-        rotAtStart[1] - dy * k,
-        rotAtStart[2]
-      ]);
-      redraw();
-      e.preventDefault();
-    }, { passive: false });
-
-    function endPointer(e) {
-      if (!dragging) return;
-      dragging = false;
-      svg.style('cursor', 'grab');
-      var pt = lastPt;
-      if (moved < 6) {
-        var cx = width / 2, cy = height / 2;
-        if (Math.hypot(pt[0] - cx, pt[1] - cy) <= radius) {
-          var inv = projection.invert(pt);
-          if (inv && isFinite(inv[0]) && isFinite(inv[1])) {
-            setMarker(inv[0], inv[1], true);
-            return;
-          }
-        }
-      }
-      paused = true; resumeAt = d3.now() + 1500;
-    }
-    svgNode.addEventListener('pointerup', endPointer);
-    svgNode.addEventListener('pointercancel', function () {
-      dragging = false;
-      svg.style('cursor', 'grab');
-      paused = true; resumeAt = d3.now() + 1500;
-    });
-    svg.style('cursor', 'grab');
-
-    // auto-rotation
-    var last = d3.now();
-    d3.timer(function () {
-      var now = d3.now();
-      var diff = now - last; last = now;
-      if (resumeAt && now > resumeAt) { paused = false; resumeAt = 0; }
-      if (paused || reduceMotion) return;
-      var r = projection.rotate();
-      r[0] += diff * 0.008;
-      projection.rotate(r);
-      redraw();
-    });
-
-    // locate me
-    var locateBtn = document.getElementById('locate-btn');
-    if (locateBtn) {
-      locateBtn.addEventListener('click', function () {
-        if (!navigator.geolocation) { flashBtn('Not supported'); return; }
-        flashBtn('Locating…');
-        navigator.geolocation.getCurrentPosition(
-          function (pos) {
-            setMarker(pos.coords.longitude, pos.coords.latitude, true);
-            flashBtn('Located', true);
-          },
-          function () { flashBtn('Unavailable'); },
-          { timeout: 8000, enableHighAccuracy: false }
-        );
-      });
-    }
-    function flashBtn(msg, ok) {
-      if (!locateBtn) return;
-      locateBtn.classList.toggle('is-ok', !!ok);
-      if (locateBtn.lastChild) locateBtn.lastChild.textContent = ' ' + msg;
-      setTimeout(function () {
-        if (locateBtn.lastChild) locateBtn.lastChild.textContent = ' Locate me';
-        locateBtn.classList.remove('is-ok');
-      }, 2200);
-    }
-
-    // recolor on theme switch
-    new MutationObserver(applyColors)
-      .observe(document.body, { attributes: true, attributeFilter: ['class'] });
-
-    // boot
-    applyColors();
-    projection.rotate([-mLon, -15, 0]);
-    updateReadout();
-    resize();
-    window.addEventListener('resize', resize);
-
-    // land data, fall back to wireframe if it fails
-    d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json')
-      .then(function (world) {
-        landFeature = topojson.feature(world, world.objects.land);
-        applyColors();
-        redraw();
-      })
-      .catch(function () { /* keep wireframe globe */ });
-  }
-
-  if (document.readyState !== 'loading') initGlobe();
-  else document.addEventListener('DOMContentLoaded', initGlobe);
-})();
-</script>
-<section id="latest-exercises" class="level2">
-<h2 class="anchored" data-anchor-id="latest-exercises">Latest Exercises</h2>
-
+<section id="loading-the-package" class="level1">
+<h1>1. Loading the Package</h1>
+<div style="font-size: 1.50em">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(sf, spdep, tmap, tidyverse, knitr, GWmodel, ggstatsplot)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</section>
+<section id="preparing-the-data" class="level1">
+<h1>2. Preparing the Data</h1>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">2.1 Loading the Data</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">2.2 Importing the csv file</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">2.3 Performing the relational join</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>hunan <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data/geospatial"</span>, </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">layer =</span> <span class="st">"Hunan"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `Hunan' from data source 
+  `/Users/norhendra/norhendra/ISSS626-GAA/In-class_Ex/In-class_Ex04/data/geospatial' 
+  using driver `ESRI Shapefile'
+Simple feature collection with 88 features and 7 fields
+Geometry type: POLYGON
+Dimension:     XY
+Bounding box:  xmin: 108.7831 ymin: 24.6342 xmax: 114.2544 ymax: 30.12812
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>hunan2012 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/Hunan_2012.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>hunan_sf <span class="ot">&lt;-</span> <span class="fu">left_join</span>(hunan, hunan2012) <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">7</span>, <span class="dv">15</span>, <span class="dv">16</span>, <span class="dv">31</span>, <span class="dv">32</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="mapping-gdppc" class="level1">
+<h1>3. Mapping GDPPC</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>basemap <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(hunan_sf) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>() <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_text</span>(<span class="st">"NAME_3"</span>, <span class="at">size=</span><span class="fl">0.5</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>gdppc <span class="ot">&lt;-</span> <span class="fu">qtm</span>(hunan_sf, <span class="st">"GDPPC"</span>) <span class="sc">+</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="st">"left"</span>, <span class="st">"bottom"</span>))  </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(basemap, gdppc, <span class="at">asp=</span><span class="dv">1</span>, <span class="at">ncol=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="In-class_Ex04_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="1536"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="converting-to-spatialpolygondataframe" class="level1">
+<h1>4. Converting to SpatialPolygonDataFrame</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>hunan_sp <span class="ot">&lt;-</span> hunan_sf <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_Spatial</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="gssw-with-bandwidth-adaptivefixed" class="level1">
+<h1>5. GSSW with bandwidth (adaptive/fixed)</h1>
+<section id="determine-adaptive-bandwidth" class="level2">
+<h2 class="anchored" data-anchor-id="determine-adaptive-bandwidth">5.1 Determine adaptive bandwidth</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Cross-validation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">AICc</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>bw_CV <span class="ot">&lt;-</span> <span class="fu">bw.gwr</span>(GDPPC <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> hunan_sp,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">approach =</span> <span class="st">"CV"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">adaptive =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">kernel =</span> <span class="st">"bisquare"</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">longlat =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Adaptive bandwidth: 62 CV score: 15515442343 
+Adaptive bandwidth: 46 CV score: 14937956887 
+Adaptive bandwidth: 36 CV score: 14408561608 
+Adaptive bandwidth: 29 CV score: 14198527496 
+Adaptive bandwidth: 26 CV score: 13898800611 
+Adaptive bandwidth: 22 CV score: 13662299974 
+Adaptive bandwidth: 22 CV score: 13662299974 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>bw_AIC <span class="ot">&lt;-</span> <span class="fu">bw.gwr</span>(GDPPC <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> hunan_sp,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">approach =</span> <span class="st">"AICc"</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">adaptive =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">kernel =</span> <span class="st">"bisquare"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">longlat =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Adaptive bandwidth (number of nearest neighbours): 62 AICc value: 1923.156 
+Adaptive bandwidth (number of nearest neighbours): 46 AICc value: 1920.469 
+Adaptive bandwidth (number of nearest neighbours): 36 AICc value: 1917.324 
+Adaptive bandwidth (number of nearest neighbours): 29 AICc value: 1916.661 
+Adaptive bandwidth (number of nearest neighbours): 26 AICc value: 1914.897 
+Adaptive bandwidth (number of nearest neighbours): 22 AICc value: 1914.045 
+Adaptive bandwidth (number of nearest neighbours): 22 AICc value: 1914.045 </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="determine-fixed-bandwidth" class="level2">
+<h2 class="anchored" data-anchor-id="determine-fixed-bandwidth">5.2 Determine fixed bandwidth</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Cross-validation</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">AICc</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>bw_CV_fix <span class="ot">&lt;-</span> <span class="fu">bw.gwr</span>(GDPPC <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> hunan_sp,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">approach =</span> <span class="st">"CV"</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">adaptive =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">kernel =</span> <span class="st">"bisquare"</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">longlat =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Fixed bandwidth: 357.4897 CV score: 16265191728 
+Fixed bandwidth: 220.985 CV score: 14954930931 
+Fixed bandwidth: 136.6204 CV score: 14134185837 
+Fixed bandwidth: 84.48025 CV score: 13693362460 
+Fixed bandwidth: 52.25585 CV score: Inf 
+Fixed bandwidth: 104.396 CV score: 13891052305 
+Fixed bandwidth: 72.17162 CV score: 13577893677 
+Fixed bandwidth: 64.56447 CV score: 14681160609 
+Fixed bandwidth: 76.8731 CV score: 13444716890 
+Fixed bandwidth: 79.77877 CV score: 13503296834 
+Fixed bandwidth: 75.07729 CV score: 13452450771 
+Fixed bandwidth: 77.98296 CV score: 13457916138 
+Fixed bandwidth: 76.18716 CV score: 13442911302 
+Fixed bandwidth: 75.76323 CV score: 13444600639 
+Fixed bandwidth: 76.44916 CV score: 13442994078 
+Fixed bandwidth: 76.02523 CV score: 13443285248 
+Fixed bandwidth: 76.28724 CV score: 13442844774 
+Fixed bandwidth: 76.34909 CV score: 13442864995 
+Fixed bandwidth: 76.24901 CV score: 13442855596 
+Fixed bandwidth: 76.31086 CV score: 13442847019 
+Fixed bandwidth: 76.27264 CV score: 13442846793 
+Fixed bandwidth: 76.29626 CV score: 13442844829 
+Fixed bandwidth: 76.28166 CV score: 13442845238 
+Fixed bandwidth: 76.29068 CV score: 13442844678 
+Fixed bandwidth: 76.29281 CV score: 13442844691 
+Fixed bandwidth: 76.28937 CV score: 13442844698 
+Fixed bandwidth: 76.2915 CV score: 13442844676 
+Fixed bandwidth: 76.292 CV score: 13442844679 
+Fixed bandwidth: 76.29119 CV score: 13442844676 
+Fixed bandwidth: 76.29099 CV score: 13442844676 
+Fixed bandwidth: 76.29131 CV score: 13442844676 
+Fixed bandwidth: 76.29138 CV score: 13442844676 
+Fixed bandwidth: 76.29126 CV score: 13442844676 
+Fixed bandwidth: 76.29123 CV score: 13442844676 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>bw_AIC_fix <span class="ot">&lt;-</span> <span class="fu">bw.gwr</span>(GDPPC <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> hunan_sp,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">approach =</span> <span class="st">"AICc"</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">adaptive =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">kernel =</span> <span class="st">"bisquare"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">longlat =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Fixed bandwidth: 357.4897 AICc value: 1927.631 
+Fixed bandwidth: 220.985 AICc value: 1921.547 
+Fixed bandwidth: 136.6204 AICc value: 1919.993 
+Fixed bandwidth: 84.48025 AICc value: 1940.603 
+Fixed bandwidth: 168.8448 AICc value: 1919.457 
+Fixed bandwidth: 188.7606 AICc value: 1920.007 
+Fixed bandwidth: 156.5362 AICc value: 1919.41 
+Fixed bandwidth: 148.929 AICc value: 1919.527 
+Fixed bandwidth: 161.2377 AICc value: 1919.392 
+Fixed bandwidth: 164.1433 AICc value: 1919.403 
+Fixed bandwidth: 159.4419 AICc value: 1919.393 
+Fixed bandwidth: 162.3475 AICc value: 1919.394 
+Fixed bandwidth: 160.5517 AICc value: 1919.391 </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="computing-geographically-weighted-summary-statistics" class="level1">
+<h1>6. Computing geographically weighted summary statistics</h1>
+<p>The code chunk below computes geographically wieghted summary statistics by using gwss() of GWmodel package. The analysis is performed using adaptive distance weighted. The distance is derived using AICc method and the kernel method used is bisquare.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>gwstat <span class="ot">&lt;-</span> <span class="fu">gwss</span> (<span class="at">data =</span> hunan_sp,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">vars =</span> <span class="st">"GDPPC"</span>,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">bw =</span> bw_AIC,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">kernel =</span> <span class="st">"bisquare"</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">quantile =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">adaptive =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">longlat =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="preparing-the-output-data" class="level1">
+<h1>7. Preparing the output data</h1>
+<p>Code chunk is used to extract SDF data table from gwss object output from gwss() for subsequent geovilisation. It will be converted into data.frame by using as.data.frame().</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>gwstat_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(gwstat<span class="sc">$</span>SDF)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, cbind() used to append the newly derived data.frame onto hunan_sf sf data.frame.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>hunan_gstat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(hunan_sf,gwstat_df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="visualising-geographically-weighted-summary-statistics" class="level1">
+<h1>8. Visualising geographically weighted summary statistics</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(hunan_gstat) <span class="sc">+</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">fill =</span> <span class="st">"GDPPC_LM"</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">fill.scale =</span> <span class="fu">tm_scale_intervals</span>(</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">style =</span> <span class="st">"quantile"</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">n =</span> <span class="dv">5</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">values =</span> <span class="st">"brewer.reds"</span>),</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">fill.legend =</span> <span class="fu">tm_legend</span>(</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">title =</span> <span class="st">"local Mean"</span>)) <span class="sc">+</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">fill_alpha =</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_title</span>(<span class="st">"Distribution of geographically weighted mean"</span>) <span class="sc">+</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="st">"left"</span>,<span class="st">"bottom"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="In-class_Ex04_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<pre><code>          )
+          ))</code></pre>
 
 
 </section>
 
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-listing-date-sort="1789747200000" data-listing-file-modified-sort="1789804281697" data-listing-date-modified-sort="1789804281000" data-listing-reading-time-sort="4" data-listing-word-count-sort="791">
-<a href="./In-class_Ex/In-class_Ex04/In-class_Ex04.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img loading='lazy' src="In-class_Ex/In-class_Ex04/In-class_Ex04_files/figure-html/unnamed-chunk-5-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-In-class Exercise 4
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Nor Hendra
-</div>
-<div class="listing-date">
-Sep 19, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="1" data-listing-date-sort="1789228800000" data-listing-file-modified-sort="1789281283328" data-listing-date-modified-sort="1789281283000" data-listing-reading-time-sort="18" data-listing-word-count-sort="3409">
-<a href="./Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img loading='lazy' src="Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04_files/figure-html/unnamed-chunk-5-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-on Exercise 4: Spatial Weights and Applications
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Nor Hendra
-</div>
-<div class="listing-date">
-Sep 13, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="2" data-listing-date-sort="1788537600000" data-listing-file-modified-sort="1789199692555" data-listing-date-modified-sort="1789199692000" data-listing-reading-time-sort="24" data-listing-word-count-sort="4799">
-<a href="./Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img loading='lazy' src="Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03_files/figure-html/unnamed-chunk-23-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-on Exercise 3: Spatio-Temporal Point Patterns Analysis
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Nor Hendra
-</div>
-<div class="listing-date">
-Sep 5, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="3" data-listing-date-sort="1787932800000" data-listing-file-modified-sort="1788590951015" data-listing-date-modified-sort="1788590951000" data-listing-reading-time-sort="19" data-listing-word-count-sort="3754">
-<a href="./Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02A.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img loading='lazy' src="Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02A_files/figure-html/unnamed-chunk-7-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-on Exercise 2A: 1st Order Spatial Point Patterns Analysis Method
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Nor Hendra
-</div>
-<div class="listing-date">
-Aug 29, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="4" data-listing-date-sort="1787932800000" data-listing-file-modified-sort="1788590958790" data-listing-date-modified-sort="1788590958000" data-listing-reading-time-sort="12" data-listing-word-count-sort="2204">
-<a href="./Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02B.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img loading='lazy' src="Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02B_files/figure-html/unnamed-chunk-7-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-on Exercise 2B: 2nd Order Spatial Point Patterns Analysis Methods
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Nor Hendra
-</div>
-<div class="listing-date">
-Aug 29, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="5" data-listing-date-sort="1787414400000" data-listing-file-modified-sort="1788590938687" data-listing-date-modified-sort="1788590938000" data-listing-reading-time-sort="18" data-listing-word-count-sort="3521">
-<a href="./Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01A.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img loading='lazy' src="Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01A_files/figure-html/unnamed-chunk-8-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-on Exercise 1A: Geospatial Data Science with R
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Nor Hendra
-</div>
-<div class="listing-date">
-Aug 23, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-<div class="g-col-1" data-index="6" data-listing-date-sort="1787414400000" data-listing-file-modified-sort="1788590776363" data-listing-date-modified-sort="1788590776000" data-listing-reading-time-sort="38" data-listing-word-count-sort="7454">
-<a href="./Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01B.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img loading='lazy' src="Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01B_files/figure-html/unnamed-chunk-13-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Hands-on Exercise 1B: Thematic Mapping and GeoVisualisation with R
-</h5>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Nor Hendra
-</div>
-<div class="listing-date">
-Aug 23, 2026
-</div>
-</div>
-</div>
-</div></a>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script>
   (function () {
     function initReveal() {
