@@ -14,13 +14,17 @@ execute:
 ---
 
 # 1. Loading the Package
+
 ::: {style ="font-size: 1.50em"}
+
 ```{r}
 pacman::p_load(sf, spdep, tmap, tidyverse, knitr, GWmodel, ggstatsplot)
 ```
+
 :::
 
 # 2. Preparing the Data
+
 ::: panel-tabset
 ### 2.1 Loading the Data
 
@@ -72,6 +76,7 @@ hunan_sp <- hunan_sf %>%
 
 ::: panel-tabset
 ### Cross-validation
+
 ```{r}
 bw_CV <- bw.gwr(GDPPC ~ 1,
             data = hunan_sp,
@@ -80,6 +85,7 @@ bw_CV <- bw.gwr(GDPPC ~ 1,
             kernel = "bisquare",
             longlat = T)
 ```
+
 ### AICc
 
 ```{r}
@@ -96,6 +102,7 @@ bw_AIC <- bw.gwr(GDPPC ~ 1,
 
 ::: panel-tabset
 ### Cross-validation
+
 ```{r}
 bw_CV_fix <- bw.gwr(GDPPC ~ 1,
             data = hunan_sp,
@@ -104,6 +111,7 @@ bw_CV_fix <- bw.gwr(GDPPC ~ 1,
             kernel = "bisquare",
             longlat = T)
 ```
+
 ### AICc
 
 ```{r}
@@ -119,6 +127,7 @@ bw_AIC_fix <- bw.gwr(GDPPC ~ 1,
 # 6. Computing geographically weighted summary statistics
 
 The code chunk below computes geographically wieghted summary statistics by using gwss() of GWmodel package. The analysis is performed using adaptive distance weighted. The distance is derived using AICc method and the kernel method used is bisquare.
+
 ```{r}
 gwstat <- gwss (data = hunan_sp,
                 vars = "GDPPC",
@@ -143,7 +152,7 @@ Next, cbind() used to append the newly derived data.frame onto hunan_sf sf data.
 hunan_gstat <- cbind(hunan_sf,gwstat_df)
 ```
 
-# 8. Visualising geographically weighted summary statistics 
+# 8. Visualising geographically weighted summary statistics
 
 ```{r}
 #| fig-height: 8
