@@ -388,7 +388,7 @@ Stages 2 and 3 differ only in their null model, so running both also serves as a
 
 ## 4 · Where: one dominant hotspot
 
-:::::: columns
+::::::: columns
 ::: {.column width="40%"}
 ```{r}
 #| label: slide-kde-map
@@ -413,17 +413,19 @@ tm_shape(kde_terra_km2) +
 ```
 :::
 
-:::: {.column width="60%"}
+::::: {.column width="60%"}
+::: small
 - A [single dominant hotspot]{.k} at `r sprintf("%.3f", peak_lon)`°E, `r sprintf("%.3f", abs(peak_lat))`°S, reaching [`r sprintf("%.2f", b$peak_row$value_per_km2)` fires/km²]{.k}, more than triple any other elevated area.
 - Beyond it, a chain of smaller 1 to 2 fires/km² patches on a similar north to south alignment, forming a [loose alignment of distinct clusters]{.t} rather than one continuous band.
 - The quadrat test rejects uniform intensity decisively (X² = `r qt_x2`, df = `r qt_df`, p \< 2.2 × 10⁻¹⁶).
 - The KDE peak falls [inside the highest-count tile]{.t} (`r b$max_tile_count` detections, `r sprintf("%.1f", b$max_tile_area_km2)` km²), verified by containment testing rather than read off the map.
+:::
 
 ::: footnote
 \* Intensity is not risk. This surface records where fires were detected, which depends on satellite overpass, cloud cover and terrain as well as on fire occurrence.
 :::
-::::
-::::::
+:::::
+:::::::
 
 ## 5 · When: a late-season surge
 
