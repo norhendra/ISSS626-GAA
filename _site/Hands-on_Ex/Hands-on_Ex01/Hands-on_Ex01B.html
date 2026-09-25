@@ -336,6 +336,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html">
  <span class="dropdown-text">Hands-on Exercise 3</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html">
+ <span class="dropdown-text">Hands-on Exercise 4</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05A.html">
+ <span class="dropdown-text">Hands-on Exercise 5A</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05B.html">
+ <span class="dropdown-text">Hands-on Exercise 5B</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-in-class-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">In-class Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex04/In-class_Ex04.html">
+ <span class="dropdown-text">In-class Exercise 4</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-take-home-exercise" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Take-home Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html">
+ <span class="dropdown-text">Take-home Exercise 1 - Technical Report</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex01/Take-home_Ex01_ExecSummary.html">
+ <span class="dropdown-text">Take-home Exercise 1 - Executive Summary</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -1931,6 +1969,54 @@ Note
     else { document.addEventListener('DOMContentLoaded', initReveal); }
   })();
 </script>
+<!-- Announcement banner -->
+<div id="announcement-banner" style="
+  background-color: #90EE90;
+  color: #000000;
+  font-weight: 600;
+  padding: 8px 0;
+  font-size: 1rem;
+  font-family: inherit;
+  overflow: hidden;
+  white-space: nowrap;
+  border-bottom: 1px solid #333;
+  z-index: 1030;
+  position: relative;
+">
+  <div id="announcement-text" style="
+    display: inline-block;
+    animation: marquee 15s linear infinite;
+    padding-left: 100%;
+  ">
+    📣 Hands-on Exercise 5 uploaded on 20 September 2026  | Take-home Exercise 1: Technical Report and Executive Summary uploaded </div>
+</div>
+
+<style>
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+#announcement-banner:hover #announcement-text {
+  animation-play-state: paused;
+}
+.navbar {
+  z-index: 1040 !important;
+}
+.navbar .dropdown-menu {
+  z-index: 1050 !important;
+}
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const banner = document.getElementById("announcement-banner");
+    const navbar = document.querySelector(".navbar");
+    if (navbar && banner) {
+      navbar.parentNode.insertBefore(banner, navbar.nextSibling);
+    }
+  });
+</script>
+
 <button id="back-to-top" aria-label="Back to top" title="Back to top">
   <svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M12 19V5"></path><path d="M5 12l7-7 7 7"></path>
@@ -1980,7 +2066,6 @@ Note
         });
         el.textContent = now + ' SGT';
       } catch (e) {
-        // fallback
         el.textContent = new Date().toLocaleTimeString();
       }
     }

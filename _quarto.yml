@@ -35,7 +35,12 @@ website:
         menu:
           - text: "In-class Exercise 4"
             href: "In-class_Ex/In-class_Ex04/In-class_Ex04.html"
-      #- text: "Take-home Exercise"
+      - text: "Take-home Exercise"
+        menu:
+          - text: "Take-home Exercise 1 - Technical Report"
+            href: "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html"
+          - text: "Take-home Exercise 1 - Executive Summary"
+            href: "Take-home_Ex/Take-home_Ex01/Take-home_Ex01_ExecSummary.html"
        # menu:
        #   - text: "Take-home Exercise 1"
         #    href: "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html"

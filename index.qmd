@@ -5,7 +5,7 @@ listing:
   type: grid
   contents:
     - "Hands-on_Ex/*/*.qmd"
-    # - "Take-home_Ex/*/*.qmd"
+    - "Take-home_Ex/*/*.qmd"
     - "In-class_Ex/*/*.qmd"
   sort: "date desc"
   fields: [date, title, image, author]

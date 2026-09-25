@@ -1,0 +1,704 @@
+---
+pagetitle: "Fire Point Patterns in Kapuas Regency"
+format:
+  revealjs:
+    theme: default
+    slide-level: 2
+    slide-number: c/t
+    width: 1250
+    height: 760
+    transition: slide
+    background-transition: fade
+    embed-resources: true
+    fig-align: center
+    include-in-header:
+      text: |
+        <style>
+        :root {
+          --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                     "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+          --font-mono: "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+          --ink:    #1d1d1f;
+          --soft:   #55555a;
+          --ember:  #b8402f;
+          --teal:   #0f6a8b;
+          --green:  #1b6b3a;
+          --amber:  #8a5a00;
+          --violet: #5b2d8e;
+          --hair:   #e3e3e6;
+        }
+
+        .reveal { font-family: var(--font-ui); color: var(--ink); }
+        .reveal h1, .reveal h2, .reveal h3 {
+          font-family: var(--font-ui);
+          font-weight: 700;
+          letter-spacing: -0.022em;
+          text-transform: none;
+        }
+        .reveal h1 { font-size: 2.0em; }
+        .reveal h2 { font-size: 1.45em; }
+
+        /* Apple-style accent rule under content headings only */
+        .reveal .slides section:not(.cover-hero):not(.closer-hero) > h2::after {
+          content: "";
+          display: block;
+          width: 62px;
+          height: 3px;
+          border-radius: 2px;
+          background: var(--ember);
+          margin-top: 10px;
+        }
+
+        .reveal p, .reveal li { font-size: 0.80em; }
+        .reveal .small p, .reveal .small li { font-size: 0.70em; }
+        .reveal .tiny p, .reveal .tiny li { font-size: 0.50em; line-height: 1.38; }
+        .reveal .micro p, .reveal .micro li { font-size: 0.43em; line-height: 1.35; }
+        .reveal .micro ul { margin-bottom: 0.35em; }
+
+        /* function names stay visually distinct from body copy */
+        .reveal code {
+          font-family: var(--font-mono);
+          font-size: 0.90em;
+          color: var(--teal);
+          background: rgba(15,106,139,0.08);
+          padding: 1px 5px;
+          border-radius: 4px;
+        }
+
+        /* inline emphasis palette */
+        .k { color: var(--ember); font-weight: 700; }
+        .t { color: var(--teal);  font-weight: 600; }
+        .g { color: var(--green); font-weight: 600; }
+        .a { color: var(--amber); font-weight: 600; }
+        .v { color: var(--violet); font-weight: 600; }
+
+        .refbox {
+          display: inline-block;
+          padding: 7px 15px;
+          margin-bottom: 10px;
+          border-left: 5px solid var(--soft);
+          background: #f4f4f6;
+          font-size: 0.72em;
+          border-radius: 3px;
+        }
+        .refbox.ref-flat { border-left-color: var(--amber); background: #fbf6ec; }
+        .refbox.ref-adj  { border-left-color: var(--teal);  background: #eef5f8; }
+
+        .caveat-green {
+          border-left: 4px solid var(--green);
+          background: #eef7f0;
+          padding: 7px 13px;
+          font-size: 0.62em;
+          color: var(--green);
+          margin-top: 12px;
+          border-radius: 3px;
+        }
+        .footnote {
+          font-size: 0.56em;
+          font-style: normal;
+          color: var(--ink);
+          border-left: 3px solid var(--hair);
+          padding-left: 13px;
+          margin-top: 14px;
+          line-height: 1.5;
+        }
+        .stepflow { padding: 4px 2px; font-size: 0.68em; }
+        .stepnum {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background: var(--soft);
+          color: #ffffff;
+          font-weight: 700;
+          font-size: 1em;
+          margin-bottom: 8px;
+        }
+        .stepnum.s1 { background: var(--teal); }
+        .stepnum.s2 { background: var(--soft); }
+        .stepnum.s3 { background: var(--ember); }
+        .stepnum.s4 { background: var(--violet); }
+
+        .funnel {
+          font-size: 0.78em;
+          line-height: 1.9;
+        }
+        .limhead {
+          color: var(--teal);
+          font-weight: 700;
+        }
+        .reveal .limlist li { margin-bottom: 10px; }
+        .rq {
+          color: var(--violet);
+          font-weight: 700;
+          font-style: italic;
+        }
+        .funnel b { color: var(--ember); }
+        .subhead { display: block; font-size: 1.05em; font-weight: 700; margin-bottom: 0.3em; }
+        .yes { color: #1b6b3a; font-weight: 600; }
+        .no  { color: #8a5a00; font-weight: 600; }
+        .reveal .slides section.cover-hero {
+          display: flex !important;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
+        .reveal .slides section.cover-hero h2 {
+          color: #ffffff !important;
+          text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+          text-align: center;
+          width: 100%;
+          margin-bottom: 28px;
+        }
+                .reveal .slides section.closer-hero {
+          display: flex !important;
+          flex-direction: column;
+          justify-content: center;
+          align-items: flex-start;
+          height: 100%;
+        }
+        .reveal .slides section.closer-hero h2 {
+          color: #ffffff !important;
+          text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+          text-align: left;
+          width: 100%;
+          margin-bottom: 28px;
+        }
+        </style>
+execute:
+  echo: false
+  warning: false
+  message: false
+  cache: true
+---
+
+```{r}
+#| label: deck-setup
+#| cache: false
+
+pacman::p_load(sf, dplyr, ggplot2, ggspatial, scales,
+               spatstat, terra, tmap, patchwork)
+
+b <- readRDS("data/deck_objects.rds")
+
+# helpers
+dep_above <- function(e) sum(e$obs > e$hi, na.rm = TRUE)
+dep_below <- function(e) sum(e$obs < e$lo, na.rm = TRUE)
+n_r       <- function(e) length(e$r)
+
+# first-order
+peak_lon <- b$peak_lonlat[1, "X"]
+peak_lat <- b$peak_lonlat[1, "Y"]
+qt_x2    <- unname(round(b$quadrat_test$statistic, 1))
+qt_df    <- unname(b$quadrat_test$parameter)
+
+# L-function (Stage 1), counted over non-zero distances
+L_nz      <- b$L_csr$r > 0
+L_max_km  <- max(b$L_csr$r, na.rm = TRUE) / 1000
+L_peak_km <- b$peak_r / 1000
+L_dep     <- sum(b$L_csr$obs[L_nz] > b$L_csr$hi[L_nz], na.rm = TRUE)
+L_n       <- sum(L_nz)
+L_exc     <- L_n - L_dep
+
+# Kinhom (Stage 2): gaps are all negative, so max = closest approach
+kin_gap     <- b$Kinhom_csr$obs - b$Kinhom_csr$hi
+kin_n       <- n_r(b$Kinhom_csr)
+kin_exceed  <- sum(kin_gap > 0, na.rm = TRUE)
+kin_nz      <- b$Kinhom_csr$r > 0
+kin_close_r <- b$Kinhom_csr$r[kin_nz][which.max(kin_gap[kin_nz])]
+
+fin_dep <- dep_below(b$Finhom_csr); fin_n <- n_r(b$Finhom_csr)
+gin_dep <- dep_below(b$Ginhom_csr); gin_n <- n_r(b$Ginhom_csr)
+
+# effect sizes
+fin_eff <- max(b$Finhom_csr$lo - b$Finhom_csr$obs, na.rm = TRUE)
+gin_eff <- max(b$Ginhom_csr$lo - b$Ginhom_csr$obs, na.rm = TRUE)
+
+# temporal
+peak_week      <- b$weekly_counts[which.max(b$weekly_counts$n_fires), ]
+pct_by_aug1    <- b$cumulative_df$cum_pct[max(which(b$cumulative_df$acq_date <= as.Date("2026-08-01")))]
+date_90pct     <- b$cumulative_df$acq_date[which(b$cumulative_df$cum_pct >= 90)[1]]
+
+# bonus
+sep_km        <- b$peak_separation_m / 1000
+intensity_x   <- b$peak_surge$value_per_km2 / b$peak_quiet$value_per_km2
+Lq_peak_km    <- b$L_quiet_csr$r[which.max(b$L_quiet_csr$obs)] / 1000
+Ls_peak_km    <- b$L_surge_csr$r[which.max(b$L_surge_csr$obs)] / 1000
+Lq_dep        <- dep_above(b$L_quiet_csr); Lq_n <- n_r(b$L_quiet_csr)
+Ls_dep        <- dep_above(b$L_surge_csr); Ls_n <- n_r(b$L_surge_csr)
+```
+
+## Fire Point Patterns in Kapuas Regency {.cover-hero background-image="images/forestfire1.jpg" background-size="cover"}
+
+::: {style="background: rgba(0,0,0,0.55); padding: 28px 40px; border-radius: 6px; color:#ffffff; text-align:center; max-width: 75%;"}
+Nor Hendra<br> ISSS626 Geospatial Analytics and Applications<br> Take-home Exercise 1
+
+<br>
+
+*Data from MODIS FIRMS*<br> *Central Kalimantan, 1 January to 11 September 2026*
+:::
+
+## Contents {background-color="#1a1a1a" style="color:#f5f5f5;"}
+
+:::::::: {style="color:#f5f5f5;"}
+::::::: columns
+:::: {.column width="50%"}
+::: small
+1.  **Research question**
+2.  **Study area and data**
+3.  **Analytical approach**
+4.  Key finding: where
+5.  Key finding: when
+:::
+::::
+
+:::: {.column width="50%"}
+::: small
+6.  Clustered beyond chance?
+7.  Clustered beyond geography?
+8.  Two distinct regimes (value-added)
+9.  **Limitations**
+10. **Public-safety implications**
+:::
+::::
+:::::::
+::::::::
+
+## 1 · Research question
+
+::: {.rq style="font-size: 1.15em; margin: 10px 0;"}
+Is Kapuas Regency's 2026 fire activity spatially clustered beyond what its already-known fire-prone geography would predict? If so, at what spatial scales?
+:::
+
+<br>
+
+::::: columns
+::: {.column width="48%"}
+[The descriptive half]{.subhead}
+
+Where is fire intensity highest, and is that concentration statistically real rather than small-sample variation?
+
+→ *first-order analysis*
+:::
+
+::: {.column width="48%"}
+[The demanding half]{.subhead}
+
+Once we grant that some parts of Kapuas are already more fire-prone, does an **unexplained** clustering signal remain?
+
+→ *second-order analysis, against an intensity-adjusted reference*
+:::
+:::::
+
+## 2 · Study area and data
+
+::::::: columns
+::: {.column width="42%"}
+```{r}
+#| label: slide-study-area
+#| fig-width: 3.6
+#| fig-height: 5.8
+
+ggplot() +
+  geom_sf(data = b$kapuas_boundary_utm, fill = "grey95", colour = "grey40") +
+  geom_sf(data = b$kapuas_fires_sf, colour = "firebrick",
+          size = 0.45, alpha = 0.45) +
+  annotation_scale(location = "bl", width_hint = 0.3) +
+  theme_void()
+```
+:::
+
+::::: {.column width="58%"}
+::: small
+**Selection was data-driven, not chosen then justified.** All `r b$n_regencies_screened` eligible Kalimantan regencies were screened on fire count and spread ratio; Kapuas is one of only two combining a substantial count with a spread ratio above 1.3 (`r b$spread_ratio_kapuas`).
+
+Corroborated independently: most of the Mega Rice Project's drained peatland falls within Kapuas, a documented driver of fire along roads and rivers (Thoha et al., 2019).
+:::
+
+::: funnel
+**`r format(b$n_raw, big.mark = ",")`** raw MODIS C61 records (archive + NRT)<br> ↓ collapse near-duplicates (23.4%), drop invalid FRP<br> **`r format(b$n_clean, big.mark = ",")`** point events<br> ↓ point-in-polygon to Kalimantan regencies<br> **`r format(b$n_kalimantan, big.mark = ",")`** in a regency<br> ↓ Kapuas, reprojected to EPSG:32750<br> <b>`r format(b$n_kapuas, big.mark = ",")` point events</b>
+:::
+:::::
+:::::::
+
+## 3 · Analytical approach
+
+::::::::::: columns
+:::: {.column width="24%"}
+::: stepflow
+[1]{.stepnum .s1}
+
+**First-order**
+
+Where is intensity elevated?
+
+Fixed-bandwidth KDE, `bw.ppl()` = `r round(b$bw_ppl_val, 3)` km
+
+Quadrat test vs CSR
+:::
+::::
+
+:::: {.column width="24%"}
+::: stepflow
+[2]{.stepnum .s2}
+
+**Second-order, flat null**
+
+Is there interaction beyond randomness?
+
+G, F, K / L against complete spatial randomness
+
+*Baseline only: the null is already known to be false for Kapuas*
+:::
+::::
+
+:::: {.column width="24%"}
+::: stepflow
+[3]{.stepnum .s3}
+
+**Second-order, adjusted null**
+
+Does clustering survive known geography?
+
+Kinhom, Ginhom, Finhom against Kapuas's own estimated intensity
+
+*Carries the interpretive weight*
+:::
+::::
+
+:::: {.column width="24%"}
+::: stepflow
+[4]{.stepnum .s4}
+
+**Value-added**
+
+Does pooling hide two regimes?
+
+Period split at the dry-season onset; KDE and L-function per period
+:::
+::::
+:::::::::::
+
+::: caveat-green
+Stages 2 and 3 differ only in their null model, so running both also serves as a sensitivity analysis on the reference itself.
+:::
+
+## 4 · Where: one dominant hotspot
+
+:::::: columns
+::: {.column width="40%"}
+```{r}
+#| label: slide-kde-map
+#| fig-width: 3.8
+#| fig-height: 5.9
+
+kde_terra <- rast(b$kde_kapuas_fixed_m)
+crs(kde_terra) <- "EPSG:32750"
+kde_terra_km2 <- kde_terra * 1e6
+
+tm_shape(kde_terra_km2) +
+  tm_raster(
+    col.scale = tm_scale_continuous_sqrt(values = "viridis",
+                                         ticks = c(0, 0.5, 1, 2, 4, 6)),
+    col.legend = tm_legend(title = "Fires\nper km²",
+                           title.size = 0.6, text.size = 0.5,
+                           position = tm_pos_out("right", "center"))
+  ) +
+  tm_shape(b$kapuas_boundary_utm) +
+  tm_borders(col = "white", lwd = 0.6) +
+  tm_scalebar(position = c("left", "bottom"))
+```
+:::
+
+:::: {.column width="60%"}
+- A [single dominant hotspot]{.k} at `r sprintf("%.3f", peak_lon)`°E, `r sprintf("%.3f", abs(peak_lat))`°S, reaching [`r sprintf("%.2f", b$peak_row$value_per_km2)` fires/km²]{.k}, more than triple any other elevated area.
+- Beyond it, a chain of smaller 1 to 2 fires/km² patches on a similar north to south alignment, forming a [loose alignment of distinct clusters]{.t} rather than one continuous band.
+- The quadrat test rejects uniform intensity decisively (X² = `r qt_x2`, df = `r qt_df`, p \< 2.2 × 10⁻¹⁶).
+- The KDE peak falls [inside the highest-count tile]{.t} (`r b$max_tile_count` detections, `r sprintf("%.1f", b$max_tile_area_km2)` km²), verified by containment testing rather than read off the map.
+
+::: footnote
+\* Intensity is not risk. This surface records where fires were detected, which depends on satellite overpass, cloud cover and terrain as well as on fire occurrence.
+:::
+::::
+::::::
+
+## 5 · When: a late-season surge
+
+```{r}
+#| label: slide-temporal
+#| fig-width: 10.5
+#| fig-height: 3.6
+
+ggplot(b$weekly_counts, aes(x = week_start, y = n_fires)) +
+  annotate("rect", xmin = as.Date("2026-08-01"), xmax = as.Date("2026-09-11"),
+           ymin = -Inf, ymax = Inf, fill = "orange", alpha = 0.10) +
+  geom_col(fill = "firebrick", alpha = 0.85, width = 6) +
+  geom_vline(xintercept = as.Date("2026-08-01"), linetype = "dashed",
+             colour = "grey40", linewidth = 0.4) +
+  annotate("text", x = as.Date("2026-08-03"),
+           y = max(b$weekly_counts$n_fires) * 1.02,
+           label = "Documented dry-season onset (August to October)", hjust = 0,
+           size = 3.2, colour = "grey30") +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+  labs(x = NULL, y = "Detections per week") +
+  theme_minimal(base_size = 13) +
+  theme(panel.grid.minor = element_blank())
+```
+
+::::::::: columns
+:::: {.column width="33%"}
+::: small
+[A step change.]{.k} Only [`r sprintf("%.2f", pct_by_aug1)`%]{.k} of the season's fires had occurred by 1 August.
+:::
+::::
+
+:::: {.column width="33%"}
+::: small
+[Peak week `r format(peak_week$week_start, "%d %b")`.]{.k} `r peak_week$n_fires` detections, `r sprintf("%.1f", peak_week$fires_per_day)` fires per day.
+:::
+::::
+
+:::: {.column width="33%"}
+::: small
+[A plateau after the peak.]{.k} Activity held near 52 to 54 fires per day to the close of the window. 90% was reached only on `r format(date_90pct, "%d %b")`.
+:::
+::::
+:::::::::
+
+## 6 · Clustered beyond chance? {auto-animate="true"}
+
+::: {.refbox .ref-flat data-id="refbox"}
+[Reference model]{.a} · complete spatial randomness, fires equally likely anywhere in Kapuas
+:::
+
+```{r}
+#| label: slide-lfunction
+#| fig-width: 8.6
+#| fig-height: 4.0
+
+L_df <- data.frame(
+  r_km = b$L_csr$r / 1000,
+  observed = b$L_csr$obs,
+  expected = b$L_csr$theo,
+  lo = b$L_csr$lo,
+  hi = b$L_csr$hi
+)
+
+ggplot(L_df, aes(x = r_km)) +
+  geom_ribbon(aes(ymin = lo, ymax = hi, fill = "Simulation envelope"), alpha = 0.4) +
+  geom_line(aes(y = expected, colour = "Randomness (flat at 0 by construction)"),
+            linetype = "dashed", linewidth = 0.6) +
+  geom_line(aes(y = observed, colour = "Observed pattern"), linewidth = 1) +
+  annotate("point", x = L_peak_km, y = b$peak_val, colour = "firebrick", size = 3) +
+  annotate("text", x = L_peak_km, y = b$peak_val + 900,
+           label = paste0("Strongest clustering\nat ~", round(L_peak_km, 1), " km"),
+           size = 3.4, hjust = 0.5, colour = "grey20") +
+  scale_colour_manual(name = NULL,
+    values = c("Observed pattern" = "black",
+               "Randomness (flat at 0 by construction)" = "firebrick")) +
+  scale_fill_manual(name = NULL, values = c("Simulation envelope" = "grey70")) +
+  labs(x = "Distance between fires (km)", y = "L(r) - r") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom")
+```
+
+::: footnote
+Observed L sits above the envelope at [`r L_dep` of `r L_n`]{.k} tested distances, peaking near [`r round(L_peak_km, 1)` km]{.k} and staying clear of the band out to `r round(L_max_km, 1)` km. The `r L_exc` exceptions are confined to the shortest distances, before the curve climbs above the envelope. The reference itself is not appropriate here. *Where: one dominant hotspot* already showed intensity is far from uniform, so part of this departure may simply be geography. *Clustered beyond geography?* puts that to the test.
+:::
+
+## 7 · Clustered beyond geography? {auto-animate="true"}
+
+::: {.refbox .ref-adj data-id="refbox"}
+[Reference model]{.t} · Kapuas's own estimated intensity surface, known fire-prone areas already built in
+:::
+
+```{r}
+#| label: slide-kinhom
+#| fig-width: 8.6
+#| fig-height: 4.0
+
+Kin_df <- data.frame(
+  r_km = b$Kinhom_csr$r / 1000,
+  gap  = b$Kinhom_csr$obs - b$Kinhom_csr$hi
+)
+
+ggplot(Kin_df, aes(x = r_km, y = gap)) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "grey50") +
+  annotate("text", x = max(Kin_df$r_km, na.rm = TRUE), y = 0,
+           label = "Adjusted null: zero means exactly as expected given location",
+           size = 3.0, hjust = 1, vjust = -0.8, colour = "grey45") +
+  geom_line(linewidth = 1, colour = "black") +
+  annotate("text",
+           x = mean(range(Kin_df$r_km, na.rm = TRUE)),
+           y = min(Kin_df$gap, na.rm = TRUE) * 0.42,
+           label = paste0("The curve never reaches zero, at any of the ",
+                          kin_n, " tested distances.\nNo clustering remains once known geography is the reference."),
+           size = 3.5, hjust = 0.5, colour = "grey20") +
+  scale_y_continuous(labels = label_number(scale_cut = cut_short_scale())) +
+  labs(x = "Distance between fires (km)", y = "Clustering beyond expected") +
+  theme_minimal(base_size = 12)
+```
+
+::: footnote
+[The answer is no.]{.k} `Kinhom` exceeds the adjusted null at [`r kin_exceed` of `r kin_n`]{.k} tested distances. Even at its closest approach, near `r round(kin_close_r / 1000, 1)` km, the observed curve stays below the bound. `Finhom` and `Ginhom` agree from different constructions, departing at only `r fin_dep` of `r fin_n` and `r gin_dep` of `r gin_n` distances, with largest magnitudes of `r sprintf("%.4f", fin_eff)` and `r sprintf("%.4f", gin_eff)`, too small and too scattered to claim either clustering or regularity. The large departure in *Clustered beyond chance?* was Kapuas's [geography]{.k} expressing itself, rather than fires interacting with each other.
+:::
+
+## 8 · Two distinct regimes
+
+:::::: columns
+::: {.column width="60%"}
+```{r}
+#| label: slide-quiet-surge-sidebyside
+#| fig-width: 9.5
+#| fig-height: 7.5
+#| out-width: "100%"
+
+coarsen <- function(im_obj) {
+  r <- rast(im_obj)
+  crs(r) <- "EPSG:32750"
+  r <- aggregate(r, fact = 4, fun = "mean", na.rm = TRUE)
+  df <- as.data.frame(r, xy = TRUE, na.rm = TRUE)
+  names(df)[3] <- "value"
+  df$rel <- df$value / max(df$value, na.rm = TRUE)
+  df
+}
+
+df_q <- coarsen(b$kde_quiet_km)
+df_s <- coarsen(b$kde_surge_km)
+
+peaks_utm <- data.frame(
+  x = c(b$peak_quiet$x, b$peak_surge$x),
+  y = c(b$peak_quiet$y, b$peak_surge$y),
+  who = c("Quiet peak", "Surge peak")
+)
+
+make_frame <- function(df, ttl, sub) {
+  ggplot() +
+    geom_raster(data = df, aes(x = x, y = y, fill = rel)) +
+    scale_fill_viridis_c(
+      name = "Relative\ndensity",
+      limits = c(0, 1), trans = "sqrt", na.value = "white",
+      breaks = c(0, 0.5, 1)) +
+    geom_sf(data = b$kapuas_boundary_utm, fill = NA,
+            colour = "white", linewidth = 0.4) +
+    geom_point(data = peaks_utm, aes(x = x, y = y, shape = who),
+               colour = "white", fill = "red3", size = 3, stroke = 0.9) +
+    scale_shape_manual(name = NULL, values = c("Quiet peak" = 21, "Surge peak" = 24)) +
+    coord_sf(datum = NA, expand = FALSE) +
+    labs(title = ttl, subtitle = sub) +
+    theme_void(base_size = 9) +
+    theme(legend.position = "right",
+          plot.title = element_text(face = "bold", size = 10, hjust = 0),
+          plot.subtitle = element_text(size = 7, colour = "grey30", hjust = 0),
+          plot.margin = margin(t = 4, r = 8, b = 4, l = 4))
+}
+
+p_q <- make_frame(df_q, "Quiet period",
+                  paste0("1 Jan to 31 Jul\n", b$n_quiet, " detections"))
+p_s <- make_frame(df_s, "Surge period",
+                  paste0("1 Aug to 11 Sep\n", format(b$n_surge, big.mark = ","), " detections"))
+
+p_q + plot_spacer() + p_s +
+  plot_layout(widths = c(1, 0.08, 1), guides = "collect") &
+  theme(legend.position = "bottom")
+```
+:::
+
+:::: {.column width="40%"}
+::: tiny
+The dominant hotspot did not form where the early activity was.
+
+- Peaks sit [`r sprintf("%.1f", sep_km)` km]{.k} apart, at roughly [`r round(intensity_x)`×]{.k} lower quiet intensity.
+- Bandwidth: `r round(b$bw_quiet, 2)` km quiet, `r round(b$bw_surge, 3)` km surge.
+- The [surge is strongly clustered]{.t} against CSR, at `r Ls_dep` of `r Ls_n` distances.
+- The [quiet period is indistinguishable from randomness]{.a} at `r b$n_quiet` points (`r Lq_dep` of `r Lq_n`).
+- Only the surge's scale is supported: about [`r round(Ls_peak_km, 1)` km]{.k}, tighter than the pooled `r round(L_peak_km, 1)` km.
+- The two-regime case rests on the [first-order]{.t} contrast. Colour is scaled per panel, so magnitudes are not comparable.
+:::
+::::
+::::::
+
+## 9 · Limitations
+
+::::::: columns
+:::: {.column width="50%"}
+::: {.small .limlist}
+- [Detection, not occurrence]{.limhead}<br>MODIS about 1 km resolution and revisit geometry mean reliability varies with cloud, terrain and overpass timing. Lower measured intensity does not mean less fire. This caveat attaches to [every]{.a} intensity and clustering based finding.
+- [A circular reference]{.limhead}<br>Stage 3's intensity surface is estimated from the same `r format(b$n_kapuas, big.mark = ",")` points it tests. It answers "clustering beyond *this estimate*," not beyond the true intensity. This is standard for the diagnostic, but it means the null absorbs whatever the estimate already encodes.
+- [One season]{.limhead}<br>No multi-year baseline. Whether 2026's timing or magnitude is typical cannot be determined here.
+:::
+::::
+
+:::: {.column width="50%"}
+::: {.small .limlist}
+- [Bandwidth sensitivity]{.limhead}<br>`bw.ppl()` and `bw.diggle()` disagreed by roughly a factor of two (`r sprintf("%.3f", b$bw_ppl_val)` vs `r sprintf("%.3f", b$bw_diggle_val)` km); fixed and adaptive KDE produced visibly different surfaces. Documented rather than resolved.
+- [Pooled temporal treatment]{.limhead}<br>The main analysis treats the full window as one cross-section despite activity concentrating in the final six weeks. *Two distinct regimes* examines the split, at reduced power.
+- [Unresolved mechanism]{.limhead}<br>The intensity surface accounts for almost all of the second-order structure, but it is only a proxy for whatever makes some areas fire-prone. Road and river accessibility, fire-to-fire spread and uneven detection cannot be distinguished with fire-detection data alone.
+:::
+::::
+:::::::
+
+## 10 · Public-safety implications
+
+:::::: columns
+::: {.column width="44%"}
+```{r}
+#| label: slide-response-radius
+#| fig-width: 4.6
+#| fig-height: 5.4
+
+kde_df_plot <- as.data.frame(kde_terra_km2, xy = TRUE)
+names(kde_df_plot)[3] <- "density"
+
+peak_sf_utm <- st_as_sf(data.frame(x = b$peak_row$x, y = b$peak_row$y),
+                        coords = c("x", "y"), crs = 32750)
+
+buffer_char <- st_buffer(peak_sf_utm, dist = b$peak_r)
+
+ggplot() +
+  geom_raster(data = kde_df_plot, aes(x = x, y = y, fill = density)) +
+  scale_fill_viridis_c(name = NULL, trans = "sqrt", na.value = "white",
+                       guide = "none") +
+  geom_sf(data = b$kapuas_boundary_utm, fill = NA, colour = "white",
+          linewidth = 0.4) +
+  geom_sf(data = buffer_char, fill = NA, colour = "red3", linewidth = 0.8) +
+  geom_sf(data = peak_sf_utm, colour = "white", size = 3.6) +
+  geom_sf(data = peak_sf_utm, colour = "black", size = 2.2) +
+  coord_sf(datum = NA, expand = FALSE) +
+  annotation_scale(location = "bl", width_hint = 0.25) +
+  theme_void() +
+  labs(caption = paste0(
+    "Ring: ", round(L_peak_km, 1),
+    " km Stage 1 characteristic scale (flat-CSR), shown for scale only.")) +
+  theme(plot.caption = element_text(size = 7, hjust = 0.5, colour = "grey25"))
+```
+:::
+
+:::: {.column width="56%"}
+::: micro
+[Supported directly by the analysis]{.subhead .yes}
+
+- [A specific staging candidate.]{.g} A verified hotspot at `r sprintf("%.3f", peak_lon)`°E, `r sprintf("%.3f", abs(peak_lat))`°S, inside a tile of `r b$max_tile_count` detections, found by two independent methods.
+- [Follow the mapped surface.]{.g} With no fire-to-fire clustering left once geography is accounted for, resources should track the intensity surface rather than a spread buffer. The `r round(L_peak_km, 1)` km ring is the Stage 1 scale, shown for reference.
+- [Readiness before onset.]{.g} Only `r sprintf("%.2f", pct_by_aug1)`% of the season's fires had occurred by 1 August, and 90% only by `r format(date_90pct, "%d %b")`.
+
+[Motivated, but requiring further data]{.subhead .no}
+
+- [Cause.]{.a} Three mechanisms remain indistinguishable. Policy should not be justified as addressing a cause until a covariate model is built.
+- [BPBD proximity.]{.a} Facility locations matter analytically, but no distances were computed, so coverage claims would be speculation.
+- [Permanent infrastructure.]{.a} One season cannot support fixed rather than seasonal capacity.
+- [Risk itself.]{.a} Intensity is not risk. Treat this surface as a hypothesis for field verification.
+:::
+::::
+::::::
+
+## Summary in one line {.closer-hero background-image="images/forestfire2.avif" background-size="cover"}
+
+::: {style="font-size: 1.15em; line-height: 1.5; color:#ffffff; text-shadow: 0 2px 8px rgba(0,0,0,0.85); text-align:left; max-width: 80%;"}
+Kapuas's `r format(b$n_kapuas, big.mark = ",")` fires of 2026 concentrated around one persistent hotspot near `r sprintf("%.3f", peak_lon)`°E, `r sprintf("%.3f", abs(peak_lat))`°S, and arrived almost entirely in a six-week surge from early August. Measured against Kapuas's own fire-prone geography, that concentration is close to what the terrain already predicts.
+:::
+
+<br>

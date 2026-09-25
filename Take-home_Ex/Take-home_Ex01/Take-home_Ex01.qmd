@@ -1,0 +1,2185 @@
+---
+title: "Take-home Exercise 1"
+format:
+  html:
+    toc: true
+    toc-depth: 4
+    number-sections: true
+execute:
+  warning: false
+  message: false
+bibliography: references.bib
+csl: apa.csl
+---
+
+```{=html}
+<style>
+body {
+  color: #000000;
+  font-size: 1.05rem;
+}
+</style>
+```
+
+```{r}
+#| label: setup
+#| code-fold: true
+#| code-summary: "Show package imports"
+
+pacman::p_load(sf, dplyr, readr, tidyr, tibble, scales,
+               ggplot2, ggspatial, ggiraph,
+               spatstat, terra, tmap)
+```
+
+<video width="700" autoplay muted loop playsinline style="max-width: 100%; height: auto;">
+
+<source src="images/aerialview.mp4" type="video/mp4">
+
+</video>
+
+<small>An aerial view of fire burning in Sungai Putri village.<br> *Source: [The Guardian, 21 September 2026](https://www.theguardian.com/world/2026/sep/21/indonesia-borneo-sumatra-fires-smoke-toxic-air)*</small>
+
+## Introduction and Study Context
+
+Forest and peatland fires in Indonesian Kalimantan are a recurring seasonal hazard with substantial public-health, economic and environmental consequences. Drained peatland burns far more readily than intact peat swamp forest, and Central Kalimantan's Kapuas Regency carries a well-documented version of this risk. Most of the roughly one-million-hectare area affected by the mid-1990s Peatland Development Project (the Mega Rice Project) falls within it, and existing research links the resulting drained peat to fire activity along roads and rivers, driven substantially by human land-clearing [@thoha2019characteristics]. NASA's FIRMS makes this activity observable at fine spatial and temporal resolution, and has been applied to Central Kalimantan specifically [@sabani2019utilization; @pratamasari2019spatial]. A raw point map does not answer whether that activity is meaningfully clustered, at what scales, or what it implies for where a response agency should concentrate resources.
+
+This report applies point pattern analysis to FIRMS MODIS fire detections in Kapuas Regency across the 2026 observation window (1 January to 11 September). Kapuas was selected by data-driven screening across all 58 Kalimantan regencies (Regency Selection), on both a substantial fire count and a spread ratio indicating dispersed rather than corner-concentrated activity. The analysis proceeds through first-order methods (where intensity is elevated and by how much) and second-order methods (whether that concentration is distinguishable from chance, and whether point-to-point clustering survives once known geography is accounted for), before translating the findings into public-safety implications.
+
+## Research Question and Objectives
+
+**Research question:** Is Kapuas Regency's 2026 fire activity spatially clustered beyond what its already-known fire-prone geography would predict, at what spatial scales, and what does this imply for public-safety planning?
+
+The question has two parts.
+
+1.  **Descriptive.** Where is fire intensity highest, and is that concentration statistically real rather than small-sample variation (First-Order Spatial Point Pattern Analysis)?
+2.  **Demanding.** Once some parts of Kapuas are accepted as already more fire-prone, does an unexplained clustering signal remain (Second-Order Spatial Point Pattern Analysis)? Both standard and intensity-adjusted methods are applied because the first-order analysis confirms intensity is strongly non-uniform, which makes a flat-CSR-only comparison insufficient.
+
+**Objectives.**
+
+1.  Prepare and quality-assess FIRMS data for Kapuas, resolving duplicate and near-duplicate detections, missing or invalid values, and CRS requirements.
+2.  Characterise first-order intensity via kernel density estimation and test it formally for departure from complete spatial randomness.
+3.  Characterise second-order structure against both homogeneous and intensity-adjusted reference models, to separate genuine point interaction from intensity variation.
+4.  Synthesise both levels, with alternative explanations and a stated account of assumptions and limitations.
+5.  Communicate the findings through a curated set of geovisualisations.
+6.  Translate the evidence into public-safety implications, distinguishing what the analysis supports from what it only motivates.
+
+## Data and Study Design
+
+### Point Event Definition
+
+One point event is one fire detection at one location on one calendar day. The issues below were identified and addressed before point events were finalised. Full code and diagnostic output appear in Data Preparation and Quality Assessment.
+
+- **Duplicate observations:** zero exact row-duplicates across the combined 64,044-record dataset.
+- **Repeated observations or detections:** MODIS fire pixels are approximately 1km, and the same physical fire is often caught more than once, by Terra and Aqua on the same day or by one satellite's separate day and night overpasses. 6,747 location/date groups (rounded to \~1km precision) involved 14,985 detections, 23.4% of all records. Each group was collapsed to its highest-confidence record.
+- **Missing coordinates:** none. `latitude` and `longitude` had zero missing values.
+- **Invalid coordinates or geometries:** none in the fire records. No values outside physical lat/lon range, no "null island" (0,0) artefacts.
+- **Observations outside the study area:** filtered to points inside a Kalimantan regency polygon via an inner spatial join, then to Kapuas and reprojected to a planar CRS.
+- **Observations outside the temporal period:** none. The archive and NRT coverage windows already matched 1 Jan to 11 Sep 2026 exactly.
+- **Other issues:** 3 records with non-positive fire radiative power (`frp` \<= 0) were removed as physically implausible.
+
+### Spatial Study Window
+
+Kapuas Regency, Central Kalimantan, was chosen by screening rather than picked first and justified afterwards. All 58 regencies were profiled on cleaned fire count and spatial spread (convex-hull area relative to regency area), and 44 met a minimum-count floor of 50 points. Four exceeded a spread ratio of 1.3 (Seruyan, Kayong Utara, Sintang, Kapuas), of which Kapuas and Sintang paired that dispersion with a substantial point count. Candidate maps showed Kapuas's fires forming a linear, corridor-like concentration rather than diffuse scatter, a pattern corroborated by literature identifying Mega Rice Project peatland drainage as a driver of fire risk along roads and rivers [@thoha2019characteristics].
+
+The spatial study window $W \subset \mathbb{R}^2$ is the administrative boundary polygon of Kapuas Regency, used rather than a bounding box or data-driven extent for two reasons. First, the window should represent where events could in principle occur, independent of where they were observed. A hull built from the observed points would define the window circularly, using the outcome to define the space in which the outcome is measured. Second, covariates relevant to later work, including distance to the nearest Regional Disaster Management Agency (Badan Penanggulangan Bencana Daerah, BPBD) facility, an approach applied to Kalimantan-wide fire clustering by @kindhi2026spatial, are meaningful at jurisdiction level, since BPBD responsibility is organised by regency. Two corrections were needed before the geometry could serve as the window: a spurious Z-dimension was stripped, and one invalid geometry was corrected with `st_make_valid()`.
+
+### Temporal Study Window
+
+The window spans 1 January to 11 September 2026. No temporal aggregation was applied, and the 1,849 cleaned Kapuas point events are treated as one pooled cross-section. Whether aggregation or a spatio-temporal treatment was warranted was assessed after the first-order pattern was examined. Activity is strongly concentrated in the final six weeks (Temporal Profile of Fire Activity), coinciding with the documented dry-season onset. The pooled analysis proceeds with that noted as a scope limitation, and a quiet/surge split is attempted separately as the Bonus component.
+
+### Analytical Assumptions
+
+Assumptions are specific to each method rather than to the point pattern in general, so they are not listed here in the abstract. Each method in First-Order and Second-Order Spatial Point Pattern Analysis states its own assumptions immediately before it is applied, with a judgement of whether they hold for Kapuas. This keeps each assumption tied to the result it constrains.
+
+### Methodological Decisions
+
+Data preparation uses WGS84 (EPSG:4326), which is adequate for bounding-box cropping, point-in-polygon joins and `st_area()`. It is unsuitable for the planar operations `spatstat` requires, which need linear units. Kapuas was therefore transformed to EPSG:32750 (WGS 84 / UTM zone 50S). Its extent straddles the 49/50 zone boundary at 114°E, a minor edge effect addressed in CRS Transformation and Kapuas Subsetting. The projected data is used to construct the `ppp` and `owin` objects.
+
+Bandwidth, distance range, edge correction and simulation settings are method-specific and documented alongside each method.
+
+## Data Preparation and Quality Assessment
+
+### Data Acquisition
+
+**Fire event data** come from NASA's Fire Information for Resource Management System (FIRMS), MODIS Collection 61, downloaded 11 September 2026. FIRMS distributes detections across two products. The *standard/archive* product is quality-controlled but lags by months, while the *near-real-time (NRT)* product is available within hours but is not yet reprocessed. The archive product only covered detections to 30 April 2026, so both were combined:
+
+- `fire_archive_M-C61_803864.csv`, standard product, 1 Jan to 30 Apr 2026 (4,122 records)
+- `fire_nrt_M-C61_803864.csv`, NRT product, 1 May to 11 Sep 2026 (59,922 records)
+
+**Administrative boundary data** come from Indonesia's Geospatial Information Agency (BIG), 2023 village/kelurahan-level dataset (`Batas_Wilayah_KelurahanDesa_10K_AR`), 1:10,000 scale, national coverage, accessed 11 September 2026.
+
+### Administrative Boundary Preparation
+
+The national dataset covers all of Indonesia at village level. Reading the full file and filtering afterwards would parse geometry for tens of thousands of polygons only to discard most, so the province filter was pushed down to the OGR driver at read time via an SQL `WHERE` clause.
+
+```{r}
+#| label: extract-kalimantan-boundary
+#| code-fold: true
+#| code-summary: "Show boundary extraction code"
+
+kalimantan_provinces <- c("Kalimantan Barat", "Kalimantan Tengah",
+                           "Kalimantan Selatan", "Kalimantan Timur",
+                           "Kalimantan Utara")
+
+where_clause <- paste0(
+  "WADMPR IN ('", paste(kalimantan_provinces, collapse = "','"), "')"
+)
+
+desa_kalimantan <- st_read(
+  "data/Batas_Wilayah_KelurahanDesa_10K_AR.shp",
+  query = paste("SELECT * FROM Batas_Wilayah_KelurahanDesa_10K_AR WHERE", where_clause)
+)
+
+nrow(desa_kalimantan)
+```
+
+The extraction returned 7,234 village-level polygons. Two quality issues were corrected before any spatial analysis: the source geometry carried a spurious Z-dimension, a known characteristic of this BIG source, and one invalid geometry remained after the Z-strip.
+
+Village polygons were dissolved to regency level (`WADMKK`), the granularity the screening question operates at. Regency area is computed here, since the screening metrics need it.
+
+```{r}
+#| label: clean-and-dissolve-boundary
+#| code-fold: true
+#| code-summary: "Show cleaning and dissolve code"
+
+desa_kalimantan <- st_zm(desa_kalimantan)
+sum(!st_is_valid(desa_kalimantan))
+desa_kalimantan <- st_make_valid(desa_kalimantan)
+
+regency_kalimantan <- desa_kalimantan |>
+  group_by(WADMPR, WADMKK) |>
+  summarise(.groups = "drop") |>
+  st_make_valid()
+
+regency_kalimantan$area_km2 <- as.numeric(st_area(regency_kalimantan)) / 1e6
+
+regency_areas <- regency_kalimantan |>
+  st_drop_geometry() |>
+  select(WADMPR, WADMKK, area_km2)
+
+nrow(regency_kalimantan)
+
+st_write(regency_kalimantan, "data/regency_kalimantan.gpkg", delete_dsn = TRUE)
+```
+
+Dissolving produced 58 regency polygons, matching the expected count.
+
+### Fire Event Data Preparation
+
+#### Import and integration
+
+The archive product includes a `type` field that NRT does not carry, since that classification is assigned only during reprocessing. Rather than dropping the column or letting a type mismatch cause an opaque row-binding failure, NRT records were explicitly assigned `NA` for `type`, which preserves the archive classification and documents its absence instead of imputing it. A similar inconsistency in `version` was resolved the same way.
+
+```{r}
+#| label: import-fire-data
+#| code-fold: true
+#| code-summary: "Show import and integration code"
+
+archive <- read_csv("data/fire_archive_M-C61_803864.csv", show_col_types = FALSE) |>
+  mutate(type = as.character(type), version = as.character(version))
+
+nrt <- read_csv("data/fire_nrt_M-C61_803864.csv", show_col_types = FALSE) |>
+  mutate(type = NA_character_)
+
+fires_raw <- bind_rows(archive, nrt)
+
+nrow(fires_raw)
+range(fires_raw$acq_date)
+sum(duplicated(fires_raw))
+```
+
+Combining yielded 64,044 records. The date range matches the intended window exactly. Zero exact-duplicate rows were found, though this check catches only literal full-row duplicates, with near-duplicates handled below.
+
+#### Data inspection
+
+```{r}
+#| label: fires-data-inspection
+
+glimpse(fires_raw)
+
+# Missingness per column
+colSums(is.na(fires_raw))
+
+# Valid lat/lon ranges, and the "null island" check
+sum(fires_raw$latitude < -90 | fires_raw$latitude > 90, na.rm = TRUE)
+sum(fires_raw$longitude < -180 | fires_raw$longitude > 180, na.rm = TRUE)
+sum(fires_raw$latitude == 0 & fires_raw$longitude == 0, na.rm = TRUE)
+
+# Confidence field distribution
+summary(fires_raw$confidence)
+
+# brightness/frp sanity check as both should be strictly positive for a genuine fire detection
+sum(fires_raw$brightness <= 0, na.rm = TRUE)
+sum(fires_raw$frp <= 0, na.rm = TRUE)
+```
+
+The only missing values were in `type` (59,922 NAs), matching the expected NRT gap. No coordinates fall outside the physical lat/lon range and none sit at (0,0), a common sentinel artefact. MODIS confidence runs 0 to 100, median 69. `brightness` had no non-positive values. `frp` contained **3 records at or below 0**, physically implausible for a genuine detection and removed during cleaning.
+
+#### Near-duplicate detections
+
+MODIS fire pixels are approximately 1km, and the same physical fire is frequently caught more than once. These are not exact duplicates, since coordinates differ slightly, but they represent the same underlying point event.
+
+```{r}
+#| label: near-duplicate-check
+
+# Round coordinates to ~1km precision and check same-day, same-rounded-location detections
+near_dupes <- fires_raw |>
+  mutate(lat_round = round(latitude, 2), lon_round = round(longitude, 2)) |>
+  count(lat_round, lon_round, acq_date, name = "n_detections") |>
+  filter(n_detections > 1)
+
+nrow(near_dupes)
+sum(near_dupes$n_detections)
+```
+
+6,747 location/date groups involved 14,985 detections, 23.4% of all records. The underlying mechanism was checked rather than assumed.
+
+```{r}
+#| label: inspect-near-duplicates
+
+near_dupe_detail <- fires_raw |>
+  mutate(lat_round = round(latitude, 2), lon_round = round(longitude, 2)) |>
+  add_count(lat_round, lon_round, acq_date, name = "n_detections") |>
+  filter(n_detections > 1)
+
+# group size distribution
+table(near_dupe_detail$n_detections) |> head(10)
+
+# for exact pairs, are they different satellites or the same satellite?
+pairs_same_satellite <- near_dupe_detail |>
+  filter(n_detections == 2) |>
+  group_by(lat_round, lon_round, acq_date) |>
+  summarise(n_satellites = n_distinct(satellite), .groups = "drop") |>
+  count(n_satellites)
+
+pairs_same_satellite
+```
+
+Group sizes ranged from 2 to 6: 5,534 pairs, 975 triples, 203 groups of four, 30 of five and 5 of six, accounting for the 6,747 groups and 14,985 detections above. (The `table()` output reports detections rather than groups, since group size is broadcast onto every member row: 11,068 detections in pairs, 2,925 in triples, 812 in groups of four, 150 in fives, 30 in sixes.)
+
+Among the 5,534 exact pairs, 3,298 (60%) involved two different satellites, the expected Terra/Aqua pattern, and 2,236 (40%) the same satellite twice, consistent with one instrument's separate day and night overpasses catching a fire still burning. Neither is a data error. Both reflect satellite revisit geometry rather than one independent point event per detection.
+
+Collapsing each group to a single representative removes 8,238 excess detections, roughly 12.9%. These counts are computed on the full 64,044 raw records, ahead of the 3-record `frp` filter.
+
+#### Cleaning to point events
+
+Where a location/day group contained multiple detections, the highest-confidence record was retained. The 3 non-positive `frp` records were removed at this stage.
+
+```{r}
+#| label: clean-fires-data
+#| code-fold: true
+#| code-summary: "Show cleaning code"
+
+fires_clean <- fires_raw |>
+  filter(frp > 0) |>
+  mutate(lat_round = round(latitude, 2), lon_round = round(longitude, 2)) |>
+  group_by(lat_round, lon_round, acq_date) |>
+  slice_max(confidence, n = 1, with_ties = FALSE) |>
+  ungroup() |>
+  select(-lat_round, -lon_round)
+
+nrow(fires_raw)
+nrow(fires_clean)
+```
+
+Cleaning reduced the dataset from 64,044 to 55,804 point events, a 13.0% reduction consistent with the near-duplicate rate.
+
+### Regency Selection
+
+The brief requires selecting one Kalimantan regency but does not prescribe how. Selection was treated as a screening step so the choice can be defended against stated criteria rather than justified after the fact. Two criteria were defined in advance:
+
+1.  **Sufficient point count.** Second-order statistics become unstable with very few points, so 50 detections was set as a floor.
+2.  **Spatial spread relative to regency size.** Raw count conflates fire activity with regency size, since a large regency with fires in one corner could out-count a smaller regency where fires are genuinely dispersed. A spread ratio captures this, with values near 1 indicating fires distributed across most of the regency.
+
+::: callout-note
+## Why a fixed count floor, and what it does not guarantee
+
+The 50-point floor is a practical decision rule, not a statistical guarantee. A lower floor would let more regencies compete on spread ratio but at the cost of noisier convex-hull estimates. A higher one would give more stable spread estimates but exclude regencies regardless of how dispersed their fires are. Its implication is that regencies below 50 detections are excluded from the *dispersion* comparison because their spread ratio cannot be reliably estimated, not because their fire activity is assumed uninteresting.
+:::
+
+#### Spatial filtering to Kalimantan
+
+Cleaned coordinates were converted to point geometry in WGS84, matching the FIRMS reference, then filtered in two stages: a bounding-box crop, then a point-in-polygon join. The bounding box alone is insufficient, since a rectangular extent includes area between and around the irregular regency boundaries. The inner polygon join (`left = FALSE`) is what correctly excludes points outside every regency.
+
+```{r}
+#| label: spatial-filter-fires
+#| code-fold: true
+#| code-summary: "Show spatial filtering code"
+
+fires_sf <- st_as_sf(fires_clean, coords = c("longitude", "latitude"),
+                      crs = 4326, remove = FALSE)
+
+kalimantan_bbox <- st_bbox(regency_kalimantan)
+fires_kalimantan_bbox <- st_crop(fires_sf, kalimantan_bbox)
+
+fires_regency <- st_join(fires_kalimantan_bbox, regency_kalimantan,
+                          join = st_intersects, left = FALSE)
+
+nrow(fires_regency)
+```
+
+31,586 cleaned point events fall within a Kalimantan regency polygon.
+
+#### Screening metrics
+
+```{r}
+#| label: regency-screening-metrics
+
+regency_diag <- fires_regency |>
+  st_drop_geometry() |>
+  count(WADMPR, WADMKK, name = "n") |>
+  filter(n >= 50)
+
+hull_sf <- fires_regency |>
+  semi_join(regency_diag, by = c("WADMPR", "WADMKK")) |>
+  group_by(WADMPR, WADMKK) |>
+  summarise(.groups = "drop") |>
+  st_convex_hull()
+
+hull_sf$hull_area_km2 <- as.numeric(st_area(hull_sf)) / 1e6
+
+hull_areas <- hull_sf |>
+  st_drop_geometry() |>
+  select(WADMPR, WADMKK, hull_area_km2)
+
+screening <- regency_diag |>
+  left_join(regency_areas, by = c("WADMPR", "WADMKK")) |>
+  left_join(hull_areas, by = c("WADMPR", "WADMKK")) |>
+  mutate(
+    density_per_1000km2 = round(n / area_km2 * 1000, 2),
+    spread_ratio = round(hull_area_km2 / area_km2, 3)
+  ) |>
+  arrange(desc(n))
+
+write_csv(screening, "data/regency_screening.csv")
+
+screening
+```
+
+The 50-point floor left 44 of 58 regencies eligible.
+
+#### Selecting the five candidates
+
+Rather than mapping all 44, five were shortlisted to represent both ends of the two criteria, since a regency can score well on one without the other.
+
+```{r}
+#| label: candidate-selection-rationale
+
+# Four most spatially dispersed regencies (highest spread ratio)
+screening |> slice_max(spread_ratio, n = 4) |> select(WADMKK, n, spread_ratio)
+
+# Two highest-count regencies, for comparison against the dispersion leaders
+screening |> slice_max(n, n = 2) |> select(WADMKK, n, spread_ratio)
+
+candidates <- c("Seruyan", "Kayong Utara", "Sintang", "Kapuas",
+                "Kotawaringin Timur")
+```
+
+The four most dispersed regencies (Seruyan 1.554, Kayong Utara 1.531, Sintang 1.314, Kapuas 1.308) were carried forward. One high-count regency was added for contrast. Ketapang records the highest count nationally (5,496) but a spread ratio of 1.099, close enough to neutral to be visually redundant. Kotawaringin Timur, second-highest by count (1,967), was selected instead, since its spread ratio of 0.858 is clearly below 1 and gives a concentrated case to contrast against the four dispersed ones.
+
+::: callout-warning
+## A density- or count-only shortlist would have been misleading
+
+Kota Palangkaraya records the highest fire *density* nationally (323.6 per 1,000km²) only because it is small and largely urban, with a modest count of 926 over 2,861km². Ketapang records the highest *absolute count* but a spread ratio too close to neutral to be interesting. Neither appears in the shortlist. Selecting by density or count alone would have highlighted regencies whose apparent extremeness is a size artefact rather than an interesting spatial pattern. This mirrors the brief's caution that an observed concentration should not be read as meaningful without considering what produced the observation.
+:::
+
+#### Kalimantan-wide overview
+
+```{r}
+#| label: national-fire-density
+#| code-fold: true
+#| code-summary: "Show density calculation code"
+
+regency_counts_all <- fires_regency |>
+  st_drop_geometry() |>
+  count(WADMPR, WADMKK, name = "n")
+
+regency_density <- regency_areas |>
+  left_join(regency_counts_all, by = c("WADMPR", "WADMKK")) |>
+  mutate(
+    n = tidyr::replace_na(n, 0),
+    density_per_1000km2 = round(n / area_km2 * 1000, 2)
+  )
+
+regency_density_sf <- regency_kalimantan |>
+  left_join(
+    regency_density |> select(WADMPR, WADMKK, n, density_per_1000km2),
+    by = c("WADMPR", "WADMKK")
+  )
+
+summary(regency_density_sf$density_per_1000km2)
+sum(regency_density_sf$n == 0)
+```
+
+```{r}
+#| label: national-overview-map-interactive
+#| fig-width: 9
+#| fig-height: 7
+#| code-fold: true
+#| code-summary: "Show plotting code"
+
+candidate_boundaries <- regency_density_sf |> filter(WADMKK %in% candidates)
+
+p_national <- ggplot() +
+  geom_sf_interactive(
+    data = regency_density_sf,
+    aes(fill = density_per_1000km2,
+        tooltip = paste0(WADMKK, ", ", WADMPR,
+                          "\nFires: ", n,
+                          "\nDensity: ", density_per_1000km2, " per 1,000km\u00b2"),
+        data_id = WADMKK),
+    colour = "white", linewidth = 0.15
+  ) +
+  geom_sf(data = fires_regency, shape = 21, fill = "white", colour = "black",
+          size = 0.35, stroke = 0.15, alpha = 0.55) +
+  geom_sf(data = candidate_boundaries, fill = NA, colour = "red",
+          linewidth = 0.6) +
+  scale_fill_viridis_c(
+    name = "Fires per\n1,000 km²",
+    option = "viridis",
+    trans = "sqrt",
+    breaks = c(0, 25, 50, 100, 200, 300)
+  ) +
+  annotation_scale(location = "bl", width_hint = 0.25) +
+  
+  theme_void() +
+  theme(
+    plot.title = element_text(size = 15, face = "bold", hjust = 0.5, margin = margin(b = 4)),
+    plot.subtitle = element_text(size = 10, hjust = 0.5, colour = "grey30", margin = margin(b = 10)),
+    legend.position = "right"
+  ) +
+  labs(
+    title = "Fire Detection Density Across Kalimantan Regencies",
+    subtitle = "Red outlines mark the five shortlisted regencies."
+  )
+
+ggsave("data/kalimantan_overview_density.png", plot = p_national,
+       width = 9, height = 7, dpi = 150)
+
+girafe(
+  ggobj = p_national,
+  width_svg = 9, height_svg = 7,
+  options = list(
+    opts_hover(css = "stroke:black;stroke-width:2.5px;"),
+    opts_tooltip(css = "background-color:white;color:black;padding:6px 10px;
+                  border-radius:4px;font-family:sans-serif;font-size:12px;
+                  box-shadow:2px 2px 6px rgba(0,0,0,0.3);"),
+    opts_sizing(rescale = TRUE)
+  )
+)
+```
+
+::: callout-important
+## 🚨 Interactive Map
+
+**Hover mouse over a regency for its name, fire count, and density above**
+:::
+
+The five shortlisted regencies (red outlines) sit in the moderate-to-high density band rather than at either extreme, consistent with the reasoning above. Kayong Utara's split across two separated landmasses is visible, foreshadowing the observation-window concern raised below. Hovering gives exact counts and densities for checking the visual pattern against the screening table.
+
+#### Candidate regency maps
+
+The five shortlisted regencies were mapped individually, at a scale where individual fire locations are legible.
+
+```{r}
+#| label: candidate-plot-function
+#| code-fold: true
+#| code-summary: "Show plotting function and PNG export code"
+
+make_candidate_plot <- function(regency_name) {
+  boundary <- regency_kalimantan |> filter(WADMKK == regency_name)
+  fires <- fires_regency |> filter(WADMKK == regency_name)
+
+  ggplot() +
+    geom_sf(data = boundary, fill = "grey95", colour = "grey40") +
+    geom_sf(data = fires, colour = "firebrick", size = 0.6, alpha = 0.5) +
+    annotation_scale(location = "bl", width_hint = 0.3) +
+    theme_void() +
+    theme(
+      plot.title = element_text(size = 14, face = "bold", hjust = 0.5,
+                                margin = margin(b = 8))
+    ) +
+    labs(title = regency_name)
+}
+
+plots <- setNames(lapply(candidates, make_candidate_plot), candidates)
+
+for (name in names(plots)) {
+  ggsave(
+    filename = paste0("data/candidate_", gsub(" ", "_", name), ".png"),
+    plot = plots[[name]],
+    width = 7, height = 6, dpi = 150
+  )
+}
+```
+
+::: panel-tabset
+#### Seruyan
+
+```{r}
+#| label: candidate-tab-seruyan
+#| fig-width: 7
+#| fig-height: 6
+#| echo: false
+
+plots[["Seruyan"]]
+```
+
+#### Kayong Utara
+
+```{r}
+#| label: candidate-tab-kayong-utara
+#| fig-width: 7
+#| fig-height: 6
+#| echo: false
+
+plots[["Kayong Utara"]]
+```
+
+#### Sintang
+
+```{r}
+#| label: candidate-tab-sintang
+#| fig-width: 7
+#| fig-height: 6
+#| echo: false
+
+plots[["Sintang"]]
+```
+
+#### Kapuas
+
+```{r}
+#| label: candidate-tab-kapuas
+#| fig-width: 7
+#| fig-height: 6
+#| echo: false
+
+plots[["Kapuas"]]
+```
+
+#### Kotawaringin Timur
+
+```{r}
+#| label: candidate-tab-kotawaringin-timur
+#| fig-width: 7
+#| fig-height: 6
+#| echo: false
+
+plots[["Kotawaringin Timur"]]
+```
+:::
+
+Seruyan and Kotawaringin Timur show fires concentrated in each regency's southern portion rather than genuinely dispersed, so their scores were inflated by a few outlying points. Kayong Utara is split across two landmasses separated by open water, which complicates defining a single coherent observation window. Sintang shows fires across two connected lobes with minimal concentration anywhere. Kapuas shows a distinctive linear, corridor-like concentration, consistent with activity tracking an accessibility feature such as a river or road network.
+
+#### Selection and justification
+
+Kapuas was selected for two reasons beyond the screening metrics. First, it is identified in the literature as an area of extreme fire risk within Central Kalimantan, since most of the roughly one-million-hectare Peatland Development Project area (*Pengembangan Lahan Gambut*, PLG, or Mega Rice Project) falls within it [@thoha2019characteristics]. PLG's drainage canals lowered the peat water table across the regency, leaving it substantially more fire-prone than undrained peat swamp forest.
+
+Second, research conducted specifically on Kapuas found high fire activity in peatland and swamp shrub close to roads and rivers and far from villages, with human land clearing identified as the predominant cause [@thoha2019characteristics]. This corresponds closely to the candidate map, which gives the analysis a concrete, literature-grounded pattern to test rather than an unexplained one.
+
+::: callout-important
+## Final selection
+
+Kapuas Regency was selected as one of only two regencies combining a substantial fire count with a spread ratio above 1.3, with its corridor-like concentration corroborated by prior research identifying Mega Rice Project peatland drainage as a documented driver of fire risk in Kapuas [@thoha2019characteristics].
+:::
+
+### CRS Transformation and Kapuas Subsetting
+
+```{r}
+#| label: kapuas-extent-check
+#| code-fold: true
+#| code-summary: "Show extent check code"
+
+kapuas_boundary <- regency_kalimantan |> filter(WADMKK == "Kapuas")
+
+st_bbox(kapuas_boundary)
+```
+
+```{r}
+#| label: crs-transform-kapuas
+#| code-fold: true
+#| code-summary: "Show CRS transformation and Kapuas subsetting code"
+
+kapuas_fires_sf <- fires_regency |>
+  filter(WADMKK == "Kapuas") |>
+  st_transform(crs = 32750)
+
+kapuas_boundary_utm <- kapuas_boundary |>
+  st_transform(crs = 32750)
+
+st_crs(kapuas_fires_sf)$epsg
+nrow(kapuas_fires_sf)
+```
+
+Kapuas's longitudinal extent (113.68°E to 114.80°E) straddles the UTM zone 49/50 boundary at 114°E. EPSG:32750 (zone 50S) was used regency-wide, since most of the boundary area and fire points fall east of that line (median fire longitude 114.3°E). Splitting the analysis across two CRS zones was not worth the complexity for this degree of edge effect, though points near the western edge incur minor positional distortion. The transformed fire count (1,849) matches the Kapuas row in the screening table, confirming no records were lost.
+
+## First-Order Spatial Point Pattern Analysis
+
+### Constructing the Point Pattern and Observation Window
+
+All point pattern analysis from here uses the `spatstat` package [@baddeley2005spatstat].
+
+```{r}
+#| label: construct-ppp-owin
+#| code-fold: true
+#| code-summary: "Show ppp and owin construction code"
+
+kapuas_owin <- as.owin(kapuas_boundary_utm)
+class(kapuas_owin)
+
+# checking if a single polygon or multiple pieces
+length(kapuas_owin$bdry)
+plot(kapuas_owin, main = "Kapuas owin -- checking window structure")
+
+# keep only marks relevant to later analysis and  drop redundant coordinate duplicates
+kapuas_fires_for_ppp <- kapuas_fires_sf |>
+  select(acq_date, confidence, frp, daynight)
+
+kapuas_ppp <- as.ppp(kapuas_fires_for_ppp)
+class(kapuas_ppp)
+
+kapuas_ppp <- kapuas_ppp[kapuas_owin]
+kapuas_ppp
+summary(kapuas_ppp)
+```
+
+```{r}
+#| label: verify-sliver-polygon
+#| code-fold: true
+#| code-summary: "Show sliver-polygon verification code"
+
+kapuas_boundary_parts <- kapuas_boundary_utm |>
+  st_cast("POLYGON")
+
+kapuas_boundary_parts$part_area_km2 <- as.numeric(st_area(kapuas_boundary_parts)) / 1e6
+
+kapuas_boundary_parts |> st_drop_geometry() |> select(part_area_km2)
+
+small_part <- kapuas_boundary_parts |> slice_min(part_area_km2, n = 1)
+
+st_join(kapuas_fires_sf, small_part, join = st_intersects, left = FALSE) |> nrow()
+```
+
+::: callout-note
+## Two window artefacts worth recording
+
+The `owin` comprises two disjoint polygons: a primary polygon of 17,065.8km² (99.999% of window area) and a fragment of 0.1457km², smaller than a single MODIS pixel. The verification confirms the fragment contains zero fire points, consistent with a topological sliver from the village-to-regency dissolve rather than a genuine exclave. It does not affect the point pattern but trivially reduces usable window area.
+
+The average intensity (1.083 × 10⁻⁷ points/m²) converts to roughly 108.34 fires per 1,000km², closely matching the 108.02 computed independently in the screening table. The difference comes from the projected UTM window area (17,065.9km²) being marginally smaller than the geodetic area used in screening (17,117.52km²), an expected consequence of projection distortion and the sliver, not an inconsistency in the point data.
+:::
+
+```{r}
+#| label: kapuas-boundary-map
+#| fig-width: 6
+#| fig-height: 10
+
+tm_shape(kapuas_boundary_utm) +
+  tm_polygons(fill = "grey95", col = "grey40") +
+  tm_shape(kapuas_fires_sf) +
+  tm_dots(fill = "firebrick", size = 0.3, fill_alpha = 0.6) +
+  tm_scalebar(position = c("left", "bottom")) +
+  tm_title("Kapuas Regency: Fire Detections (Projected, UTM 50S)") +
+  tm_layout(inner.margins = c(bottom = 0.06, top = 0.02, left = 0.02, right = 0.02))
+```
+
+### Kernel Density Estimation
+
+Bandwidth selection is the central tuning decision in KDE. A **fixed bandwidth** applies one smoothing radius uniformly, while an **adaptive bandwidth** lets the radius shrink in dense areas and widen in sparse ones. Among `spatstat`'s automatic fixed-bandwidth selectors, `bw.ppl()` is recommended for patterns made up predominantly of tight clusters, while `bw.diggle()` is tuned for detecting a single tight cluster within otherwise random noise [@baddeley2015spatial].
+
+Coordinates were rescaled from metres to kilometres before selection so bandwidth values are legible. A Gaussian kernel was used throughout, since kernel shape has substantially less influence on the density surface than bandwidth choice [@baddeley2015spatial].
+
+```{r}
+#| label: rescale-ppp-km
+#| code-fold: true
+#| code-summary: "Show rescaling code"
+
+kapuas_ppp_km <- rescale.ppp(kapuas_ppp, 1000, "km")
+kapuas_ppp_km
+```
+
+```{r}
+#| label: bandwidth-comparison
+
+bw_ppl_val <- bw.ppl(kapuas_ppp_km)
+bw_diggle_val <- bw.diggle(kapuas_ppp_km)
+
+bw_ppl_val
+bw_diggle_val
+```
+
+`bw.ppl()` and `bw.diggle()` returned 1.113km and 0.550km, roughly a factor of two apart. The disagreement is informative, suggesting Kapuas's pattern matches neither selector's ideal case, consistent with a sustained linear corridor rather than either textbook shape. `bw.ppl()` was carried forward as the better-justified fit for sustained clustering.
+
+```{r}
+#| label: kde-fixed-vs-adaptive
+#| code-fold: true
+#| code-summary: "Show KDE computation code"
+
+kde_kapuas_fixed <- density(kapuas_ppp_km,
+                            sigma = bw_ppl_val,
+                            edge = TRUE,
+                            kernel = "gaussian")
+
+kde_kapuas_adaptive <- adaptive.density(kapuas_ppp_km, f = 0.1, method = "kernel")
+```
+
+```{r}
+#| label: kde-negative-value-check
+#| code-fold: true
+#| code-summary: "Show negative-value diagnostic code"
+
+range(kde_kapuas_fixed$v, na.rm = TRUE)
+sum(kde_kapuas_fixed$v < 0, na.rm = TRUE)
+
+range(kde_kapuas_adaptive$v, na.rm = TRUE)
+sum(kde_kapuas_adaptive$v < 0, na.rm = TRUE)
+```
+
+::: callout-note
+## Marginally below zero density surfaces
+
+Both surfaces contain pixels marginally below zero (minimum -3.4 × 10⁻¹⁶ for fixed, 457 pixels, and -1.4 × 10⁻¹⁶ for adaptive, 15 pixels), orders of magnitude smaller than the surfaces' maxima (6.59 and 8.37). This is floating-point noise from the edge-correction calculation near the boundary, not a genuine negative density, which is impossible by definition. These values were clamped to 0 before the square-root transform used for visualisation. The transform does not alter the underlying estimates.
+:::
+
+::: panel-tabset
+#### Fixed Bandwidth (bw.ppl)
+
+```{r}
+#| label: kde-fixed-sqrt-tab
+#| fig-width: 7
+#| fig-height: 9
+#| code-fold: true
+#| code-summary: "Show plotting code"
+
+kde_fixed_clamped <- eval.im(pmax(kde_kapuas_fixed, 0))
+kde_fixed_sqrt <- sqrt(kde_fixed_clamped)
+
+plot(kde_fixed_sqrt, main = "Fixed bandwidth (sqrt scale, bw.ppl = 1.113km)")
+```
+
+#### Adaptive Bandwidth
+
+```{r}
+#| label: kde-adaptive-sqrt-tab
+#| fig-width: 7
+#| fig-height: 9
+#| code-fold: true
+#| code-summary: "Show plotting code"
+
+kde_adaptive_clamped <- eval.im(pmax(kde_kapuas_adaptive, 0))
+kde_adaptive_sqrt <- sqrt(kde_adaptive_clamped)
+
+plot(kde_adaptive_sqrt, main = "Adaptive bandwidth (sqrt scale, f = 0.1)")
+```
+:::
+
+::: callout-important
+## Primary first-order method
+
+Fixed bandwidth via `bw.ppl()` (σ = 1.113km) is the primary kernel density estimate going forward. The adaptive alternative was tested and rejected. It captures finer local variation, but its output here is visibly more fragmented, breaking the sustained corridor structure into disconnected hotspots and implying a spatial precision the MODIS data cannot support. The `bw.ppl()`/`bw.diggle()` disagreement and this sensitivity to bandwidth method are retained as documented limitations.
+:::
+
+::: callout-note
+## Why the density surface is recomputed rather than reused
+
+The surface above used coordinates rescaled to kilometres so the bandwidth value was legible. Converting it directly to a georeferenced raster would be a problem. The coordinates would still be in kilometres, and tagging a metre-based CRS as metadata does not rescale them, so the raster would carry a correct-looking CRS while its coordinates were wrong by a factor of 1,000. That is invisible on a simple plot but produces wrong graticule labels and scale-bar distances on a cartographic map.
+
+The surface is therefore recomputed on the original metre-based pattern (`kapuas_ppp`) with the bandwidth converted back to metres. An explicit pixel size (`eps = 250`) gives a finer 250m grid, replacing a default coarse enough to look blocky at full size. Both changes affect only rendering resolution and coordinate accuracy, not the bandwidth or smoothing method.
+:::
+
+```{r}
+#| label: kde-metre-scale-recompute
+#| code-fold: true
+#| code-summary: "Show metre-scale recomputation code"
+
+kde_kapuas_fixed_m <- density(kapuas_ppp,
+                              sigma = bw_ppl_val * 1000,
+                              edge = TRUE,
+                              kernel = "gaussian",
+                              eps = 250)
+
+kde_kapuas_fixed_m <- eval.im(pmax(kde_kapuas_fixed_m, 0))
+
+summary(kde_kapuas_fixed_m)
+```
+
+The surface is converted to a `terra` `SpatRaster` and explicitly assigned the projected CRS, printed before and after assignment to confirm the field changes rather than assuming it. Values are converted from points per m² to points per km².
+
+```{r}
+#| label: kde-raster-conversion
+#| code-fold: true
+#| code-summary: "Show raster conversion and CRS assignment code"
+
+kde_kapuas_terra <- rast(kde_kapuas_fixed_m)
+class(kde_kapuas_terra)
+kde_kapuas_terra
+
+crs(kde_kapuas_terra) <- "EPSG:32750"
+kde_kapuas_terra
+
+kde_kapuas_terra_km2 <- kde_kapuas_terra * 1e6
+```
+
+```{r}
+#| label: kde-cartographic-map
+#| fig-width: 9
+#| fig-height: 10
+
+kde_map_obj <- tm_shape(kde_kapuas_terra_km2) +
+  tm_raster(
+    col.scale = tm_scale_continuous_sqrt(values = "viridis",
+                                          ticks = c(0, 0.5, 1, 2, 4, 6)),
+    col.legend = tm_legend(
+      title = "Estimated fire\ndensity\n(per km²)",
+      title.size = 0.8,
+      text.size = 0.7,
+      position = tm_pos_out("right", "center"))
+  ) +
+  tm_shape(kapuas_boundary_utm) +
+  tm_borders(col = "white", lwd = 0.8) +
+  tm_graticules(labels.size = 0.6, lwd = 0.3, col = "grey60") +
+  tm_scalebar(position = c("left", "bottom")) +
+  tm_title("Kapuas Regency: Kernel Density Estimate of Fire Detections") +
+  tm_layout(inner.margins = c(bottom = 0.06, top = 0.02, left = 0.02, right = 0.02))
+
+tmap_save(kde_map_obj, "data/kde_kapuas_fixed.png", width = 9, height = 10, dpi = 300)
+
+kde_map_obj
+```
+
+The peak is extracted below rather than estimated by eye, since a specific coordinate is more useful for the public-safety discussion.
+
+```{r}
+#| label: kde-peak-location
+#| code-fold: true
+#| code-summary: "Show peak-location extraction code"
+
+kde_df <- as.data.frame(kde_kapuas_fixed_m)
+peak_row <- kde_df[which.max(kde_df$value), ]
+peak_row$value_per_km2 <- peak_row$value * 1e6
+
+peak_sf <- st_as_sf(peak_row, coords = c("x", "y"), crs = 32750) |>
+  st_transform(4326)
+
+st_coordinates(peak_sf)
+peak_row$value_per_km2
+```
+
+The surface shows a single dominant hotspot at approximately 114.146°E, 2.022°S, reaching 7.69 fires/km², more than triple any other elevated area. Beyond it, a chain of smaller patches (roughly 1 to 2 fires/km²) follows a similar north-south alignment. This refines the raw-point impression from the candidate maps. The corridor-like appearance reflects a loose alignment of several distinct clusters anchored by one much larger hotspot, not a single continuous band of uniformly elevated intensity.
+
+::: callout-important
+## Intensity is not risk
+
+This surface shows where detections are concentrated, not risk. A high-intensity pixel could reflect more accessible terrain, where fires are both more likely to be started and more reliably detected, rather than worse underlying hazard. Whether the hotspot and surrounding patches represent statistically distinguishable clustering is addressed in Second-Order Spatial Point Pattern Analysis, and the concentration-versus-risk distinction is developed in the public-safety section.
+:::
+
+### Testing for Complete Spatial Randomness
+
+The KDE surface shows where intensity is visually elevated but does not test whether the pattern departs from a homogeneous Poisson process. A quadrat count test does. The window is partitioned into a grid, observed counts are compared with those expected under CSR, and a chi-squared statistic summarises the discrepancy. @vadrevu2008spatial applied this approach, with nearest-neighbour analysis and Ripley's K, to satellite fire detections in India. That study is a methodological precedent here, matching this one in data type and analytical intent though not geography.
+
+```{r}
+#| label: quadrat-test
+#| code-fold: true
+#| code-summary: "Show quadrat test code"
+
+kapuas_quadrat_counts <- quadratcount(kapuas_ppp, nx = 5, ny = 14)
+kapuas_quadrat_test <- quadrat.test(kapuas_ppp, nx = 5, ny = 14)
+
+kapuas_quadrat_test
+```
+
+```{r}
+#| label: quadrat-plot
+#| fig-width: 6
+#| fig-height: 10
+#| code-fold: true
+#| code-summary: "Show quadrat plot code"
+
+plot(unmark(kapuas_ppp), pch = 20, cex = 0.3, cols = "grey50",
+     main = "Quadrat Counts of Fire Detections")
+plot(kapuas_quadrat_counts, add = TRUE, col = "red", cex = 0.8)
+```
+
+::: callout-note
+## Interpreting the quadrat test result
+
+The test rejects CSR decisively (X² = 3785.9, df = 45, p \< 2.2 × 10⁻¹⁶). The grid has 46 tiles rather than the nominal 70 because only tiles overlapping Kapuas's boundary are counted. With 1,849 points even minor departures from uniformity would be significant, so the extreme p-value is expected rather than notable. The result confirms that the non-uniformity in the KDE surface is genuine rather than a bandwidth or rendering artefact.
+
+The KDE peak falls within the highest-count tile (412 detections), confirmed with `inside.owin()` rather than by eye. This agreement holds only at the tile's resolution (561.9km², roughly 25km × 24km), since a count method cannot locate anything more finely. The two methods agree on which broad area is busiest, not on an exact point.
+:::
+
+### Temporal Profile of Fire Activity
+
+Task 2 permits investigating how intensity varies across space and time, and the Temporal Study Window deferred this until the first-order spatial pattern had been examined.
+
+Kalimantan's dry season, and the associated peak in peatland fire activity, is documented as typically occurring from August to October, driven by El Niño-linked drought lowering peat groundwater levels [@sulaiman2023peatland]. This study's window extends into the front edge of that peak, so a weekly count was produced to check for a comparable late-season increase.
+
+```{r}
+#| label: temporal-weekly-counts
+#| code-fold: true
+#| code-summary: "Show weekly count aggregation code"
+
+weekly_counts <- kapuas_fires_sf |>
+  st_drop_geometry() |>
+  mutate(week_start = as.Date(cut(acq_date, "week"))) |>
+  count(week_start, name = "n_fires")
+
+range(weekly_counts$week_start)
+nrow(weekly_counts)
+sum(weekly_counts$n_fires)
+tail(weekly_counts, 3)
+```
+
+Collection ended 11 September rather than at a week boundary, so the final bin is printed above before interpreting the chart. A partial final week could otherwise be misread as a genuine decline.
+
+```{r}
+#| label: temporal-profile-plot
+#| fig-width: 9
+#| fig-height: 5
+#| code-fold: true
+#| code-summary: "Show plotting code"
+
+p_temporal <- ggplot(weekly_counts, aes(x = week_start, y = n_fires)) +
+  annotate("rect", xmin = as.Date("2026-08-01"), xmax = as.Date("2026-09-11"),
+           ymin = -Inf, ymax = Inf, fill = "orange", alpha = 0.10) +
+  geom_col(fill = "firebrick", alpha = 0.8, width = 6) +
+  geom_vline(xintercept = as.Date("2026-08-01"), linetype = "dashed",
+             colour = "grey40", linewidth = 0.4) +
+  annotate("text", x = as.Date("2026-08-03"), y = max(weekly_counts$n_fires) * 1.02,
+           label = "Documented dry-season onset (Aug-Oct)", hjust = 0,
+           size = 3, colour = "grey30") +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+  labs(
+    title = "Weekly Fire Detection Counts in Kapuas, Jan-Sep 2026",
+    subtitle = "Shaded region marks the dry-season window documented in the peatland literature",
+    x = NULL, y = "Fire detections per week"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(panel.grid.minor = element_blank())
+
+ggsave("data/kapuas_weekly_fire_counts.png", p_temporal, width = 9, height = 5, dpi = 150)
+
+p_temporal
+```
+
+```{r}
+#| label: temporal-partial-week-check
+#| code-fold: true
+#| code-summary: "Show partial-week normalization code"
+
+weekly_counts <- weekly_counts |>
+  mutate(
+    week_end = pmin(week_start + 6, as.Date("2026-09-11")),
+    n_days = as.integer(week_end - week_start) + 1,
+    fires_per_day = round(n_fires / n_days, 1)
+  )
+
+tail(weekly_counts, 3)
+```
+
+Weekly counts rise in a near step-function from early August, consistent with the documented dry-season onset [@sulaiman2023peatland]. January to July was minimal and sporadic apart from two small bursts in mid-January and early April, before activity peaked at 623 detections (89.0 fires/day) in the week of 24 August.
+
+The next full week (31 August to 6 September) recorded 378 detections (54.0 fires/day), a genuine drop of roughly 39% in daily intensity. The final bin (7 to 11 September) covers only 5 days, so its 261 detections look like a further steep fall, but normalised this is 52.2 fires/day, essentially unchanged. After its peak, activity plateaued at roughly 52 to 54 fires/day rather than continuing to taper.
+
+## Second-Order Spatial Point Pattern Analysis
+
+First-order analysis established that Kapuas's intensity is strongly non-uniform, so testing against a flat-CSR null can only confirm what is already known. The decisive question for an inhomogeneous process such as wildfire is narrower: *is there clustering beyond what the intensity surface already explains?* Only the intensity-adjusted methods (`Kinhom`, `Ginhom`, `Finhom`) can answer this.
+
+The homogeneous methods come first because they provide the baseline the adjusted result is measured against. `Kinhom`'s central finding is a residual, and a residual cannot be interpreted without the unadjusted departure it is taken from. The 12.4km characteristic scale used in the public-safety discussion also comes only from the standard L-function. Because the two stages differ solely in their null model, running both also serves as a sensitivity analysis.
+
+This section is organised as a two-stage escalation of the null model, with Stage 2 carrying the interpretive weight.
+
+::: callout-note
+## Why every envelope test here is global (rank), not pointwise
+
+Every envelope test in this section is global (`nrank = 1, global = TRUE`) rather than pointwise. A pointwise envelope controls the error rate only at a single distance r chosen in advance. Inspecting a curve across a range of distances, as every interpretation here does, amounts to many simultaneous comparisons, so the true error rate can far exceed the nominal level [@loosmoreford2006; @myllymaki2017global]. The global rank test gives a single valid significance level across the whole curve, and is applied uniformly so no method is held to a lower standard.
+:::
+
+### Stage 1 Baseline: Departure from Complete Spatial Randomness
+
+#### G-Function: Nearest-Neighbour Distance Distribution
+
+::: callout-note
+## Method card: G-function
+
+**Question.** Independent of *where* intensity is high, are individual fire events on average closer to their nearest neighbour than CSR would produce? This is separate from first-order intensity, since a pattern can have non-uniform intensity while still showing CSR-like spacing *within* each dense region.
+
+**Method.** $G(r)$ estimates the cumulative distribution of nearest-neighbour distances, the proportion of events with a nearest neighbour within distance $r$. Computed via `Gest()`.
+
+**Assumptions.** The CSR reference assumes a homogeneous Poisson process, constant intensity and independent events. First-order analysis established Kapuas's intensity is *not* homogeneous, so a direct CSR comparison risks attributing intensity-driven clustering to genuine point interaction. Stage 2 addresses this.
+
+**Null model.** CSR via Monte Carlo simulation, 999 homogeneous Poisson patterns within the same `owin`, global rank envelope.
+
+**Edge correction.** Border correction, which restricts the estimate to points far enough from the boundary to have their true nearest neighbour observed, without assuming anything about behaviour beyond the window [@baddeley2015spatial].
+:::
+
+```{r}
+#| label: g-function-estimate
+#| code-fold: true
+#| code-summary: "Show G-function estimation code"
+
+G_kapuas <- Gest(kapuas_ppp, correction = "border")
+
+plot(G_kapuas, main = "G-function: Kapuas Fire Detections")
+```
+
+```{r}
+#| label: g-function-envelope
+#| code-fold: true
+#| code-summary: "Show CSR envelope simulation code"
+#| cache: true
+
+set.seed(1234)
+G_kapuas_csr <- envelope(kapuas_ppp, Gest, correction = "border", nsim = 999,
+                          nrank = 1, global = TRUE, verbose = FALSE)
+
+plot(G_kapuas_csr, main = "G-function vs. CSR Envelope (999 simulations, global test)")
+```
+
+```{r}
+#| label: g-function-rmax-check
+#| code-fold: true
+#| code-summary: "Show parameter extraction code"
+
+attr(G_kapuas, "alim")
+max(G_kapuas$r)
+```
+
+```{r}
+#| label: g-function-gap-check
+#| code-fold: true
+#| code-summary: "Show gap verification code within reliable range"
+
+alim_g <- attr(G_kapuas, "alim")
+r_vals_g <- G_kapuas_csr$r
+gap_g <- G_kapuas_csr$obs - G_kapuas_csr$hi
+
+within_alim_g <- r_vals_g <= alim_g[2]
+sum(within_alim_g)
+
+gap_within_g <- gap_g[within_alim_g]
+sum(gap_within_g <= 0, na.rm = TRUE)
+
+r_within_g <- r_vals_g[within_alim_g]
+r_within_g[gap_within_g <= 0]
+gap_within_g[gap_within_g <= 0]
+```
+
+The reliable range extends to 1215.42m (`spatstat`'s automatically selected `alim`). Estimates are computed to 5815.86m but not plotted beyond that range, because the border correction's usable sample shrinks as distance grows.
+
+Within that range the observed curve lies outside the CSR envelope at 98 of 108 tested distances. The ten exceptions are all at the origin end, from r = 0 (where G(0) = 0 by definition) out to r ≈ 102m, with the gap narrowing from -0.058 to -0.007. This is expected rather than a weakening of the result. MODIS fire pixels are roughly 1km across, so nearest-neighbour distances below about 100m are rare however strongly clustered the pattern is, and neither curve has had room to diverge. From r ≈ 114m to the 1215.42m limit the observed curve stays above the envelope without exception. Fire events are therefore systematically closer to their nearest neighbour than CSR would produce, consistent with the hotspot-and-satellite-cluster structure in the KDE surface, and this holds under the stricter global test.
+
+A small, sharp step near r ≈ 950 to 1000m, close to the upper edge of the reliable range, is likely an artefact of the border correction's shrinking sample rather than a real feature.
+
+#### F-Function: Empty-Space Distance Distribution
+
+::: callout-note
+## Method card: F-function
+
+**Question.** G showed fire events are closer to each other than CSR predicts. F asks the complementary question from the opposite direction. Are *random locations* within Kapuas also close to a fire event, or are large stretches far from any fire? Together the two distinguish patterns that look similar on a map but mean different things: strong clustering with genuinely empty gaps (both depart) versus fires locally close together but still reachable from most of the study area (G departs, F stays closer).
+
+**Method.** $F(r)$ estimates the cumulative distribution of distances from fixed reference points, not the events themselves, to the nearest observed event. Computed via `Fest()`.
+
+**Assumptions.** Same as G. The CSR reference assumes a homogeneous Poisson process, which does not hold for Kapuas, and is interpreted with that caveat.
+
+**Null model.** CSR, 999 simulations, global rank envelope.
+
+**Edge correction.** `correction = "best"`, selecting the most appropriate method for the pattern rather than committing in advance [@baddeley2015spatial].
+:::
+
+```{r}
+#| label: f-function-estimate
+#| code-fold: true
+#| code-summary: "Show F-function estimation code"
+
+F_kapuas <- Fest(kapuas_ppp, correction = "best")
+
+plot(F_kapuas, main = "F-function: Kapuas Fire Detections")
+```
+
+```{r}
+#| label: f-function-envelope
+#| code-fold: true
+#| code-summary: "Show CSR envelope simulation code"
+#| cache: true
+
+set.seed(1234)
+F_kapuas_csr <- envelope(kapuas_ppp, Fest, correction = "best", nsim = 999,
+                          nrank = 1, global = TRUE, verbose = FALSE)
+
+plot(F_kapuas_csr, main = "F-function vs. CSR Envelope (999 simulations, global test)")
+```
+
+```{r}
+#| label: f-function-alim-check
+#| code-fold: true
+#| code-summary: "Show parameter extraction code"
+
+attr(F_kapuas, "alim")
+max(F_kapuas$r)
+```
+
+```{r}
+#| label: f-function-gap-check
+#| code-fold: true
+#| code-summary: "Show gap verification code within reliable range"
+
+alim_f <- attr(F_kapuas, "alim")
+r_vals_f <- F_kapuas_csr$r
+gap_f <- F_kapuas_csr$lo - F_kapuas_csr$obs  
+
+within_alim_f <- r_vals_f <= alim_f[2]
+sum(within_alim_f)
+
+gap_within_f <- gap_f[within_alim_f]
+sum(gap_within_f <= 0, na.rm = TRUE)
+
+r_within_f <- r_vals_f[within_alim_f]
+r_within_f[gap_within_f <= 0]
+gap_within_f[gap_within_f <= 0]
+```
+
+Unlike G, F's reliable range covers its full domain (0 to 5855.69m). The Kaplan-Meier correction, selected automatically by `correction = "best"`, does not lose sample at larger distances the way border correction does.
+
+The observed F lies below the CSR envelope at 22 of the 25 tested distances. The three exceptions are r = 0 (trivial, F(0) = 0 by definition) and two short distances, r ≈ 244m and r ≈ 488m, where the observed curve sits only fractionally above the lower bound (gaps of -0.045 and -0.022). Beyond r ≈ 488m the observed curve departs below the envelope without exception. Read with G, this completes the picture. Fires sit closer to each other than CSR predicts, and random locations sit further from the nearest fire. Clustering produces exactly this pair of effects, because pulling points together leaves other areas emptier.
+
+By 5.86km, observed F reaches about 0.75 against a CSR value near 1.0. Roughly a quarter of Kapuas therefore lies more than 5.86km from any detection, a far larger fire-free area than randomness would produce.
+
+#### K- and L-Functions: Clustering Across Distance Scales
+
+::: callout-note
+## Method card: K- and L-functions
+
+**Question.** G and F established that clustering exists and is not confined to one small scale. K, and its variance-stabilised transform L, addresses the remaining question. At what distances is clustering strongest, and does the departure from CSR grow, shrink or hold constant as scale increases? This connects the statistical finding to something spatially actionable.
+
+**Method.** $K(r)$ counts the expected number of further events within distance r of a typical event, normalised by intensity. $L(r) = \sqrt{K(r)/\pi} - r$ stabilises variance and makes deviations easier to read, since under CSR it is flat at zero. Computed via `Kest()`, with L derived from the K envelope.
+
+**Assumptions.** Same CSR caveat as G and F. This matters *more* for K/L, which are more directly sensitive to intensity inhomogeneity being mistaken for point interaction, and is exactly what Stage 2 resolves.
+
+**Null model.** CSR, global rank envelope.
+
+**Edge correction.** Ripley (isotropic) correction [@baddeley2015spatial].
+:::
+
+```{r}
+#| label: k-function-estimate
+#| code-fold: true
+#| code-summary: "Show K-function estimation code"
+
+K_kapuas <- Kest(kapuas_ppp, correction = "Ripley")
+
+plot(K_kapuas, main = "K-function: Kapuas Fire Detections")
+```
+
+```{r}
+#| label: k-function-envelope
+#| code-fold: true
+#| code-summary: "Show CSR envelope simulation code"
+#| cache: true
+
+set.seed(1234)
+K_kapuas_csr <- envelope(kapuas_ppp, Kest, correction = "Ripley", nsim = 19,
+                          nrank = 1, global = TRUE, verbose = FALSE)
+
+plot(K_kapuas_csr, main = "K-function vs. CSR Envelope (19 simulations)")
+```
+
+::: callout-note
+## A note on simulation count for this envelope
+
+The code runs 19 simulations (`nsim = 19`), giving a global rank envelope test at α ≈ 0.10. The K/L results below, including the \~12.4km characteristic distance, were originally established with a 99-simulation run under the same `"Ripley"` correction (α ≈ 0.02), which took roughly 30 minutes at this sample size. Re-running at `nsim = 99` reproduces the result at finer resolution. `nsim = 19` is substituted for faster reproducibility while preserving the same conclusion. The observed curve is unaffected by simulation count, and only the envelope's critical values change.
+:::
+
+```{r}
+#| label: l-function-from-k
+#| code-fold: true
+#| code-summary: "Show L-function derivation code"
+
+L_kapuas_csr <- K_kapuas_csr
+L_kapuas_csr$obs  <- sqrt(K_kapuas_csr$obs  / pi) - K_kapuas_csr$r
+L_kapuas_csr$theo <- sqrt(K_kapuas_csr$theo / pi) - K_kapuas_csr$r
+L_kapuas_csr$lo   <- sqrt(K_kapuas_csr$lo   / pi) - K_kapuas_csr$r
+L_kapuas_csr$hi   <- sqrt(K_kapuas_csr$hi   / pi) - K_kapuas_csr$r
+
+par(mar = c(7, 4, 4, 2))
+
+plot(L_kapuas_csr, main = "L-function vs. CSR Envelope (derived from K)",
+     ylab = "L(r) - r   (0 = complete spatial randomness)", legend = FALSE)
+
+legend("bottom", inset = c(0, -0.35), xpd = TRUE, horiz = TRUE, bty = "n",
+       legend = c(expression(hat(L)[obs](r)), expression(L[theo](r)),
+                  expression(hat(L)[hi](r)), expression(hat(L)[lo](r))),
+       col = c("black", "red", "grey", "grey"),
+       lty = c(1, 2, 1, 1))
+```
+
+::: callout-tip
+## Reading an L-function plot: why the reference line sits flat on zero
+
+Because the L transform subtracts r, complete spatial randomness maps onto the horizontal line at zero exactly. Under CSR, $L(r) = r$, so $L(r) - r = 0$ by construction at every distance. The flat theoretical line is the intended baseline, not a curve that has been flattened. The simulation envelope around it has genuine nonzero width but appears visually compressed against zero, because the observed departure is orders of magnitude larger, exceeding 10,000 at its peak. This is the point of the transform. It converts "is the observed curve meaningfully above the theoretical one" into the easier visual question "is the black line above zero".
+:::
+
+```{r}
+#| label: kl-function-alim-check
+#| code-fold: true
+#| code-summary: "Show parameter extraction code"
+
+attr(K_kapuas, "alim")
+max(K_kapuas$r)
+
+range(K_kapuas_csr$r)
+```
+
+```{r}
+#| label: l-function-peak-extraction
+#| code-fold: true
+#| code-summary: "Show peak-distance extraction code"
+
+peak_idx <- which.max(L_kapuas_csr$obs)
+peak_r <- L_kapuas_csr$r[peak_idx]
+peak_val <- L_kapuas_csr$obs[peak_idx]
+
+peak_r
+peak_val
+
+min(L_kapuas_csr$obs - L_kapuas_csr$hi)
+```
+
+The observed L-function exceeds the envelope at 501 of the 512 non-zero distances tested across the 0 to 31.23km range. The eleven exceptions are confined to the shortest distances, before the curve climbs clear of the band, after which it remains outside the envelope for the entire remaining range. The departure peaks at r = 12.38km, where L(r) - r reaches 10,108.56m, which is Kapuas's characteristic clustering scale. Beyond the peak the curve declines gradually but stays well clear of the envelope.
+
+Because Kapuas's intensity is already known to be non-uniform, part of this departure may reflect that variation rather than point-to-point clustering. Stage 1 cannot resolve this, so Stage 2 addresses it directly.
+
+### Stage 2 Primary Evidence: Departure from an Intensity-Adjusted Null
+
+Stage 1 tested Kapuas against a null that first-order analysis had already falsified. Stage 2 replaces it with a null built from Kapuas's own estimated intensity, so any remaining departure reflects point interaction rather than intensity variation. `Kinhom`, `Ginhom` and `Finhom` revisit Stage 1's three questions using different statistical constructions against the same reference, which lets them triangulate the result.
+
+#### Constructing the Reference Intensity
+
+All three methods use one shared reference intensity $\lambda(u)$: the metre-scale fixed-bandwidth KDE surface (`kde_kapuas_fixed_m`), the primary sensitivity-checked estimate from the first-order analysis, which matches `kapuas_ppp`'s units. Sharing one reference keeps the three results comparable.
+
+`Kinhom` weights each point by $1/\lambda(u)$, so $\lambda(u)$ must be positive everywhere. With a 1.113km bandwidth across a regency roughly 340km long, large areas have density at or near zero.
+
+```{r}
+#| label: kde-zero-pixel-check
+#| code-fold: true
+#| code-summary: "Show zero-pixel diagnostic code"
+
+sum(kde_kapuas_fixed_m$v == 0, na.rm = TRUE)
+range(kde_kapuas_fixed_m$v[kde_kapuas_fixed_m$v > 0], na.rm = TRUE)
+```
+
+15,444 pixels were exactly zero, and other values fell as low as 5.21 × 10⁻²⁷, which is underflow from the Gaussian tail rather than real density. CSR simulations place points in these areas too, so both break the $1/\lambda$ weighting. The surface was floored at 1% of its mean. A floor relative to the maximum was tried first, but it sat roughly six orders of magnitude below the surface's typical scale, giving sparse-area points implausible weights and destabilising the envelope. The mean-based floor keeps those weights plausible while avoiding zeros.
+
+```{r}
+#| label: kde-mean-check
+#| code-fold: true
+#| code-summary: "Show mean-density diagnostic code"
+
+mean(kde_kapuas_fixed_m$v, na.rm = TRUE)
+```
+
+```{r}
+#| label: kde-lambda-floor
+#| code-fold: true
+#| code-summary: "Show lambda flooring code"
+
+kde_mean <- mean(kde_kapuas_fixed_m$v, na.rm = TRUE)
+kde_floor <- kde_mean * 0.01
+
+kde_kapuas_fixed_m_floored <- eval.im(pmax(kde_kapuas_fixed_m, kde_floor))
+
+kde_floor
+range(kde_kapuas_fixed_m_floored)
+
+# Ginhom/Finhom envelopes require an lmin strictly below the surface minimum
+lmin_safe <- min(kde_kapuas_fixed_m_floored) * 0.999
+lmin_safe
+```
+
+`Kinhom` also needs `normpower`, which rescales the estimate to reduce bias under strong inhomogeneity. `spatstat` keeps `normpower = 1` as the default only for backward compatibility and recommends `normpower = 2` here. With 15,444 pixels at zero before flooring, Kapuas clearly qualifies, so `normpower = 2` is used in both the estimate and its envelope.
+
+::: callout-note
+## A shared circularity
+
+All three methods assume $\lambda(u)$ approximates the true intensity. Because that estimate comes from the same 1,849 points being tested, each asks whether there is clustering beyond what *this estimate* explains, not beyond the true, unobservable intensity. `envelope()` warns about the same issue: a fixed `lambda` departs from the method's strict assumptions (this warning is suppressed in the rendered output).
+
+This is standard practice for the diagnostic [@baddeley2015spatial] and does not invalidate the results, but it does mean they describe the *shape* of the remaining dependency rather than giving fully independent confirmation. It applies equally to all three methods and is not repeated below.
+:::
+
+#### Inhomogeneous K-Function
+
+::: callout-note
+## Method card: Kinhom
+
+**Question.** Is the large Stage 1 departure genuine point-to-point clustering, or substantially just the K-function correctly detecting Kapuas's already-known intensity variation expressed differently?
+
+**Method.** `Kinhom()` generalises Ripley's K to a spatially varying intensity $\lambda(u)$ by weighting each pairwise distance contribution by the local intensity at each point [@baddeley2000nonsemiparametric]. It remains second-order in the same sense as standard K, differing only in whether the reference intensity is constant or varying [@baddeley2015spatial].
+
+**Null model.** An inhomogeneous Poisson process with $\lambda(u)$ set to the floored KDE surface, a null that already incorporates Kapuas's known spatial concentration.
+
+**Edge correction.** Translation, not the isotropic correction used for standard K. This is a deliberate departure rather than an inconsistency. For inhomogeneous clustered patterns, translation correction is the better-supported choice in the literature, while isotropic correction is both less appropriate under strong inhomogeneity and, at 1,849 points (beyond `spatstat`'s \~1,000-point threshold), substantially more demanding computationally.
+:::
+
+```{r}
+#| label: kinhom-estimate
+#| code-fold: true
+#| code-summary: "Show inhomogeneous K-function estimation code"
+
+Kinhom_kapuas <- Kinhom(kapuas_ppp, lambda = kde_kapuas_fixed_m_floored,
+                         correction = "translate", normpower = 2)
+
+plot(Kinhom_kapuas, main = "Inhomogeneous K-function: Kapuas Fire Detections")
+```
+
+```{r}
+#| label: kinhom-envelope
+#| code-fold: true
+#| code-summary: "Show CSR envelope simulation code"
+#| cache: true
+
+set.seed(1234)
+Kinhom_kapuas_csr <- envelope(kapuas_ppp, Kinhom, lambda = kde_kapuas_fixed_m_floored,
+                               correction = "translate", normpower = 2, nsim = 99,
+                               nrank = 1, global = TRUE, verbose = FALSE,
+                               simulate = expression(rpoispp(kde_kapuas_fixed_m_floored)))
+
+plot(Kinhom_kapuas_csr, main = "Inhomogeneous K-function vs. Intensity-Adjusted Envelope (99 sims)")
+```
+
+```{r}
+#| label: kinhom-gap-analysis
+#| code-fold: true
+#| code-summary: "Show gap analysis code"
+
+gap <- Kinhom_kapuas_csr$obs - Kinhom_kapuas_csr$hi
+r_vals <- Kinhom_kapuas_csr$r
+
+# Does the observed curve ever dip inside the envelope 
+any(gap <= 0, na.rm = TRUE)
+sum(gap <= 0, na.rm = TRUE)
+
+# Range and location of the minimum gap (closest approach to the envelope)
+min(gap, na.rm = TRUE)
+r_vals[which.min(gap)]
+
+# Range and location of the maximum gap (widest departure)
+max(gap, na.rm = TRUE)
+r_vals[which.max(gap)]
+```
+
+Unlike the standard K/L-function, `Kinhom` shows no sustained departure. The observed curve never exceeds the intensity-adjusted envelope's upper bound at any of the 501 tested distances, remaining inside or below the band throughout.
+
+This substantially revises the Stage 1 finding rather than merely qualifying it. Once the known intensity surface is the reference, almost none of the large K/L departure from flat CSR survives. Kapuas's known fire-prone geography accounts for essentially all of the second-moment clustering structure Stage 1 detected, at both short and long range.
+
+#### Inhomogeneous G- and F-Functions
+
+::: callout-note
+## Method card: Ginhom and Finhom
+
+**Question.** The ambiguity `Kinhom` resolved for the second-moment measure applies equally to nearest-neighbour and empty-space distances. Do the Stage 1 G and F departures survive intensity adjustment? Because these use a different construction from `Kinhom`, they provide independent triangulation rather than restatement.
+
+**Method.** `Ginhom()` and `Finhom()` generalise the nearest-neighbour and empty-space functions to a spatially varying reference intensity, following @vanlieshout2011jfunction.
+
+**Null model.** An inhomogeneous Poisson process using the same floored KDE surface as `Kinhom`, so all three test against one reference.
+
+**Parameters and edge correction.** Both use a fixed border correction, with no user-selectable option unlike `Kest()`/`Kinhom()`. Both require `lmin`, the minimum possible intensity over the domain. The point estimates use `kde_floor` directly, while the envelopes require a value *strictly* below the floored surface's minimum and therefore use `lmin_safe` (0.1% lower). This is a technical requirement of the function, not a change in the reference intensity.
+:::
+
+```{r}
+#| label: ginhom-finhom-estimate
+#| code-fold: true
+#| code-summary: "Show Ginhom and Finhom estimation code"
+
+Ginhom_kapuas <- Ginhom(kapuas_ppp, lambda = kde_kapuas_fixed_m_floored, lmin = kde_floor)
+Finhom_kapuas <- Finhom(kapuas_ppp, lambda = kde_kapuas_fixed_m_floored, lmin = kde_floor)
+```
+
+::: panel-tabset
+#### Ginhom estimate
+
+```{r}
+#| label: ginhom-estimate-plot
+#| echo: false
+
+plot(Ginhom_kapuas, main = "Inhomogeneous G-function: Kapuas Fire Detections")
+```
+
+#### Finhom estimate
+
+```{r}
+#| label: finhom-estimate-plot
+#| echo: false
+
+plot(Finhom_kapuas, main = "Inhomogeneous F-function: Kapuas Fire Detections")
+```
+:::
+
+Unlike the homogeneous G-function, whose sign convention is well established, `spatstat`'s documentation for `Ginhom` does not state which direction indicates clustering versus regularity for the reweighted version. This was confirmed with a control test rather than assumed. `Ginhom` computed under a flat, constant intensity should behave equivalently to ordinary `Gest`, since reweighting becomes trivial when the reference does not vary.
+
+```{r}
+#| label: ginhom-sign-convention-check
+#| code-fold: true
+#| code-summary: "Show sign-convention verification code"
+
+
+flat_lambda_val <- kapuas_ppp$n / area.owin(kapuas_owin)
+flat_lambda_vec <- rep(flat_lambda_val, kapuas_ppp$n)
+
+Ginhom_flat_check <- Ginhom(kapuas_ppp, lambda = flat_lambda_vec)
+
+flat_check <- data.frame(
+  r = Ginhom_flat_check$r,
+  gap = Ginhom_flat_check$bord - Ginhom_flat_check$theo
+)
+
+
+mean(flat_check$gap > 0, na.rm = TRUE)
+sum(flat_check$gap > 0, na.rm = TRUE)
+sum(flat_check$gap < 0, na.rm = TRUE)
+
+flat_check[round(seq(1, nrow(flat_check), length.out = 8)), ]
+```
+
+Under flat intensity the gap is strongly positive at short range (0.53 at r ≈ 829m, declining smoothly thereafter), matching the known direction of Kapuas's homogeneous G result. `Ginhom`'s sign convention therefore matches `Gest`'s: positive gap indicates clustering, negative indicates regularity, relative to whatever reference intensity is supplied.
+
+```{r}
+#| label: ginhom-envelope
+#| code-fold: true
+#| code-summary: "Show Ginhom CSR envelope simulation code"
+#| cache: true
+
+set.seed(1234)
+Ginhom_kapuas_csr <- envelope(kapuas_ppp, Ginhom, lambda = kde_kapuas_fixed_m_floored,
+                               lmin = lmin_safe, nsim = 999, nrank = 1, global = TRUE, verbose = FALSE,
+                               simulate = expression(rpoispp(kde_kapuas_fixed_m_floored)))
+```
+
+```{r}
+#| label: finhom-envelope
+#| code-fold: true
+#| code-summary: "Show Finhom CSR envelope simulation code"
+#| cache: true
+
+set.seed(1234)
+Finhom_kapuas_csr <- envelope(kapuas_ppp, Finhom, lambda = kde_kapuas_fixed_m_floored,
+                               lmin = lmin_safe, nsim = 999, nrank = 1, global = TRUE, verbose = FALSE,
+                               simulate = expression(rpoispp(kde_kapuas_fixed_m_floored)))
+```
+
+::: panel-tabset
+#### Ginhom vs envelope
+
+```{r}
+#| label: ginhom-envelope-plot
+#| echo: false
+
+plot(Ginhom_kapuas_csr, main = "Inhomogeneous G-function vs. Intensity-Adjusted Envelope (999 sims)")
+```
+
+#### Finhom vs envelope
+
+```{r}
+#| label: finhom-envelope-plot
+#| echo: false
+
+plot(Finhom_kapuas_csr, main = "Inhomogeneous F-function vs. Intensity-Adjusted Envelope (999 sims)")
+```
+:::
+
+```{r}
+#| label: ginhom-finhom-alim-check
+#| code-fold: true
+#| code-summary: "Show reliable-range check code"
+
+attr(Ginhom_kapuas, "alim")
+attr(Finhom_kapuas, "alim")
+
+max(Ginhom_kapuas_csr$r)
+max(Finhom_kapuas_csr$r)
+```
+
+Both reliable ranges span the full computed domain with no truncation, unlike the homogeneous G-function's truncation to 1215.42m, mirroring the border-correction contrast already seen between G and F.
+
+```{r}
+#| label: ginhom-finhom-envelope-check
+#| code-fold: true
+#| code-summary: "Show envelope verification code"
+
+# simulation envelope wideness
+g_width <- data.frame(
+  r = Ginhom_kapuas_csr$r,
+  lo = Ginhom_kapuas_csr$lo,
+  hi = Ginhom_kapuas_csr$hi,
+  width = Ginhom_kapuas_csr$hi - Ginhom_kapuas_csr$lo
+)
+f_width <- data.frame(
+  r = Finhom_kapuas_csr$r,
+  lo = Finhom_kapuas_csr$lo,
+  hi = Finhom_kapuas_csr$hi,
+  width = Finhom_kapuas_csr$hi - Finhom_kapuas_csr$lo
+)
+
+g_width[round(seq(1, nrow(g_width), length.out = 8)), ]
+f_width[round(seq(1, nrow(f_width), length.out = 8)), ]
+
+g_gap_hi <- Ginhom_kapuas_csr$obs - Ginhom_kapuas_csr$hi
+g_gap_lo <- Ginhom_kapuas_csr$lo - Ginhom_kapuas_csr$obs
+f_gap_hi <- Finhom_kapuas_csr$obs - Finhom_kapuas_csr$hi
+f_gap_lo <- Finhom_kapuas_csr$lo - Finhom_kapuas_csr$obs
+
+sum(g_gap_hi > 0, na.rm = TRUE)   # observed ABOVE envelope
+sum(g_gap_lo > 0, na.rm = TRUE)   # observed BELOW envelope
+sum(f_gap_hi > 0, na.rm = TRUE)
+sum(f_gap_lo > 0, na.rm = TRUE)
+
+# compare envelope width against the ordinary G/F envelope widths
+g_width_ordinary <- G_kapuas_csr$hi - G_kapuas_csr$lo
+f_width_ordinary <- F_kapuas_csr$hi - F_kapuas_csr$lo
+summary(g_width_ordinary)
+summary(f_width_ordinary)
+summary(g_width$width)
+summary(f_width$width)
+```
+
+The wider envelope here (median width 0.091 for Ginhom versus 0.035 for ordinary G, though comparable at the maximum) reflects genuinely greater variability under an intensity-adjusted null. Simulated points sometimes land in Kapuas's sparse zones and sometimes its dense zone, producing more variable nearest-neighbour and empty-space distances than a flat reference would. This is expected given how uneven the intensity surface is, not an estimation problem.
+
+`Finhom` departs below the lower bound at only 10 of 95 tested distances, with the largest departure a modest −0.0155. Where Stage 1's F-function departed from flat CSR almost everywhere, the intensity-adjusted null already accounts for nearly all of the empty-space structure.
+
+`Ginhom` shows the same pattern, with only 4 of 95 tested distances outside the lower bound and a maximum departure of −0.0057. Neither finds a broad-based departure once intensity is accounted for. With `Kinhom`'s result, this indicates the known fire-prone geography explains almost all of the second-order structure Stage 1 detected, for overall concentration and nearest-neighbour spacing alike. What Stage 1 read as strong clustering is substantially explained by where fires are already known to be more likely, not by fires interacting with each other.
+
+```{r}
+#| label: ginhom-finhom-peak-gap-check
+#| code-fold: true
+#| code-summary: "Show peak-gap location check code"
+
+g_gap_signed <- Ginhom_kapuas_csr$obs - Ginhom_kapuas_csr$lo
+min(g_gap_signed, na.rm = TRUE)
+Ginhom_kapuas_csr$r[which.min(g_gap_signed)]
+
+f_gap_signed <- Finhom_kapuas_csr$obs - Finhom_kapuas_csr$lo
+min(f_gap_signed, na.rm = TRUE)
+Finhom_kapuas_csr$r[which.min(f_gap_signed)]
+
+g_gap_signed[round(seq(1, length(g_gap_signed), length.out = 6))]
+f_gap_signed[round(seq(1, length(f_gap_signed), length.out = 6))]
+```
+
+Both departures are small and confined to a handful of distances near the far edge of the tested range, rather than growing steadily across the whole range as Stage 1's homogeneous tests did. The largest magnitudes are −0.0057 for `Ginhom` and −0.0155 for `Finhom`, far smaller than the corresponding Stage 1 effect sizes and too small to support a claim of sustained departure from the intensity-adjusted null.
+
+#### What Survives Adjustment
+
+All three methods agree with each other, unlike the mixed picture Stage 1 alone would suggest:
+
+- **`Kinhom`:** never exceeds the intensity-adjusted envelope at any of 501 tested distances. No departure at any scale.
+- **`Finhom`:** departs at only 10 of 95 tested distances, maximum effect size −0.0155.
+- **`Ginhom`:** departs at only 4 of 95 tested distances, maximum effect size −0.0057.
+
+Once point interaction is separated from intensity variation, Kapuas's fire pattern shows almost no residual clustering or regularity beyond what the intensity surface already predicts. The large departures Stage 1 found against flat CSR are attributable overwhelmingly to non-uniform intensity, not to fires interacting with, triggering or avoiding each other.
+
+## Integrated Findings and Discussion
+
+### What Each Level of Analysis Reveals
+
+**First-order.** The KDE surface identifies a single dominant hotspot at 114.146°E, 2.022°S reaching 7.69 fires/km², more than triple any other elevated area, alongside smaller 1 to 2 fires/km² patches on a similar north-south alignment. The quadrat test confirms this non-uniformity is genuine (X² = 3785.9, df = 45, p \< 2.2 × 10⁻¹⁶), and its highest-count tile (412 detections) contains the KDE peak, confirmed by containment testing. The temporal profile adds the dimension the brief permits alongside space, with activity concentrated overwhelmingly in the final six weeks [@sulaiman2023peatland].
+
+**Second-order.** Stage 1 established that this concentration reflects more than visual clustering. G and F depart from CSR in complementary directions across almost their entire reliable ranges, and K/L confirm this holds out to 31.2km, peaking at 12.38km. Stage 2 shows the departure is overwhelmingly attributable to non-uniform intensity rather than point interaction, since `Kinhom`, `Ginhom` and `Finhom` all fall within their intensity-adjusted envelopes at the overwhelming majority of tested distances.
+
+### Complementarity Between the Two Levels
+
+The two levels answer different halves of the same question. First-order analysis identifies *where* intensity is elevated and *how strongly*, but cannot distinguish event-to-event interaction from events simply occurring more often in an already fire-prone location. Second-order analysis fills that gap. Stage 1 establishes that interaction exists beyond flat randomness, and Stage 2 separates how much survives once the known intensity pattern is held constant.
+
+That is what makes the finding more than descriptive. `Kinhom`, `Ginhom` and `Finhom` converge on the same conclusion despite three different statistical constructions. This replaces "fires are clustered" with something more precise and more cautious: Kapuas's second-order structure is substantially explained by its documented fire-prone geography, not by fire-to-fire interaction. Only comparing Stage 1 against Stage 2 makes that distinction visible.
+
+### Cross-Method Summary
+
+```{r}
+#| label: synthesis-table
+#| code-fold: true
+#| code-summary: "Show synthesis table code"
+
+synthesis_summary <- tibble::tibble(
+  Method = c("Quadrat test", "G-function", "F-function",
+             "K/L-function", "Kinhom", "Ginhom", "Finhom"),
+  `Key statistic` = c("X\u00b2 = 3785.9, df = 45, p < 2.2e-16",
+                       "Global rank envelope, 999 sims",
+                       "Global rank envelope, 999 sims",
+                       "Global rank envelope, 99 sims",
+                       "Global rank envelope, 99 sims",
+                       "Global rank envelope, 999 sims",
+                       "Global rank envelope, 999 sims"),
+  `Characteristic distance` = c(NA, 1215.42, 5855.69, 12382.35, NA, NA, NA),
+  `Result vs. reference` = c("Rejects CSR (non-uniform intensity)",
+                            "Above CSR envelope (closer neighbours)",
+                            "Below CSR envelope (larger empty gaps)",
+                            "Above CSR envelope, peaks then declines",
+                            "No departure from intensity-adjusted null (0/501 above bound)",
+                            "No sustained departure from intensity-adjusted null (4/95 below bound)",
+                            "No sustained departure from intensity-adjusted null (10/95 below bound)")
+)
+
+synthesis_summary
+```
+
+The Stage 1 distance scales span nearly three orders of magnitude and are plotted on a log scale below. The Stage 2 methods are excluded from the chart, since none shows a sustained departure and so none has a characteristic distance to plot.
+
+```{r}
+#| label: synthesis-distance-plot
+#| fig-width: 9
+#| fig-height: 4
+#| code-fold: true
+#| code-summary: "Show distance-scale comparison plot code"
+
+synthesis_distances <- tibble::tibble(
+  label = c("G: reliable range limit", "F: reliable range limit",
+            "K/L: peak departure"),
+  distance_m = c(1215.42, 5855.69, 12382.35),
+  type = c("Reliable-range boundary", "Reliable-range boundary",
+           "Peak departure")
+)
+
+p_synthesis_distances <- ggplot(synthesis_distances,
+                                 aes(x = distance_m, y = reorder(label, distance_m),
+                                     colour = type)) +
+  geom_segment(aes(x = 100, xend = distance_m, yend = reorder(label, distance_m)),
+               linewidth = 0.6) +
+  geom_point(size = 4) +
+  scale_x_log10(labels = scales::label_comma(suffix = "m")) +
+  scale_colour_brewer(palette = "Dark2") +
+  labs(
+    title = "Characteristic Distances Across Stage 1 Methods",
+    subtitle = "Log scale. Kinhom, Ginhom, Finhom omitted (no sustained departure from adjusted null)",
+    x = "Distance (metres, log scale)", y = NULL, colour = NULL
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "bottom")
+
+p_synthesis_distances
+```
+
+The three distances shown are all Stage 1 results, tested against flat CSR. The claim that known intensity explains almost all of the second-order structure rests on the near-complete absence of exceedances in the table above, not on a specific distance.
+
+```{r}
+#| label: hotspot-location-verification
+#| code-fold: true
+#| code-summary: "Show hotspot location verification code"
+
+qc_counts <- as.vector(kapuas_quadrat_counts)
+qc_tess <- attr(kapuas_quadrat_counts, "tess")
+
+max_tile_idx <- which.max(qc_counts)
+qc_counts[max_tile_idx]
+
+max_tile <- qc_tess$tiles[[max_tile_idx]]
+inside.owin(peak_row$x, peak_row$y, max_tile)
+
+tile_area_km2 <- area.owin(max_tile) / 1e6
+tile_area_km2
+```
+
+The KDE peak falls inside the quadrat grid's highest-count tile (412 detections, 561.9km²), confirmed by containment testing rather than visual estimation.
+
+### Consistency Across Analytical Views
+
+The conclusion that Kapuas's fires are clustered rather than random, tested against flat CSR, holds across the quadrat test, KDE, G, F and K/L. KDE and quadrat counts agree on the hotspot's broad location, though only at the coarser method's resolution, since a discrete grid cannot resolve location more finely than its 561.9km² tile.
+
+Stage 1 and Stage 2 diverge in a way that is informative rather than a weakness. Stage 1's homogeneous methods reject flat CSR decisively, while Stage 2's intensity-adjusted methods each independently find almost no departure from a properly-specified inhomogeneous null. The divergence is between the two *stages*, and it has a clear explanation. Stage 1's large departure was driven substantially by intensity variation that Stage 2 correctly absorbs into its reference.
+
+### Assumptions and Limitations
+
+These are consolidated in Limitations rather than repeated here. In brief: Stage 1's CSR reference does not describe Kapuas, which is why Stage 2 exists. Stage 2 fixes that but is circular, since its reference intensity comes from the same data being tested. The G-function's reliable range stops at 1.22km because of its border correction. The pooled cross-sectional treatment sets aside a strongly concentrated temporal pattern, examined in the Bonus extension. Every finding describes *detected* fire events, so lower measured intensity can mean less reliable detection rather than less fire.
+
+::: callout-tip
+## Sensitivity checks ran throughout
+
+Sensitivity analysis was built into the workflow rather than left to this section. Fixed bandwidth was tested against adaptive, `bw.ppl()` against `bw.diggle()`, and every homogeneous test against its inhomogeneous counterpart, which is what the Stage 1 and Stage 2 structure is for. These comparisons did real work. Switching from a flat-CSR null to a properly-specified intensity-adjusted null overturned the Stage 1 clustering conclusion for all three methods.
+:::
+
+### Alternative Explanations for the Observed Pattern
+
+The clustered pattern is consistent with several mechanisms that fire-detection data alone cannot distinguish.
+
+One is genuine spatial contagion, with fires spreading to or triggering nearby fires, producing the short-range G/F signature observed. A second is a shared driver. Proximity to roads and rivers is documented as a fire-risk factor in Kapuas, associated with human land clearing [@thoha2019characteristics], so accessible terrain could attract the activity that starts fires without fires causing fires. A third, harder to rule out, is detection bias. If satellite coverage or cloud-free days vary spatially, an area could appear as a hotspot partly through better observation.
+
+The second-order analysis lends weight to the shared-driver mechanism. Once the intensity surface, itself a proxy for the underlying fire-prone terrain, is used as the reference, almost none of the raw clustering signal remains unexplained. A covariate-based model (distance to river, road, or BPBD facility) would be needed to confirm the driver itself rather than the intensity surface standing in for it. Those covariates were identified as relevant when the study window was defined, but the GIS layers have not been acquired, so this remains future work.
+
+`Ginhom`'s small residual departure (4 of 95 distances, maximum effect −0.0057) is too weak to support a claim of nearest-neighbour regularity. It is more consistent with ordinary Monte Carlo variability under a global test spanning many distances than with a real mechanism, so no specific explanation is proposed.
+
+## Spatio-Temporal Extension (Bonus/Value-Added)
+
+::: callout-note
+## Method card: period-split spatio-temporal comparison
+
+**Question.** The main analysis pools the full window into one cross-section even though activity concentrates in the final six weeks. Does the pooled pattern hide two distinct spatial regimes, a sparse period before the dry-season onset and a concentrated surge after it, or does the same pattern simply intensify uniformly? Spatio-temporal treatments of Kalimantan hotspot data exist in the literature [@lestari2016spatiotemporal; @sahitya2021spatiotemporal], typically across multiple fire seasons rather than within one.
+
+**Method.** The window splits at the step-change boundary from the temporal profile (1 August), giving a quiet period (1 Jan to 31 Jul, 58 points) and a surge period (1 Aug to 11 Sep, 1,791 points). Each uses the same core methods as the main analysis, fixed-bandwidth KDE via `bw.ppl()` and the L-function against CSR, so any difference reflects the pattern rather than the method.
+
+**Assumptions and departures.** Two simplifications apply here only. The second-order comparison uses the homogeneous L-function instead of the inhomogeneous suite, since building an intensity-adjusted reference from 58 points would add a second layer of estimation instability on top of an already small sample. The envelopes use `correction = "border"` instead of `"Ripley"` and 19 simulations instead of 99, for tractability. Border correction is faster at the surge period's sample size, and 19 simulations still give a valid global rank envelope test with coarser critical values.
+
+**Null model.** CSR within the same `owin` used throughout, applied separately to each period's own point count.
+:::
+
+```{r}
+#| label: bonus-period-split
+#| code-fold: true
+#| code-summary: "Show period-split diagnostic code"
+
+kapuas_fires_sf <- kapuas_fires_sf |>
+  mutate(period = ifelse(acq_date < as.Date("2026-08-01"), "quiet", "surge"))
+
+table(kapuas_fires_sf$period)
+
+kapuas_ppp_quiet <- kapuas_ppp[kapuas_fires_sf$period == "quiet"]
+kapuas_ppp_surge <- kapuas_ppp[kapuas_fires_sf$period == "surge"]
+
+kapuas_ppp_quiet
+kapuas_ppp_surge
+```
+
+```{r}
+#| label: bonus-kde-by-period
+#| code-fold: true
+#| code-summary: "Show per-period KDE code"
+
+kapuas_ppp_quiet_km <- rescale.ppp(kapuas_ppp_quiet, 1000, "km")
+kapuas_ppp_surge_km <- rescale.ppp(kapuas_ppp_surge, 1000, "km")
+
+bw_quiet <- bw.ppl(kapuas_ppp_quiet_km)
+bw_surge <- bw.ppl(kapuas_ppp_surge_km)
+
+bw_quiet
+bw_surge
+
+kde_quiet_km <- density(kapuas_ppp_quiet, sigma = bw_quiet * 1000,
+                         edge = TRUE, kernel = "gaussian", eps = 250)
+kde_surge_km <- density(kapuas_ppp_surge, sigma = bw_surge * 1000,
+                         edge = TRUE, kernel = "gaussian", eps = 250)
+
+kde_quiet_km <- eval.im(pmax(kde_quiet_km, 0))
+kde_surge_km <- eval.im(pmax(kde_surge_km, 0))
+
+peak_quiet <- as.data.frame(kde_quiet_km)
+peak_quiet <- peak_quiet[which.max(peak_quiet$value), ]
+peak_quiet$value_per_km2 <- peak_quiet$value * 1e6
+
+peak_surge <- as.data.frame(kde_surge_km)
+peak_surge <- peak_surge[which.max(peak_surge$value), ]
+peak_surge$value_per_km2 <- peak_surge$value * 1e6
+
+peak_quiet_sf <- st_as_sf(peak_quiet, coords = c("x", "y"), crs = 32750) |> st_transform(4326)
+peak_surge_sf <- st_as_sf(peak_surge, coords = c("x", "y"), crs = 32750) |> st_transform(4326)
+
+st_coordinates(peak_quiet_sf)
+peak_quiet$value_per_km2
+
+st_coordinates(peak_surge_sf)
+peak_surge$value_per_km2
+
+st_distance(peak_quiet_sf, peak_surge_sf)
+```
+
+```{r}
+#| label: bonus-l-function-by-period
+#| code-fold: true
+#| code-summary: "Show per-period L-function code"
+#| cache: true
+
+set.seed(1234)
+K_quiet_csr <- envelope(kapuas_ppp_quiet, Kest, correction = "border", nsim = 19,
+                         nrank = 1, global = TRUE, verbose = FALSE)
+
+set.seed(1234)
+K_surge_csr <- envelope(kapuas_ppp_surge, Kest, correction = "border", nsim = 19,
+                         nrank = 1, global = TRUE, verbose = FALSE)
+
+L_quiet_csr <- K_quiet_csr
+L_quiet_csr$obs  <- sqrt(K_quiet_csr$obs  / pi) - K_quiet_csr$r
+L_quiet_csr$theo <- sqrt(K_quiet_csr$theo / pi) - K_quiet_csr$r
+L_quiet_csr$lo   <- sqrt(K_quiet_csr$lo   / pi) - K_quiet_csr$r
+L_quiet_csr$hi   <- sqrt(K_quiet_csr$hi   / pi) - K_quiet_csr$r
+
+L_surge_csr <- K_surge_csr
+L_surge_csr$obs  <- sqrt(K_surge_csr$obs  / pi) - K_surge_csr$r
+L_surge_csr$theo <- sqrt(K_surge_csr$theo / pi) - K_surge_csr$r
+L_surge_csr$lo   <- sqrt(K_surge_csr$lo   / pi) - K_surge_csr$r
+L_surge_csr$hi   <- sqrt(K_surge_csr$hi   / pi) - K_surge_csr$r
+
+peak_idx_quiet <- which.max(L_quiet_csr$obs)
+peak_idx_surge <- which.max(L_surge_csr$obs)
+
+L_quiet_csr$r[peak_idx_quiet]
+L_quiet_csr$obs[peak_idx_quiet]
+
+L_surge_csr$r[peak_idx_surge]
+L_surge_csr$obs[peak_idx_surge]
+
+sum((L_quiet_csr$obs - L_quiet_csr$hi) <= 0, na.rm = TRUE)
+sum((L_surge_csr$obs - L_surge_csr$hi) <= 0, na.rm = TRUE)
+
+range(K_quiet_csr$r)
+range(K_surge_csr$r)
+
+length(K_quiet_csr$r)
+length(K_surge_csr$r)
+
+par(mar = c(7, 4, 4, 2))
+
+plot(L_quiet_csr, main = "L-function vs CSR: Quiet Period (Jan-Jul)",
+     ylab = "L(r) - r   (0 = complete spatial randomness)", legend = FALSE)
+legend("bottom", inset = c(0, -0.35), xpd = TRUE, horiz = TRUE, bty = "n",
+       legend = c(expression(hat(L)[obs](r)), expression(L[theo](r)),
+                  expression(hat(L)[hi](r)), expression(hat(L)[lo](r))),
+       col = c("black", "red", "grey", "grey"),
+       lty = c(1, 2, 1, 1))
+
+plot(L_surge_csr, main = "L-function vs CSR: Surge Period (Aug-Sep)",
+     ylab = "L(r) - r   (0 = complete spatial randomness)", legend = FALSE)
+legend("bottom", inset = c(0, -0.35), xpd = TRUE, horiz = TRUE, bty = "n",
+       legend = c(expression(hat(L)[obs](r)), expression(L[theo](r)),
+                  expression(hat(L)[hi](r)), expression(hat(L)[lo](r))),
+       col = c("black", "red", "grey", "grey"),
+       lty = c(1, 2, 1, 1))
+```
+
+As in the main L-function plot, the theoretical line sits at zero because $L(r) - r = 0$ under CSR at every distance. The quiet period's much wider, noisier envelope reflects its small sample.
+
+**Results and interpretation.** The quiet period needed a much wider smoothing radius (`bw.ppl()` = 6.65km versus the surge period's 1.113km, which matches the main analysis exactly since the surge holds 1,791 of 1,849 points), reflecting a sparser, more scattered distribution. Its peak (114.331°E, 1.372°S) sits **75.13km** from the surge peak (114.146°E, 2.022°S, essentially the full-period hotspot), and its peak intensity (0.027 fires/km²) is roughly 289 times lower. The season's dominant hotspot did not form where the earlier, weak activity was concentrated.
+
+The two periods behave very differently against CSR. The surge period departs from the envelope at 478 of 513 tested distances (93.2%), a sustained and unambiguous clustering signal. The quiet period does not: its observed curve exceeds the envelope at only 4 of 513 distances, so at 58 points its pattern is not statistically distinguishable from CSR. Its nominal peak (r ≈ 14.03km, L(r) - r = 12,269.76) is larger in absolute terms than the surge's (r ≈ 4.57km, L(r) - r = 7,776.01), but it sits inside a Monte Carlo envelope made very wide by the small sample and should not be read as evidence of a broader-scale clustering process. Only the surge period's characteristic scale, 4.57km, is statistically supported, and it is tighter than the pooled analysis's 12.38km.
+
+The quiet period's 58 points sit just above the report's 50-point stability floor, and the L-function result shows the consequence directly. At that sample size CSR cannot be rejected, so the quiet period's spatial structure can only be characterised descriptively through its KDE surface. The evidence that the two periods are distinct therefore rests on the first-order comparison, where it is strong: a 75.13km separation between peaks, a six-fold difference in bandwidth, and a roughly 289-fold difference in peak intensity. On that basis the dry-season surge is a spatially distinct, more tightly-clustered process rather than an intensified continuation of wherever fires already occurred.
+
+This complicates the pooled treatment in the main analysis. The full-period hotspot and characteristic distance largely reflect the surge specifically, unsurprising since it holds 97% of points, but a spatio-temporal treatment would frame this as two regimes rather than one pattern at varying intensity. For readiness planning, response anchored to the pooled hotspot remains well-supported for the surge period it actually reflects, but should not be read as describing a quiet-period baseline.
+
+## Geovisualisation and Geocommunication
+
+Five visuals were curated from the full set produced across this report, selected to communicate the analytical findings rather than the data-preparation and study-area-selection visuals, which serve Task 1 rather than Task 5.
+
+### Fixed-Bandwidth Kernel Density Estimate
+
+```{r}
+#| label: geovis-kde-map
+#| fig-width: 9
+#| fig-height: 10
+#| code-fold: true
+#| code-summary: "Show map redisplay code"
+
+kde_map_obj
+```
+
+**Reveals:** Fire intensity is strongly uneven across Kapuas. A single dominant hotspot at 114.146°E, 2.022°S reaches 7.69 fires/km², more than triple any other elevated area, with a chain of smaller 1 to 2 fires/km² patches on a similar north-south alignment rather than one continuous corridor.
+
+**Evidence:** Fixed-bandwidth KDE (`bw.ppl()` = 1.113km), corroborated by two independent checks: a quadrat test rejecting CSR (X² = 3785.9, p \< 2.2 × 10⁻¹⁶), and the grid's highest-count tile (412 detections) containing this exact peak, confirmed by containment testing.
+
+**Limitations:** The surface's shape is bandwidth-sensitive, and the adaptive alternative fragments the same hotspot. Intensity is not risk, since this records where fires were *detected*, which depends on satellite observation reliability as well as fire occurrence.
+
+### Does Fire Clustering Have a Characteristic Scale?
+
+```{r}
+#| label: geovis-l-function
+#| fig-width: 9
+#| fig-height: 5.5
+#| code-fold: true
+#| code-summary: "Show plot code"
+
+L_df <- data.frame(
+  r_km = L_kapuas_csr$r / 1000,
+  observed = L_kapuas_csr$obs,
+  expected = L_kapuas_csr$theo,
+  lo = L_kapuas_csr$lo,
+  hi = L_kapuas_csr$hi
+)
+
+peak_r_km <- peak_r / 1000
+
+ggplot(L_df, aes(x = r_km)) +
+  geom_ribbon(aes(ymin = lo, ymax = hi,
+                  fill = "Simulated envelope around the randomness line"),
+              alpha = 0.4) +
+  geom_line(aes(y = expected,
+                colour = "Complete spatial randomness (flat at 0 by construction)"),
+            linetype = "dashed", linewidth = 0.6) +
+  geom_line(aes(y = observed, colour = "Observed pattern"), linewidth = 1) +
+  annotate("point", x = peak_r_km, y = peak_val, colour = "firebrick", size = 3) +
+  annotate("text", x = peak_r_km, y = peak_val + 700,
+           label = paste0("Strongest clustering\nat ~", round(peak_r_km, 1), " km"),
+           size = 3.2, hjust = 0.5, colour = "grey20") +
+  scale_colour_manual(
+    name = NULL,
+    values = c("Observed pattern" = "black",
+               "Complete spatial randomness (flat at 0 by construction)" = "firebrick")) +
+  scale_fill_manual(
+    name = NULL,
+    values = c("Simulated envelope around the randomness line" = "grey70")) +
+  labs(
+    title = "Are Kapuas's Fires More Clustered Than Chance Would Predict?",
+    subtitle = "Plotting L(r) - r puts randomness exactly on zero; height above the band is the clustering effect",
+    x = "Distance between fires (km)", y = "L(r) - r   (0 = complete spatial randomness)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom")
+```
+
+**Reveals:** The chart plots L(r) - r, a transform under which complete spatial randomness falls exactly on zero. The flat red line is the intended baseline, and the grey band around it is a real Monte Carlo envelope with genuine width that looks thin only because the observed departure is orders of magnitude larger, peaking above 10,000 near r ≈ 12.4km. Kapuas's fires sit measurably closer together than chance across almost the entire 31.2km range tested, most strongly at about 12.4km, easing afterwards without returning inside the band.
+
+**Evidence:** A global rather than pointwise envelope test, which guards against overstating significance across a range this wide.
+
+**Limitations:** The comparison assumes fires could occur anywhere in Kapuas with equal likelihood, already shown false, so part of this departure may be known geography rather than fire-to-fire clustering. The next visual addresses that.
+
+### Is There Genuine Fire-to-Fire Clustering, or Just Geography?
+
+```{r}
+#| label: geovis-kinhom
+#| fig-width: 9
+#| fig-height: 5.5
+#| code-fold: true
+#| code-summary: "Show plot code"
+
+Kinhom_gap_df <- data.frame(
+  r_km = Kinhom_kapuas_csr$r / 1000,
+  gap = Kinhom_kapuas_csr$obs - Kinhom_kapuas_csr$hi
+)
+
+ggplot(Kinhom_gap_df, aes(x = r_km, y = gap)) +
+  geom_ribbon(aes(ymin = 0, ymax = pmax(gap, 0)), fill = "orange", alpha = 0.25) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_line(linewidth = 1, colour = "black") +
+  scale_y_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
+  labs(
+    title = "Does Extra Clustering Remain After Accounting for Known Fire-Prone Areas?",
+    subtitle = "Zero means the pattern matches an intensity-adjusted null; the curve stays at or below zero almost everywhere",
+    x = "Distance between fires (km)", y = "Extra clustering beyond expected"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+**Reveals:** This plots the *gap* between the observed pattern and the upper edge of a null that already builds in Kapuas's known fire-prone geography, so zero means exactly as expected given location. The curve never exceeds this upper bound anywhere across the tested range, remaining substantially negative even at its narrowest point. Once known geography is accounted for, no unexplained clustering signal remains at any distance.
+
+**Evidence:** A formally tested departure (99 simulations, global envelope) against an intensity-adjusted reference rather than pure randomness. The absence of exceedances was verified against the underlying data rather than estimated visually.
+
+**Limitations:** The reference is built from the same fire data being tested, a circularity shared by all three inhomogeneous methods. `Finhom` and `Ginhom` independently reach the same conclusion.
+
+### Temporal Profile of Fire Activity
+
+```{r}
+#| label: geovis-temporal
+#| fig-width: 9
+#| fig-height: 5
+#| code-fold: true
+#| code-summary: "Show plot redisplay code"
+
+p_temporal
+```
+
+**Reveals:** Fire activity is heavily concentrated in the final six weeks of the observation window rather than spread across January to September, coinciding with the documented onset of Kalimantan's dry season.
+
+**Evidence:** Weekly counts show a near step-function increase from early August, peaking at 623 detections (89.0 fires/day) in the week of 24 August. The apparent collapse in the final, shorter bar is a plateau at 52.2 fires/day once normalised for its 5-day length, matching the documented dry-season window [@sulaiman2023peatland].
+
+**Limitations:** Only one season is observed, with no multi-year baseline to confirm this is typical. The main spatial analyses pool the full window, and the quiet/surge split is examined in the Spatio-Temporal Extension at reduced power given the quiet period's small sample.
+
+### Cross-Method Distance Comparison
+
+```{r}
+#| label: geovis-synthesis-chart
+#| fig-width: 9
+#| fig-height: 4
+#| code-fold: true
+#| code-summary: "Show plot redisplay code"
+
+p_synthesis_distances
+```
+
+**Reveals:** The three Stage 1 methods operate at genuinely different distances spanning roughly 1.2km to 12.4km, almost an order of magnitude. None of Stage 2's methods appear, since none shows a sustained departure worth marking on this scale.
+
+**Evidence:** All three distances are extracted directly from the fitted `spatstat` objects rather than estimated visually. The log scale keeps the shorter G-function distance legible next to the longer K/L peak.
+
+**Limitations:** This chart reflects only Stage 1's departure from flat CSR, which the Stage 2 analysis substantially explains away. The Stage 2 results are captured in the cross-method table instead.
+
+## Public-Safety Planning and Management Implications
+
+**Evidence-supported implications.** The KDE surface and quadrat test jointly locate a verified hotspot (114.146°E, 2.022°S, within a 561.9km² tile recording 412 detections), a concrete candidate for BPBD resource staging or monitoring infrastructure. Second-order analysis, once known fire-prone geography is accounted for, finds almost no residual clustering beyond that geography. This supports concentrating resources on the mapped intensity surface itself rather than planning a separate response radius for fire-to-fire spread. The temporal profile is equally actionable. Activity concentrated in the final six weeks with a step-change onset in early August supports a seasonally front-loaded posture ahead of the dry-season window rather than reacting after activity has surged.
+
+### Illustrative Response-Radius Map
+
+```{r}
+#| label: safety-response-radius-map
+#| fig-width: 10
+#| fig-height: 10
+#| code-fold: true
+#| code-summary: "Show map code"
+
+peak_sf_utm <- st_as_sf(data.frame(x = peak_row$x, y = peak_row$y),
+                         coords = c("x", "y"), crs = 32750)
+
+buffer_characteristic <- st_buffer(peak_sf_utm, dist = peak_r)
+
+kde_df_plot <- as.data.frame(kde_kapuas_terra_km2, xy = TRUE)
+names(kde_df_plot)[3] <- "density"
+
+bbox_kapuas <- st_bbox(kapuas_boundary_utm)
+x_margin <- (bbox_kapuas["xmax"] - bbox_kapuas["xmin"]) * 0.45
+label_x <- bbox_kapuas["xmax"] + x_margin * 0.35
+
+anchor_characteristic <- data.frame(x = peak_row$x + peak_r, y = peak_row$y)
+
+label_characteristic_pos <- data.frame(x = label_x, y = peak_row$y)
+
+ggplot() +
+  geom_raster(data = kde_df_plot, aes(x = x, y = y, fill = density)) +
+  scale_fill_viridis_c(name = "Estimated fire density (per km²)",
+                        trans = "sqrt", na.value = "white") +
+  geom_sf(data = kapuas_boundary_utm, fill = NA, colour = "white", linewidth = 0.5) +
+  geom_sf(data = buffer_characteristic, fill = NA, colour = "red3",
+          linewidth = 0.9) +
+  geom_sf(data = peak_sf_utm, colour = "white", size = 4.5) +
+  geom_sf(data = peak_sf_utm, colour = "black", size = 3) +
+  geom_segment(data = anchor_characteristic,
+               aes(x = x, y = y, xend = label_characteristic_pos$x,
+                   yend = label_characteristic_pos$y),
+               colour = "red3", linewidth = 0.4,
+               arrow = arrow(length = unit(0.2, "cm"), ends = "first")) +
+  geom_label(data = label_characteristic_pos,
+             aes(x = x, y = y, label = "12.4km\ncharacteristic\nclustering scale\n(L-function)"),
+             fill = "white", colour = "red3", size = 2.8, label.size = 0.3,
+             hjust = 0, label.padding = unit(0.3, "lines")) +
+  coord_sf(xlim = c(bbox_kapuas["xmin"], bbox_kapuas["xmax"] + x_margin),
+           ylim = c(bbox_kapuas["ymin"], bbox_kapuas["ymax"]),
+           expand = FALSE) +
+  annotation_scale(location = "bl", width_hint = 0.2) +
+  theme_void() +
+  theme(legend.position = "bottom") +
+  labs(title = "Verified Hotspot with the Stage 1 Characteristic Clustering Radius",
+       subtitle = "Radius is the Stage 1 (flat-CSR) characteristic distance; the underlying surface is the fixed-bandwidth KDE")
+```
+
+The circle marks the Stage 1 characteristic clustering distance around the verified peak, not an operational service area. The buffer is isotropic while Kapuas's pattern is corridor-like, so the radius indicates *scale*, not the shape of a response zone. It reflects the raw departure from randomness against flat CSR, not a distance at which fire-to-fire interaction has been confirmed. The intensity-adjusted analysis found no such residual signal.
+
+### When Should Readiness Already Be in Place?
+
+```{r}
+#| label: safety-cumulative-timing
+#| fig-width: 9
+#| fig-height: 5
+#| code-fold: true
+#| code-summary: "Show plot code"
+
+cumulative_df <- kapuas_fires_sf |>
+  st_drop_geometry() |>
+  count(acq_date, name = "n_fires") |>
+  arrange(acq_date) |>
+  mutate(cum_n = cumsum(n_fires),
+         cum_pct = cum_n / sum(n_fires) * 100)
+
+pct_by_aug1 <- cumulative_df$cum_pct[max(which(cumulative_df$acq_date <= as.Date("2026-08-01")))]
+date_90pct <- cumulative_df$acq_date[which(cumulative_df$cum_pct >= 90)[1]]
+
+pct_by_aug1
+date_90pct
+
+ggplot(cumulative_df, aes(x = acq_date, y = cum_pct)) +
+  geom_line(linewidth = 1, colour = "firebrick") +
+  geom_vline(xintercept = as.Date("2026-08-01"), linetype = "dashed", colour = "grey40") +
+  geom_hline(yintercept = 90, linetype = "dotted", colour = "grey60") +
+  annotate("text", x = as.Date("2026-08-01"), y = 5, label = "1 Aug",
+           hjust = -0.1, size = 3, colour = "grey30") +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b") +
+  labs(title = "Cumulative Share of the Season's Fires Over Time",
+       subtitle = paste0("By 1 August, only ", round(pct_by_aug1, 1),
+                          "% of the season's total fires had occurred"),
+       x = NULL, y = "Cumulative % of season's fires") +
+  theme_minimal(base_size = 12)
+```
+
+By 1 August only 3.19% of the season's fires had occurred, and 90% was not reached until 10 September, one day before the window closes. Readiness therefore needs to be in place well before the onset date, and activity was still building rather than tapering when the data ends.
+
+**Implications requiring additional information.** Whether known geography is the actual causal driver of Stage 1's raw clustering, or merely correlates with an unobserved one, is not established here. The intensity surface accounts statistically for almost all of the second-order structure, but it is itself only a proxy for whatever makes some areas more fire-prone. Three candidate drivers were identified (road and river accessibility [@thoha2019characteristics], fire-to-fire spread, and uneven satellite detection), and this analysis cannot distinguish between them. A covariate-based model would be needed to test the first directly, so land-use or road-network policy responses should not be justified as addressing a specific cause until that model is built. BPBD facility locations were named as analytically relevant but no such distances were computed, so any claim about current response-unit proximity would be speculation.
+
+Intensity is also not risk. A high-detection area may reflect more reliable observation rather than elevated hazard, so resource decisions should treat this surface as a starting hypothesis for field verification. This analysis covers one season, and whether 2026's timing is typical cannot be determined without multi-year data, which matters for any commitment to permanent rather than seasonal infrastructure.
+
+In summary, the analysis supports targeted, time-bound readiness around a specific, well-verified location and season. It does not on its own support causal land-use claims, fixed infrastructure siting, or conclusions about underlying fire risk without further field or covariate data.
+
+## Limitations
+
+This section consolidates limitations identified at the point they arose rather than introducing new ones.
+
+**Data.** Near-duplicate detections (23.4% of raw records) were collapsed to one representative per location/day group using highest confidence as tie-breaker, a defensible but not uniquely correct rule. A different rule could shift counts slightly, though the spatial pattern is unlikely to be sensitive to this given the scale of clustering observed. Detection is satellite-dependent, and MODIS's \~1km resolution and revisit geometry mean reliability varies with cloud cover, terrain accessibility and overpass timing, so lower measured intensity is not necessarily lower actual activity. This applies to every intensity- and clustering-based finding.
+
+**Coordinate system and boundary geometry.** Kapuas straddles the UTM zone 49/50 boundary at 114°E, and EPSG:32750 was applied uniformly, introducing minor positional distortion for the minority of points near the western edge. The dissolved boundary contains a topological sliver (0.1457km², confirmed to contain zero fire points) that trivially reduces usable window area.
+
+**First-order analysis.** KDE is bandwidth-sensitive. `bw.ppl()` and `bw.diggle()` disagreed by a factor of two, and fixed versus adaptive produced visibly different surfaces. The fixed result was retained as primary with the disagreement documented rather than resolved. The quadrat test's extreme significance is partly a function of sample size, so the p-value's magnitude is not informative beyond confirming non-uniformity.
+
+**Second-order analysis.** Stage 1's homogeneous tests compare against flat CSR, which does not describe Kapuas. Stage 2 addresses this using an intensity surface estimated from the same data being tested, a circularity affecting all three inhomogeneous methods. The G-function's reliable range is truncated to 1.22km by its border correction. All three Stage 2 methods find only isolated, small-magnitude exceedances rather than a sustained departure (`Kinhom` 0 of 501, `Ginhom` 4 of 95, `Finhom` 10 of 95), so this analysis does not identify a robust residual signal of either clustering or regularity.
+
+**Temporal scope.** The main analysis treats the full window as one pooled cross-section despite activity being concentrated in the final six weeks. The Spatio-Temporal Extension examines the quiet/surge split separately, at reduced power given the quiet period's 58-point sample, where CSR could not be rejected.
+
+**Unresolved causal and policy questions.** Whether the intensity surface that explains Stage 1's clustering reflects road and river accessibility specifically, or some other unobserved driver, cannot be established with fire-detection data alone. Doing so would require a covariate-based model that was not built here.
+
+## Use of AI
+
+Following the completion of independent analysis, generative AI tools were employed exclusively to enhance the linguistic clarity and readability of the technical report. My original methodology, analytical insights, code, and conclusions remain completely unassisted.
+
+During the development process in R Studio, generative AI was utilized for auxiliary tasks such as discovering layout features, adding images, and implementing workflows like caching simulation runs that take 20 to 30 minutes. It was also used to quickly summarize libraries, with official documentation consulted directly whenever a deeper dive was required.
+
+## References
+
+::: {#refs}
+:::
+
+```{r}
+#| label: export-deck-objects
+#| code-fold: true
+#| code-summary: "Code chunk for the Executive Summary deck"
+#| include: false
+
+deck_objects <- list(
+  # --- study area and data ---
+  kapuas_boundary_utm  = kapuas_boundary_utm,
+  kapuas_fires_sf      = kapuas_fires_sf,
+  n_raw                = nrow(fires_raw),
+  n_clean              = nrow(fires_clean),
+  n_kalimantan         = nrow(fires_regency),
+  n_kapuas             = kapuas_ppp$n,
+  n_regencies_screened = nrow(screening),
+  spread_ratio_kapuas  = screening$spread_ratio[screening$WADMKK == "Kapuas"],
+
+  # --- first-order ---
+  kde_kapuas_fixed_m   = kde_kapuas_fixed_m,
+  bw_ppl_val           = bw_ppl_val,
+  bw_diggle_val        = bw_diggle_val,
+  peak_row             = peak_row,
+  peak_lonlat          = st_coordinates(peak_sf),
+  quadrat_test         = kapuas_quadrat_test,
+  max_tile_count       = max(as.vector(kapuas_quadrat_counts)),
+  max_tile_area_km2    = tile_area_km2,
+
+  # --- temporal ---
+  weekly_counts        = weekly_counts,
+  cumulative_df        = cumulative_df,
+
+  # --- second-order ---
+  G_csr                = G_kapuas_csr,
+  F_csr                = F_kapuas_csr,
+  L_csr                = L_kapuas_csr,
+  peak_r               = peak_r,
+  peak_val             = peak_val,
+  Kinhom_csr           = Kinhom_kapuas_csr,
+  Ginhom_csr           = Ginhom_kapuas_csr,
+  Finhom_csr           = Finhom_kapuas_csr,
+
+  # --- bonus: spatio-temporal ---
+  kde_quiet_km         = kde_quiet_km,
+  kde_surge_km         = kde_surge_km,
+  bw_quiet             = bw_quiet,
+  bw_surge             = bw_surge,
+  peak_quiet           = peak_quiet,
+  peak_surge           = peak_surge,
+  peak_quiet_lonlat    = st_coordinates(peak_quiet_sf),
+  peak_surge_lonlat    = st_coordinates(peak_surge_sf),
+  peak_separation_m    = as.numeric(st_distance(peak_quiet_sf, peak_surge_sf)),
+  L_quiet_csr          = L_quiet_csr,
+  L_surge_csr          = L_surge_csr,
+  n_quiet              = kapuas_ppp_quiet$n,
+  n_surge              = kapuas_ppp_surge$n
+)
+
+saveRDS(deck_objects, "data/deck_objects.rds")
+```
