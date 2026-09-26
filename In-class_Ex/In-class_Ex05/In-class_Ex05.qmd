@@ -1,0 +1,122 @@
+---
+title: "In-class Exercise 5"
+author: "Nor Hendra"
+date: "26 September 2026"
+date-modified: "last-modified"
+format: html
+editor: visual
+execute:
+  eval: true
+  echo: true
+  warning: false
+  message: false
+  freeze: true
+---
+
+# 1. Installing and Loading the R Packages
+
+::: {style ="font-size: 1.50em"}
+
+```{r}
+pacman::p_load(sf, sfdep, tmap, tidyverse)
+```
+
+:::
+
+# 2. Preparing the Data
+
+::: panel-tabset
+## 2.1 Loading the Data
+
+```{r}
+hunan <- st_read(dsn = "data/geospatial", 
+                 layer = "Hunan")
+```
+
+## 2.2 Importing the csv file
+
+```{r}
+hunan2012 <- read_csv("data/aspatial/Hunan_2012.csv")
+```
+
+## 2.3 Performing the relational join
+
+```{r}
+hunan_GDPCC <- left_join(hunan, hunan2012) %>%
+  dplyr::select(1:4, 7, 15, 16)
+```
+:::
+
+# 3. Global Measures of Spatial Association 
+## 3.1 Step 1: Deriving Queen's continuity weights: sfdep methods
+
+```{r}
+wm_q <- hunan_GDPCC %>%
+  mutate(nb = st_contiguity(geometry),
+         wt = st_weights(nb,
+                         style = "W"),
+         .before = 1)
+```
+
+## 3.2 Performing Moran's I
+
+### 3.2.1 Step 2A: Computing Global Moran's I
+
+`global_moran()`  function is used to compute the Moran's I value. Different from sdep package, the output is a tibble data.frame. 
+
+```{r}
+moranI <- global_moran(wm_q$GDPPC,
+                       wm_q$nb,
+                       wm_q$wt)
+glimpse(moranI)
+```
+### 3.2.2 Step 2B: Performing Global Moran's I test
+
+Moran's I test will be performed instead of just computing the Moran's I statistics. With sfdep package, Moran's I test can be performed by using `global_moran_test()` as shown in the code chunk below. 
+
+```{r}
+global_moran_test(wm_q$GDPPC,
+                       wm_q$nb,
+                       wm_q$wt)
+```
+
+### 3.2.3 Step 2C: Performing Global Moran's I permutation test
+
+Monte Carlo simulation should be used to perform the statistical test. The number of simulations is always equal nsim + 1.
+
+```{r}
+set.seed(1234)
+
+global_moran_perm(wm_q$GDPPC,
+                       wm_q$nb,
+                       wm_q$wt,
+                  nsim = 99)
+```
+## 3.3 Step 3: Computing local Moran's I
+
+```{r}
+lisa <- wm_q %>%
+  mutate(local_moran = local_moran(
+    GDPPC, nb, wt, nsim = 99),
+    .before = 1) %>%
+  unnest(local_moran)
+```
+
+### 3.3.1 Plotting LISA map
+
+```{r}
+lisa_sig <- lisa %>%
+  filter(p_ii_sim < 0.05)
+tmap_mode("plot")
+tm_shape(lisa) +
+  tm_polygons() + 
+  tm_borders(fill_alpha = 0.5) +
+tm_shape(lisa_sig) +
+tm_polygons(fill = "mean",
+            fill.legend = tm_legend(
+              text.size = 1.20,
+              width = 6)) +
+  tm_borders(fill_alpha = 0.4) +
+  tm_layout(legend.title.size = 1.10)
+```
+
