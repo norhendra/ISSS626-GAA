@@ -15,13 +15,9 @@ execute:
 
 # 1. Installing and Loading the R Packages
 
-::: {style ="font-size: 1.50em"}
-
 ```{r}
 pacman::p_load(sf, sfdep, tmap, tidyverse)
 ```
-
-:::
 
 # 2. Preparing the Data
 
