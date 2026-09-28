@@ -910,7 +910,7 @@ For a segmentation that is meant to support planning, trading 0.4% of homogeneit
 # Summary of Adjustments
 
 | Location in reference | Issue found | Correction applied |
-|------------------------|------------------------|------------------------|
+|----|----|----|
 | 12.5.2.2, 12.8.6 (all `tmap` calls) | Written in tmap v3 syntax: `tm_fill(col=, n=, style=, title=)`, `tm_borders(alpha=)`, standalone `tm_legend()`, `qtm()` with a positional variable | Translated to tmap v4: `tm_polygons(fill=, fill.scale=tm_scale_intervals(), fill.legend=tm_legend())`, `tm_borders(col_alpha=)`, `qtm(fill=)`. Border transparency is `col_alpha` because borders are lines. Same translation applied in Exercises 5A and 5B |
 | 12.8.5 (`plot(clust6, ..., add = TRUE)`) | `add` is not an argument of `plot.skater()`, so it passes through to `plot()` and raises "add is not a graphical parameter". `groups.colors` also supplies five colours for six groups | Left the code as written. The figure still draws over the boundaries correctly and the warning is suppressed by the YAML, noted so it is not a surprise when run interactively |
 | 12.8.5 (SKATER cluster sizes) | Prose describes the first cluster as having 12 observations. This data gives 22, 18, 11, 2, 1, 1, including two single-township clusters | Reported the sizes this data produces, identified the singletons as Ywangan and Narphan, and explored `skater(crit=)` as a fix in section 11.5 |

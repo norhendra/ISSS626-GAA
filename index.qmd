@@ -2,17 +2,26 @@
 title: ""
 pagetitle: "Nor Hendra · ISSS626 Geospatial Analytics"
 listing:
-  type: grid
-  contents:
-    - "Hands-on_Ex/*/*.qmd"
-    - "Take-home_Ex/*/*.qmd"
-    - "In-class_Ex/*/*.qmd"
-  sort: "date desc"
-  fields: [date, title, image, author]
-  max-items: 12
+  - id: hands-on
+    type: grid
+    contents: "Hands-on_Ex/*/*.qmd"
+    sort: "date desc"
+    fields: [date, title, image, author]
+    max-items: 3
+  - id: take-home
+    type: grid
+    contents: "Take-home_Ex/*/*.qmd"
+    sort: "date desc"
+    fields: [date, title, image, author]
+    max-items: 3
+  - id: in-class
+    type: grid
+    contents: "In-class_Ex/*/*.qmd"
+    sort: "date desc"
+    fields: [date, title, image, author]
+    max-items: 3
 toc: false
 ---
-
 ```{=html}
 <div class="hero hero-globe">
   <div class="hero-copy">
@@ -320,4 +329,17 @@ toc: false
 </script>
 ```
 
-## Latest Exercises
+## Hands-on Exercises
+
+::: {#hands-on}
+:::
+
+## Take-home Exercises
+
+::: {#take-home}
+:::
+
+## In-class Exercises
+
+::: {#in-class}
+:::
