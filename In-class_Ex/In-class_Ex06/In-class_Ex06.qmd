@@ -67,7 +67,12 @@ GDPPC_nb <- GDPPC_st %>%
   set_nbs("nb") %>%
   set_wts("wt")
 ```
-## 3.2. Computing Local Gi*
+## 3.2. Computing Gi* (unnest)
+
+We can use these new columns to manually calculate the local Gi* for each location. We can do this by grouping by Year and using local_gstar_perm() of sfdep package. After which, we use `unnest()` to unnest gi_star column of the newly created gi_starts data.frame.
+
+Don't need to include `tidyr` and just type in unnest.
+
 ```{r}
 gi_stars <- GDPPC_nb %>% 
   group_by(Year) %>% 

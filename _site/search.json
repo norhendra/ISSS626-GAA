@@ -1559,5 +1559,12 @@
     "title": "In-class Exercise 6",
     "section": "5.2. Visualising EHSA",
     "text": "5.2. Visualising EHSA\nJoining hunan and ehsa together:\n\nhunan_ehsa &lt;- hunan %&gt;%\n  left_join(ehsa,\n            by = join_by(County == location))\n\ntmap functions:\n\nehsa_sig &lt;- hunan_ehsa  %&gt;%\n  filter(p_value &lt; 0.05)\ntmap_mode(\"plot\")\ntm_shape(hunan_ehsa) +\n  tm_polygons() +\n  tm_borders(fill_alpha = 0.5) +\ntm_shape(ehsa_sig) +\n  tm_fill(\"classification\") + \n  tm_borders(fill_alpha = 0.4)"
+  },
+  {
+    "objectID": "In-class_Ex/In-class_Ex06/In-class_Ex06.html#computing-gi-unnest",
+    "href": "In-class_Ex/In-class_Ex06/In-class_Ex06.html#computing-gi-unnest",
+    "title": "In-class Exercise 6",
+    "section": "3.2. Computing Gi* (unnest)",
+    "text": "3.2. Computing Gi* (unnest)\nWe can use these new columns to manually calculate the local Gi* for each location. We can do this by grouping by Year and using local_gstar_perm() of sfdep package. After which, we use unnest() to unnest gi_star column of the newly created gi_starts data.frame.\nDon’t need to include tidyr and just type in unnest.\n\ngi_stars &lt;- GDPPC_nb %&gt;% \n  group_by(Year) %&gt;% \n  mutate(gi_star = local_gstar_perm(\n    GDPPC, nb, wt)) %&gt;% \n  tidyr::unnest(gi_star)"
   }
 ]
