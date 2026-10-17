@@ -1,0 +1,235 @@
+---
+title: "In-class Exercise 7"
+format: html
+---
+
+# 1. Loading R Package
+
+```{r}
+#| eval: false
+remotes::install_github('uva-bi-sdad/catchment')
+```
+
+```{r}
+pacman::p_load(sf, tidyverse, tmap, catchment)
+```
+
+# 2. Importing geospatial data and preparation
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial", layer = "MP14_SUBZONE_NO_SEA_PL") %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+hexagons <- st_read(dsn = "data/geospatial", layer = "hexagons") %>% 
+  st_transform(crs = 3414)
+```
+
+```{r}
+eldercare <- st_read(dsn = "data/geospatial", layer = "ELDERCARE") %>%
+  st_transform(crs = 3414)
+```
+
+```{r}
+eldercare <- eldercare %>%
+  select(fid, ADDRESSPOS) %>%
+  mutate(capacity = 100)
+
+hexagons <- hexagons %>%
+  select(fid) %>%
+  mutate(demand = 100)
+```
+
+```{r}
+ODMatrix <- read_csv("data/aspatial/OD_Matrix.csv", skip = 0)
+```
+
+```{r}
+distmat <- ODMatrix %>%
+  select(origin_id, destination_id, total_cost) %>%
+  spread(destination_id, total_cost)%>%
+  select(c(-c('origin_id')))
+
+distmat_km <- as.matrix(distmat/1000)
+```
+
+```{r}
+mapex <- st_bbox(hexagons)
+```
+
+# 3. Two-Step Floating Catchment Area
+
+```{r}
+df_2sfca <- catchment_ratio(
+  consumers = hexagons,
+  consumers_value = "demand",
+  providers = eldercare,
+  providers_value = "capacity",
+  cost = distmat_km, 
+  max_cost = 5
+)
+```
+
+
+```{r}
+#| fig-width: 12
+#| fig-height: 8
+hex_2SFCA <- bind_cols(hexagons, `2SFCA` = df_2sfca)
+
+tm_shape(hex_2SFCA,
+         bbox = mapex) +
+  tm_polygons(fill = "2SFCA",
+              fill.scale = tm_scale_intervals(
+                style = "quantile",
+                n = 10,
+                values = "-brewer.blues")) +
+tm_shape(eldercare) +
+  tm_dots(size = 0.3,
+          fill = "red",
+          col = "black") +
+  tm_title("2SFCA Accessibility measures") +
+  tm_layout(frame = TRUE) +
+  tm_compass(type="8star", size = 2) +
+  tm_scalebar() +
+  tm_grid(alpha = 0.2)
+```
+
+# 4. Enhanced 2-Step Floating Catchment
+
+```{r}
+step_weights <- list(c(5, .01), c(4, .05), c(3, .1), c(2, .4), c(1, 1))
+
+df_e2sfca <- catchment_ratio(
+  consumers = hexagons$demand,
+  providers = eldercare$capacity,
+  cost = distmat_km,
+  weight = step_weights) %>%
+  as.data.frame() %>%
+  rename("E2SFCA" = ".")
+```
+
+```{r}
+#| fig-width: 12
+#| fig-height: 8
+hex_E2SFCA <- bind_cols(hexagons, df_e2sfca)
+
+tm_shape(hex_E2SFCA,
+         bbox = mapex) +
+  tm_polygons(fill = "E2SFCA",
+              fill.scale = tm_scale_intervals(
+                style = "quantile",
+                n = 10,
+                values = "-brewer.blues")) +
+tm_shape(eldercare) +
+  tm_dots(size = 0.3,
+          fill = "red",
+          col = "black") +
+  tm_title("E2SFCA Accessibility measures") +
+  tm_layout(frame = TRUE) +
+  tm_compass(type="8star", size = 2) +
+  tm_scalebar() +
+  tm_grid(alpha = 0.2)
+```
+# 5. Kernel Density (Gaussian) 2-Step
+
+```{r}
+df_kd2sfca <- catchment_ratio(
+  consumers = hexagons$demand,
+  providers = eldercare$capacity,
+  cost = distmat_km,
+  weight = "gaussian") %>%
+  as.data.frame() %>%
+  rename("KD2SFCA" = ".")
+```
+```{r}
+hex_KD2SFCA <- bind_cols(hexagons, df_kd2sfca)
+
+tm_shape(hex_KD2SFCA,
+         bbox = mapex) +
+  tm_polygons(fill = "KD2SFCA",
+              fill.scale = tm_scale_intervals(
+                style = "quantile",
+                n = 10,
+                values = "-brewer.blues")) +
+tm_shape(eldercare) +
+  tm_dots(size = 0.3,
+          fill = "red",
+          col = "black") +
+  tm_title("KD2SFCA (Gaussian) Accessibility measures") +
+  tm_layout(frame = TRUE) +
+  tm_compass(type="8star", size = 2) +
+  tm_scalebar() +
+  tm_grid(alpha = 0.2)
+```
+# 6. 3-Step Floating Catchment Area
+```{r}
+df_3sfca <- catchment_ratio(
+  consumers = hexagons$demand,
+  providers = eldercare$capacity,
+  cost = distmat_km,
+  weight = step_weights,
+  normalize_weight = TRUE) %>%
+  as.data.frame() %>%
+  rename("3SFCA" = ".")
+```
+
+```{r}
+hex_3SFCA <- bind_cols(hexagons, df_3sfca)
+
+tm_shape(hex_3SFCA,
+         bbox = mapex) +
+  tm_polygons(fill = "3SFCA",
+              fill.scale = tm_scale_intervals(
+                style = "quantile",
+                n = 10,
+                values = "-brewer.blues")) +
+tm_shape(eldercare) +
+  tm_dots(size = 0.3,
+          fill = "red",
+          col = "black") +
+  tm_title("3SFCA Accessibility measures") +
+  tm_layout(frame = TRUE) +
+  tm_compass(type="8star", size = 2) +
+  tm_scalebar() +
+  tm_grid(alpha = 0.2)
+```
+
+# 7. Statistical Graphics
+```{r}
+hex_all <- hexagons %>%
+  mutate(`2SFCA`   = df_2sfca,
+         `E2SFCA`  = df_e2sfca$E2SFCA,
+         `KD2SFCA` = df_kd2sfca$KD2SFCA,
+         `3SFCA`   = df_3sfca$`3SFCA`) %>%
+  st_join(mpsz %>% select(REGION_N),
+          join = st_intersects,
+          largest = TRUE)
+```
+# 8. Extras
+
+As mentioned in class, I wanted to see the difference between all the methods and used Hands-on Exercise 7's code here to compare. 
+
+```{r}
+acc_long <- hex_all %>%
+  st_drop_geometry() %>%
+  pivot_longer(cols = c(`2SFCA`, `E2SFCA`, `KD2SFCA`, `3SFCA`),
+               names_to = "method",
+               values_to = "accessibility") %>%
+  mutate(method = factor(method,
+                         levels = c("2SFCA", "E2SFCA", "KD2SFCA", "3SFCA")))
+```
+```{r}
+#| fig-width: 14
+#| fig-height: 10
+ggplot(data = acc_long,
+       aes(y = accessibility,
+           x = REGION_N)) +
+  geom_boxplot() +
+  geom_point(stat = "summary",
+             fun = "mean",
+             colour = "red",
+             size = 2) +
+  facet_wrap(~ method, ncol = 2, scales = "free_y") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
