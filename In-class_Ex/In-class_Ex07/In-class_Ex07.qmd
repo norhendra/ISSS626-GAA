@@ -71,7 +71,6 @@ df_2sfca <- catchment_ratio(
 )
 ```
 
-
 ```{r}
 #| fig-width: 12
 #| fig-height: 8
@@ -131,6 +130,7 @@ tm_shape(eldercare) +
   tm_scalebar() +
   tm_grid(alpha = 0.2)
 ```
+
 # 5. Kernel Density (Gaussian) 2-Step
 
 ```{r}
@@ -142,6 +142,7 @@ df_kd2sfca <- catchment_ratio(
   as.data.frame() %>%
   rename("KD2SFCA" = ".")
 ```
+
 ```{r}
 hex_KD2SFCA <- bind_cols(hexagons, df_kd2sfca)
 
@@ -162,7 +163,9 @@ tm_shape(eldercare) +
   tm_scalebar() +
   tm_grid(alpha = 0.2)
 ```
+
 # 6. 3-Step Floating Catchment Area
+
 ```{r}
 df_3sfca <- catchment_ratio(
   consumers = hexagons$demand,
@@ -195,7 +198,8 @@ tm_shape(eldercare) +
   tm_grid(alpha = 0.2)
 ```
 
-# 7. Statistical Graphics
+# 7. Extras: Statistical Graphics
+
 ```{r}
 hex_all <- hexagons %>%
   mutate(`2SFCA`   = df_2sfca,
@@ -206,9 +210,8 @@ hex_all <- hexagons %>%
           join = st_intersects,
           largest = TRUE)
 ```
-# 8. Extras
 
-As mentioned in class, I wanted to see the difference between all the methods and used Hands-on Exercise 7's code here to compare. 
+As mentioned in class, I wanted to see the difference between all the methods and used Hands-on Exercise 7's code here to compare.
 
 ```{r}
 acc_long <- hex_all %>%
@@ -219,6 +222,7 @@ acc_long <- hex_all %>%
   mutate(method = factor(method,
                          levels = c("2SFCA", "E2SFCA", "KD2SFCA", "3SFCA")))
 ```
+
 ```{r}
 #| fig-width: 14
 #| fig-height: 10

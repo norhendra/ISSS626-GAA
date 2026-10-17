@@ -405,8 +405,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#enhanced-2-step-floating-catchment" id="toc-enhanced-2-step-floating-catchment" class="nav-link" data-scroll-target="#enhanced-2-step-floating-catchment">4. Enhanced 2-Step Floating Catchment</a></li>
   <li><a href="#kernel-density-gaussian-2-step" id="toc-kernel-density-gaussian-2-step" class="nav-link" data-scroll-target="#kernel-density-gaussian-2-step">5. Kernel Density (Gaussian) 2-Step</a></li>
   <li><a href="#step-floating-catchment-area" id="toc-step-floating-catchment-area" class="nav-link" data-scroll-target="#step-floating-catchment-area">6. 3-Step Floating Catchment Area</a></li>
-  <li><a href="#statistical-graphics" id="toc-statistical-graphics" class="nav-link" data-scroll-target="#statistical-graphics">7. Statistical Graphics</a></li>
-  <li><a href="#extras" id="toc-extras" class="nav-link" data-scroll-target="#extras">8. Extras</a></li>
+  <li><a href="#extras-statistical-graphics" id="toc-extras-statistical-graphics" class="nav-link" data-scroll-target="#extras-statistical-graphics">7. Extras: Statistical Graphics</a></li>
   </ul>
 </nav>
     </div>
@@ -787,8 +786,8 @@ dbl (6): origin_id, destination_id, entry_cost, network_cost, exit_cost, tot...
 </div>
 </div>
 </section>
-<section id="statistical-graphics" class="level1">
-<h1>7. Statistical Graphics</h1>
+<section id="extras-statistical-graphics" class="level1">
+<h1>7. Extras: Statistical Graphics</h1>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>hex_all <span class="ot">&lt;-</span> hexagons <span class="sc">%&gt;%</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">2SFCA</span><span class="st">`</span>   <span class="ot">=</span> df_2sfca,</span>
@@ -803,9 +802,6 @@ dbl (6): origin_id, destination_id, entry_cost, network_cost, exit_cost, tot...
 all geometries</code></pre>
 </div>
 </div>
-</section>
-<section id="extras" class="level1">
-<h1>8. Extras</h1>
 <p>As mentioned in class, I wanted to see the difference between all the methods and used Hands-on Exercise 7’s code here to compare.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>acc_long <span class="ot">&lt;-</span> hex_all <span class="sc">%&gt;%</span></span>
