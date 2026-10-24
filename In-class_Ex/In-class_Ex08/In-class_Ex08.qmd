@@ -457,6 +457,7 @@ tm_shape(village_TA) +
   tm_scalebar() +
   tm_grid(alpha = 0.2)
 ```
+
 ## 8.3.1 Calculating Expected Sales
 
 Prof Kam mentioned the natural next stage would be to calculate the expected sales. Below is my attempt to do so:
@@ -482,14 +483,16 @@ ggscatterstats(
   x = TA_customers,
   y = Total_Sales)
 ```
+
 ```{r}
 cor.test(TA_sales_nongeom$TA_customers,
          TA_sales_nongeom$Total_Sales)
 ```
-::: callout-note 
-# Conclusion 
 
-Do note that this conclusion is based on my findings and code I ran. It seems from discussion with Prof Kam that it should actually be slightly better correlation. This will be left for further investigation in future works. 
+::: callout-note
+# Conclusion
+
+Do note that this conclusion is based on my findings and code I ran. It seems from discussion with Prof Kam that it should actually be slightly better correlation. This will be left for further investigation in future works.
 
 The hard assignment (done in-class) drops the fit from r = 0.58 to r = 0.22, and this one isn’t significant (p = 0.27). Under the soft assignment (original hands-on) it sat mid-table on estimated customers, roughly matching its low actual sales. Here it climbs to 6th, because it wins every village in its quiet rural corner outright, even the close ones. Collapsing a probability into a single winner throws away how contested each village actually was.
 :::
