@@ -548,4 +548,3 @@ all.equal(huff_cap$p_ij, huff_share$p_ij)
 ```
 
 `TRUE`. The probabilities don't move at all. So the map in 8.1 and the correlation in 8.2 are really a distance-only model wearing the Huff model's name. A real attractiveness value, floor area or seating count for instance, would have to differ from store to store before `Store_size` meant anything here.
-

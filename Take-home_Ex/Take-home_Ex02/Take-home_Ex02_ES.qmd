@@ -1,0 +1,672 @@
+---
+pagetitle: "Geospatial Analytics for Peace"
+format:
+  revealjs:
+    theme: default
+    slide-level: 2
+    slide-number: c/t
+    width: 1250
+    height: 760
+    transition: slide
+    background-transition: fade
+    embed-resources: true
+    fig-align: center
+    include-in-header:
+      text: |
+        <style>
+        :root {
+          --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                     "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+          --font-mono: "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+          --ink:    #1d1d1f;
+          --soft:   #55555a;
+          --ember:  #b8402f;
+          --teal:   #0f6a8b;
+          --green:  #1b6b3a;
+          --amber:  #8a5a00;
+          --violet: #5b2d8e;
+          --hair:   #e3e3e6;
+        }
+
+        .reveal { font-family: var(--font-ui); color: var(--ink); }
+        .reveal h1, .reveal h2, .reveal h3 {
+          font-family: var(--font-ui);
+          font-weight: 700;
+          letter-spacing: -0.022em;
+          text-transform: none;
+        }
+        .reveal h1 { font-size: 2.0em; }
+        .reveal h2 { font-size: 1.45em; }
+
+        /* Apple-style accent rule under content headings only */
+        .reveal .slides section:not(.cover-hero):not(.closer-hero) > h2::after {
+          content: "";
+          display: block;
+          width: 62px;
+          height: 3px;
+          border-radius: 2px;
+          background: var(--ember);
+          margin-top: 10px;
+        }
+
+        .reveal p, .reveal li { font-size: 0.80em; }
+        .reveal .small p, .reveal .small li { font-size: 0.70em; }
+        .reveal .smaller p, .reveal .smaller li { font-size: 0.60em; line-height: 1.38; }
+        .reveal .s4 p, .reveal .s4 li { font-size: 0.54em; line-height: 1.32; }
+        .reveal .s4 li { margin-bottom: 4px; }
+        .footnote.fn4 { font-size: 0.46em; margin-top: 6px; line-height: 1.35; }
+        .reveal .tiny p, .reveal .tiny li { font-size: 0.50em; line-height: 1.38; }
+        .reveal .micro p, .reveal .micro li { font-size: 0.43em; line-height: 1.35; }
+        .reveal .micro ul { margin-bottom: 0.35em; }
+
+        /* function names stay visually distinct from body copy */
+        .reveal code {
+          font-family: var(--font-mono);
+          font-size: 0.90em;
+          color: var(--teal);
+          background: rgba(15,106,139,0.08);
+          padding: 1px 5px;
+          border-radius: 4px;
+        }
+
+        /* inline emphasis palette: ember = hot, teal = cold */
+        .k { color: var(--ember); font-weight: 700; }
+        .t { color: var(--teal);  font-weight: 600; }
+        .g { color: var(--green); font-weight: 600; }
+        .a { color: var(--amber); font-weight: 600; }
+        .v { color: var(--violet); font-weight: 600; }
+
+        .caveat-green {
+          border-left: 4px solid var(--green);
+          background: #eef7f0;
+          padding: 7px 13px;
+          font-size: 0.62em;
+          color: var(--green);
+          margin-top: 12px;
+          border-radius: 3px;
+        }
+        .footnote {
+          font-size: 0.56em;
+          font-style: normal;
+          color: var(--ink);
+          border-left: 3px solid var(--hair);
+          padding-left: 13px;
+          margin-top: 14px;
+          line-height: 1.5;
+        }
+        .stepflow { padding: 4px 2px; font-size: 0.68em; }
+        .stepnum {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background: var(--soft);
+          color: #ffffff;
+          font-weight: 700;
+          font-size: 1em;
+          margin-bottom: 8px;
+        }
+        .stepnum.s1 { background: var(--soft); }
+        .stepnum.s2 { background: var(--ember); }
+        .stepnum.s3 { background: var(--teal); }
+        .stepnum.s4 { background: var(--violet); }
+
+        .funnel {
+          font-size: 0.70em;
+          line-height: 1.8;
+        }
+        .limhead {
+          color: var(--teal);
+          font-weight: 700;
+        }
+        .reveal .limlist li { margin-bottom: 10px; }
+        .rq {
+          color: var(--violet);
+          font-weight: 700;
+          font-style: italic;
+        }
+        .tl { color: var(--teal); font-weight: 600; font-size: 0.9em; }
+        .funnel b { color: var(--ember); }
+        .subhead { display: block; font-size: 1.05em; font-weight: 700; margin-bottom: 0.3em; }
+        .yes { color: #1b6b3a; font-weight: 600; }
+        .no  { color: #8a5a00; font-weight: 600; }
+        .reveal .slides section.cover-hero {
+          display: flex !important;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
+        .reveal .slides section.cover-hero h2 {
+          color: #ffffff !important;
+          text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+          text-align: center;
+          width: 100%;
+          margin-bottom: 28px;
+        }
+        .reveal .slides section.closer-hero {
+          display: flex !important;
+          flex-direction: column;
+          justify-content: center;
+          align-items: flex-start;
+          height: 100%;
+        }
+        .reveal .slides section.closer-hero h2 {
+          color: #ffffff !important;
+          text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+          text-align: left;
+          width: 100%;
+          margin-bottom: 28px;
+        }
+        </style>
+execute:
+  echo: false
+  warning: false
+  message: false
+  cache: true
+---
+
+```{r}
+#| label: deck-setup
+#| cache: false
+
+pacman::p_load(sf, dplyr, tidyr, stringr, forcats, ggplot2, tmap, scales)
+
+# Every number below comes from the Technical Report's save-deck-objects chunk
+b <- readRDS("data/rds/deck_objects.rds")
+
+dz  <- c("Sagaing", "Magway", "Mandalay")
+fmt <- function(x) format(x, big.mark = ",")
+
+# data
+n_events <- sum(b$mmr_conflict$conflict_n)
+n_raw    <- b$funnel$n_events[1]
+n_dup    <- sum(b$funnel$removed[2:4], na.rm = TRUE)
+n_types  <- b$funnel$removed[5]
+n_prec   <- b$funnel$removed[6]
+
+# LMSA
+moran     <- round(b$global_moran, 2)
+lisa_n    <- function(k) sum(b$lisa$lisa_class == k)
+hh_dz     <- sum(b$lisa$lisa_class == "High-High" & b$lisa$ST %in% dz)
+gi_hot    <- sum(str_detect(b$hcsa$hcsa_class, "^Hot"))
+gi_cold   <- sum(str_detect(b$hcsa$hcsa_class, "^Cold"))
+gi_99     <- sum(b$hcsa$hcsa_class == "Hot spot (99%)")
+gi_99_dz  <- sum(b$hcsa$hcsa_class == "Hot spot (99%)" & b$hcsa$ST %in% dz)
+rb_hot4   <- sum(b$robust$n_hot == 4)
+rb_hot_dz <- sum(b$robust$n_hot == 4 & b$robust$ST %in% dz)
+rb_cold4  <- sum(b$robust$n_cold == 4)
+
+# EHSA
+fam      <- table(b$ehsa$family)
+n_consec <- sum(b$ehsa$class == "Consecutive hot spot")
+n_osc_c  <- sum(b$ehsa$class == "Oscillating cold spot")
+n_osc_ns <- sum(b$ehsa$class == "Oscillating cold spot" & b$ehsa$ST == "Shan (North)")
+mk_up    <- sum(b$ehsa$tau > 0 & b$ehsa$mk_p < 0.05)
+mk_down  <- sum(b$ehsa$tau < 0 & b$ehsa$mk_p < 0.05)
+kept_025 <- percent(b$ehsa_class_kept[["thr_025"]], accuracy = 1)
+
+# bivariate
+bv_n     <- function(k) sum(b$bv$bv_class == k)
+bv_share <- percent(sum(b$bv$airstrike_n[b$bv$bv_class == "High-High"]) / sum(b$bv$airstrike_n),
+                    accuracy = 1)
+bv_ll0   <- sum(b$bv$bv_class == "Low-Low" & b$bv$airstrike_n == 0)
+
+# integrated
+hot6     <- b$integ$n_hot6 == 6
+ev_dark  <- sum(b$integ$evidence == "Hot in the total and in all six EHSA runs")
+ev_light <- sum(b$integ$evidence == "Hot in all six EHSA runs only")
+ev_share <- percent(sum(b$integ$conflict_n[hot6]) / sum(b$integ$conflict_n), accuracy = 1)
+ev_pop   <- round(sum(b$integ$pop2014[hot6], na.rm = TRUE) / 1e6, 1)
+pop_all  <- round(sum(b$integ$pop2014, na.rm = TRUE) / 1e6, 1)
+
+# implications
+watch_names <- b$watch$TS
+watch_small <- sum(b$watch$conflict_n < 130)
+q           <- b$quake
+
+# shared map pieces, as in the Technical Report
+states <- tm_shape(b$mmr_states) + tm_borders(col = "grey20", lwd = 0.8)
+
+deck_map <- function(data, var, values, title, legend_pos = tm_pos_in("left", "bottom")) {
+  tm_shape(data) +
+    tm_polygons(
+      fill = var,
+      fill.scale = tm_scale_categorical(values = values),
+      fill.legend = tm_legend(title = title, position = legend_pos,
+                              title.size = 0.75, text.size = 0.6),
+      col = "grey60", lwd = 0.2) +
+    states +
+    tm_compass(type = "arrow", size = 1.6, position = tm_pos_in("right", "top")) +
+    tm_scalebar(breaks = c(0, 100, 200), text.size = 0.5,
+                position = tm_pos_in("left", "top")) +
+    tm_layout(frame = FALSE)
+}
+
+join_class <- function(df, col, levels) {
+  b$mmr_conflict |>
+    select(TS_PCODE) |>
+    left_join(select(df, TS_PCODE, all_of(col)), by = "TS_PCODE") |>
+    mutate(!!col := factor(replace_na(.data[[col]], "Not analysed"), levels = levels))
+}
+```
+
+## Geospatial Analytics for Peace {.cover-hero background-image="images/image1.jpg" background-size="cover"}
+
+::: {style="background: rgba(0,0,0,0.55); padding: 28px 40px; border-radius: 6px; color:#ffffff; text-align:center; max-width: 75%;"}
+Nor Hendra<br> ISSS626 Geospatial Analytics and Applications<br> Take-home Exercise 2
+
+<br>
+
+*Data from ACLED and MIMU v9.4*<br> *Myanmar, 1 January 2021 to 30 September 2025*
+:::
+
+## Contents {background-color="#1a1a1a" style="color:#f5f5f5;"}
+
+:::::::: {style="color:#f5f5f5;"}
+::::::: columns
+:::: {.column width="50%"}
+::: small
+1.  **Research question**
+2.  **Study area and data**
+3.  **Analytical approach**
+4.  **Key finding: where**
+5.  **Key finding: how it evolved**
+:::
+::::
+
+:::: {.column width="50%"}
+::: small
+6.  **Key finding: several wars, not one**
+7.  **Air war follows ground war (value-added)**
+8.  **Limitations**
+9.  **Public-safety implications**
+:::
+::::
+:::::::
+::::::::
+
+## 1 · Research question
+
+::: {.rq style="font-size: 1.15em; margin: 10px 0;"}
+Where has armed conflict concentrated across Myanmar's 330 townships since the February 2021 coup, and how has that pattern changed quarter by quarter?
+:::
+
+<br>
+
+:::::: columns
+::: {.column width="32%"}
+[Where, over the whole period]{.subhead}
+
+Which townships have more or fewer events than chance would give, and which stand apart from their neighbours?
+
+[→ *Local Moran's I and Getis–Ord Gi\* (LMSA)*]{.tl}
+:::
+
+::: {.column width="32%"}
+[How it evolved]{.subhead}
+
+Which hot spots persisted, emerged or faded, and how fast did they spread?
+
+[→ *Emerging Hot Spot Analysis on a quarterly space-time cube*]{.tl}
+:::
+
+::: {.column width="32%"}
+[Value added]{.subhead}
+
+Does the air war follow the ground war, or strike where there is little other fighting?
+
+[→ *Bivariate Local Moran's I*]{.tl}
+:::
+::::::
+
+## 2 · Study area and data
+
+::::::: columns
+::: {.column width="44%"}
+```{r}
+#| label: slide-study-area
+#| fig-width: 4.6
+#| fig-height: 5.8
+
+tm_shape(b$mmr_conflict) +
+  tm_polygons(
+    fill = "conflict_n",
+    fill.scale = tm_scale_intervals(
+      breaks = b$count_breaks,
+      labels = b$count_labels,
+      values = c("#f0f0f0", "#ffffb2", "#fecc5c", "#fd8d3c", "#f03b20", "#bd0026")),
+    fill.legend = tm_legend(title = "Armed-conflict\nevents", position = tm_pos_in("left", "bottom"),
+                            title.size = 0.75, text.size = 0.6),
+    col = "grey60", lwd = 0.2) +
+  states +
+  tm_compass(type = "arrow", size = 1.6, position = tm_pos_in("right", "top")) +
+  tm_scalebar(breaks = c(0, 100, 200), text.size = 0.5, position = tm_pos_in("left", "top")) +
+  tm_layout(frame = FALSE)
+```
+:::
+
+::::: {.column width="56%"}
+::: smaller
+**The township is the unit.** All 330 MIMU v9.4 townships, projected to UTM 47N (EPSG:32647). Cocokyun, 126 km offshore with no neighbours, is left out of the local statistics, so 329 are analysed.
+
+**Armed conflict means three ACLED event types:** battles, explosions/remote violence and violence against civilians. Protests, riots and strategic developments are excluded.
+
+**Every event that drops out or moves is counted.** 180 events (0.3%) whose township name disagreed with their coordinates were reassigned across a shared boundary.
+:::
+
+::: funnel
+**`r fmt(n_raw)`** raw ACLED records, January 2021 to September 2025<br> ↓ duplicates and offshore records removed (`r n_dup`)<br> ↓ keep the three armed-conflict event types (`r fmt(n_types)` removed)<br> ↓ drop events located only to a region (`r n_prec`)<br> <b>`r fmt(n_events)` armed-conflict events</b> in 330 townships
+:::
+:::::
+:::::::
+
+## 3 · Analytical approach
+
+::::::::::: columns
+:::: {.column width="24%"}
+::: stepflow
+[1]{.stepnum .s1}
+
+**Gateway**
+
+Is conflict clustered at all?
+
+Global Moran's I = `r moran`, p = 0.001 (999 permutations)
+
+*Clustering is real, so local statistics are justified*
+:::
+::::
+
+:::: {.column width="24%"}
+::: stepflow
+[2]{.stepnum .s2}
+
+**LMSA, whole period**
+
+Where are the clusters, hot spots and outliers?
+
+Local Moran's I and Gi\*, Queen contiguity with two island bridges
+
+Re-run with KNN k = 6, log(1 + count) and FDR
+:::
+::::
+
+:::: {.column width="24%"}
+::: stepflow
+[3]{.stepnum .s3}
+
+**EHSA, 19 quarters**
+
+How has each township's status changed?
+
+Gi\* per quarter against that quarter's own permutations, Mann–Kendall trend, rule-based classes
+
+*`sfdep` corrected; six sensitivity runs*
+:::
+::::
+
+:::: {.column width="24%"}
+::: stepflow
+[4]{.stepnum .s4}
+
+**Value-added**
+
+Does the air war follow the ground war?
+
+Bivariate Local Moran's I: air and drone strikes in a township against all other fighting around it
+:::
+::::
+:::::::::::
+
+::: caveat-green
+Every analytical choice (variable form, neighbours, weights, time bin, threshold) was screened against at least two alternatives before seeing the result. Close calls became the sensitivity runs, and maps show only townships significant at p \< 0.05.
+:::
+
+## 4 · Where: one core, many fronts
+
+:::::::: columns
+::: {.column width="30%"}
+```{r}
+#| label: slide-lisa
+#| fig-width: 3.4
+#| fig-height: 5.7
+
+lisa_lv <- c("High-High", "High-Low", "Low-High", "Low-Low", "Not significant", "Not analysed")
+deck_map(join_class(b$lisa, "lisa_class", lisa_lv), "lisa_class",
+         c("High-High" = "#d7301f", "High-Low" = "#fc8d59", "Low-High" = "#9ecae1",
+           "Low-Low" = "#2171b5", "Not significant" = "#eeeeee", "Not analysed" = "#ffffff"),
+         "LISA (p < 0.05)")
+```
+:::
+
+::: {.column width="30%"}
+```{r}
+#| label: slide-gistar
+#| fig-width: 3.4
+#| fig-height: 5.7
+
+gi_lv <- c("Hot spot (99%)", "Hot spot (95%)", "Cold spot (95%)", "Cold spot (99%)",
+           "Not significant", "Not analysed")
+deck_map(join_class(b$hcsa, "hcsa_class", gi_lv), "hcsa_class",
+         c("Hot spot (99%)" = "#b30000", "Hot spot (95%)" = "#fc8d59",
+           "Cold spot (95%)" = "#74a9cf", "Cold spot (99%)" = "#045a8d",
+           "Not significant" = "#eeeeee", "Not analysed" = "#ffffff"),
+         "Gi* (p < 0.05)")
+```
+:::
+
+::::: {.column width="40%"}
+::: s4
+- [`r lisa_n("High-High")` High-High]{.k} townships, `r hh_dz` of them one contiguous Dry Zone block in Sagaing, Magway and Mandalay; [`r lisa_n("Low-Low")` Low-Low]{.t} in Yangon, the delta, Nay Pyi Taw and the Shan hills.
+- [No High-Low outlier:]{.k} heavy fighting never sits among quiet neighbours. `r lisa_n("Low-High")` Low-High townships are quiet towns ringed by fighting, such as Pyinoolwin.
+- Gi\* finds [`r gi_hot` hot]{.k} and [`r gi_cold` cold]{.t} spots; `r gi_99_dz` of the `r gi_99` hot spots at 99% confidence are in the Dry Zone core.
+- [`r rb_hot4` townships are hot under all four specifications]{.k}, `r rb_hot_dz` in the Dry Zone: the most reliable whole-period result. `r rb_cold4` are cold under all four.
+- Northern Shan and Rakhine, scene of the largest offensives since late 2023, are [not hot over the whole period]{.a}. Brief fighting is diluted in a 57-month total, which is why time is analysed next.
+:::
+
+::: {.footnote .fn4}
+Only townships significant at p \< 0.05 are coloured. Cold means few events were recorded, not that an area is safe.
+:::
+:::::
+::::::::
+
+## 5 · How it evolved: a lasting core
+
+::::::: columns
+::: {.column width="50%"}
+```{r}
+#| label: slide-ehsa
+#| fig-width: 5.6
+#| fig-height: 5.8
+
+deck_map(join_class(b$ehsa, "class", b$ehsa_levels), "class",
+         b$ehsa_pal[b$ehsa_levels], "EHSA class",
+         legend_pos = tm_pos_out("right", "center"))
+```
+:::
+
+::::: {.column width="50%"}
+::: smaller
+- Each township was tested in all 19 quarters: [`r fam[["Hot"]]` have a hot-spot history]{.k}, [`r fam[["Cold"]]` a cold one]{.t} and `r fam[["None"]]` no clear pattern.
+- [`r n_consec` consecutive hot spots]{.k}: the Dry Zone core, its spread north and east of Mandalay, and Dawei and Palaw in Tanintharyi. Eleven have been hot every quarter since late 2021.
+- [No new, intensifying or persistent hot spot.]{.a} The core was not yet hot in early 2021, before the armed uprising, so it falls just short of the 90% rule.
+- `r n_osc_ns` of the `r n_osc_c` oscillating cold spots are in the Kokang and Lashio area of northern Shan: hot during Operation 1027, cold by mid-2025.
+- The Gi\* trend is rising in [`r mk_up` townships]{.k} and falling in [`r mk_down`]{.t}.
+:::
+
+::: footnote
+Exact labels are fragile (only `r kept_025` keep their class at threshold 0.025), but hot or cold is robust: [`r b$ehsa_n_hot6` townships are hot and `r b$ehsa_n_cold6` cold in all six runs]{.k}.
+:::
+:::::
+:::::::
+
+## 6 · Several wars, not one
+
+```{r}
+#| label: slide-timeline
+#| fig-width: 11.5
+#| fig-height: 4.7
+
+keep <- c("Monywa", "Yinmarbin", "Myaing", "Pakokku",
+          "Madaya", "Pyinoolwin", "Nyaung-U", "Chauk",
+          "Laukkaing", "Kunlong", "Lashio", "Nawnghkio",
+          "Maungdaw", "Kyauktaw", "Toungup", "Kyaukpyu",
+          "Shwegyin", "Hlaingbwe", "Myawaddy", "Dawei",
+          "Demoso", "Loikaw", "Hakha", "Mindat")
+
+tl <- b$timeline |>
+  filter(TS %in% keep) |>
+  mutate(label = fct_drop(label), front = fct_drop(front))
+
+ggplot(tl, aes(quarter, label, fill = status)) +
+  geom_tile(colour = "white", linewidth = 0.4) +
+  geom_vline(xintercept = 11.5, linetype = "dashed", colour = "grey30") +
+  facet_grid(front ~ ., scales = "free_y", space = "free_y", switch = "y") +
+  scale_fill_manual(values = c("Significant hot" = "#b2182b",
+                               "Significant cold" = "#2166ac",
+                               "Not significant" = "#eeeeee")) +
+  scale_x_discrete(breaks = b$q_labels[str_detect(b$q_labels, "Q1")],
+                   labels = \(x) str_sub(x, 1, 4)) +
+  labs(x = NULL, y = NULL, fill = NULL) +
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "top", panel.grid = element_blank(),
+        strip.placement = "outside",
+        strip.text.y.left = element_text(angle = 0, face = "bold"))
+```
+
+::::::::: columns
+:::: {.column width="33%"}
+::: tiny
+[A core that keeps spreading.]{.k} The Dry Zone core has been hot almost every quarter since late 2021, and the zone reached Pyinoolwin in 2024 and Nyaung-U and Chauk in 2025.
+:::
+::::
+
+:::: {.column width="33%"}
+::: tiny
+[Short, intense fronts.]{.k} Most of northern Shan was hot only in the two quarters around Operation 1027 (dashed line); only its western edge, such as Nawnghkio, stayed hot. Rakhine went from cold to hot in 2024, then quiet except Kyaukpyu.
+:::
+::::
+
+:::: {.column width="33%"}
+::: tiny
+[Fronts that faded.]{.k} Kayah and Chin were hot early and then dropped out. Kayah's events truly fell; Chin was overtaken by fighting elsewhere.
+:::
+::::
+:::::::::
+
+## 7 · Air war follows ground war
+
+::::::: columns
+::: {.column width="42%"}
+```{r}
+#| label: slide-bivariate
+#| fig-width: 4.4
+#| fig-height: 5.8
+
+bv_lv <- c("High-High", "High-Low", "Low-High", "Low-Low", "Not significant", "Not analysed")
+deck_map(join_class(b$bv, "bv_class", bv_lv), "bv_class",
+         c("High-High" = "#d7301f", "High-Low" = "#fc8d59", "Low-High" = "#9ecae1",
+           "Low-Low" = "#2171b5", "Not significant" = "#eeeeee", "Not analysed" = "#ffffff"),
+         "Bivariate LISA\n(p < 0.05)")
+```
+:::
+
+::::: {.column width="58%"}
+::: smaller
+Do air and drone strikes fall where other fighting is, or apart from it?
+
+- Global bivariate Moran's I = `r round(b$bv_I, 2)` (p = `r b$bv_p`): townships with many strikes sit among townships with much other fighting.
+- [`r bv_n("High-High")` High-High townships]{.k}, mostly in Sagaing, Magway and Mandalay, received [`r bv_share` of all `r fmt(b$n_air)` strikes]{.k}.
+- [`r bv_n("Low-Low")` Low-Low]{.t}, `r bv_ll0` of them with no strikes at all.
+- [No High-Low:]{.k} no township is struck heavily while its surroundings are calm.
+- `r percent(b$air_state, accuracy = 1)` of strikes have state forces as first actor. Using only those keeps 24 of 29 High-High and all 47 Low-Low townships.
+:::
+
+::: footnote
+What this adds to LISA: the clusters were already known, but the air war is now shown not to be independent of the ground war. It shows co-location, not cause, and the `r bv_n("Low-High")` Low-High townships are weak results (one survives FDR).
+:::
+:::::
+:::::::
+
+## 8 · Limitations
+
+::::::: columns
+:::: {.column width="50%"}
+::: {.smaller .limlist}
+- [Reported events, not violence]{.limhead}<br>ACLED depends on media and local reports. Where access is poor (the Wa hills, Rakhine during blackouts) counts understate conflict, so a cold spot means fewer events recorded, not less violence.
+- [Counts, not harm or rates]{.limhead}<br>A skirmish and a massacre count once each, and the only population figures are from the 2014 census, before more than three million people were displaced.
+- [One fixed window]{.limhead}<br>EHSA weights the final quarter (Q3 2025), so events after the window could change several classes.
+:::
+::::
+
+:::: {.column width="50%"}
+::: {.smaller .limlist}
+- [The unit shapes the result]{.limhead}<br>Townships range from Yangon wards of a few km² to Shan townships of thousands; another boundary set could show a different pattern.
+- [Gi\* is relative, labels are fragile]{.limhead}<br>A township can lose hot status because fighting grew elsewhere. About half of LISA and Gi\* results survive FDR, and EHSA classes are uncorrected.
+- [A modified EHSA]{.limhead}<br>`sfdep` was corrected (position matching, pooled permutations, one mis-signed rule). It reproduces `sfdep`'s Gi\* exactly but departs from the standard tool.
+- [No causal claims]{.limhead}<br>Matching dates are consistent with a link but do not show one.
+:::
+::::
+:::::::
+
+## 9 · Public-safety implications
+
+:::::: columns
+::: {.column width="46%"}
+```{r}
+#| label: slide-evidence
+#| fig-width: 5.4
+#| fig-height: 5.8
+
+ev_lv <- c("Hot in the total and in all six EHSA runs", "Hot in all six EHSA runs only",
+           "Cold in the total and in all six EHSA runs", "Cold in all six EHSA runs only",
+           "Other", "Not analysed")
+ev_map <- join_class(b$integ, "evidence", ev_lv)
+
+tm_shape(ev_map) +
+  tm_polygons(
+    fill = "evidence",
+    fill.scale = tm_scale_categorical(
+      values = setNames(c("#67001f", "#f4a582", "#053061", "#92c5de", "#eeeeee", "#ffffff"), ev_lv),
+      labels = c("Hot: total and all EHSA runs", "Hot: all EHSA runs only",
+                 "Cold: total and all EHSA runs", "Cold: all EHSA runs only",
+                 "Other", "Not analysed")),
+    fill.legend = tm_legend(title = "Where the analyses agree",
+                            position = tm_pos_out("right", "center"),
+                            title.size = 0.7, text.size = 0.5),
+    col = "grey60", lwd = 0.2) +
+  states +
+  tm_compass(type = "arrow", size = 1.6, position = tm_pos_in("right", "top")) +
+  tm_scalebar(breaks = c(0, 100, 200), text.size = 0.5, position = tm_pos_in("left", "top")) +
+  tm_layout(frame = FALSE)
+```
+:::
+
+:::: {.column width="54%"}
+::: micro
+[Supported directly by the analysis]{.subhead .yes}
+
+- [Plan for lasting hot spots, not only surges.]{.g} The `r sum(hot6)` townships hot in every EHSA run (dark and light red) hold [`r ev_share` of all events]{.k} and `r ev_pop` million of the analysed townships' `r pop_all` million people (2014 census): a baseline list for long-term protection and humanitarian access.
+- [Watch the edges of active fronts.]{.g} Townships that turned hot recently and are still rising: `r paste(watch_names, collapse = ", ")`. `r watch_small` have fewer than 130 events in total, so a map of totals would miss them.
+- [Prepare for ground and air attack together.]{.g} Strikes follow the fighting, so civilians in hot spots face both: shelter, strike warning and medical access should assume both.
+- [Check ceasefires against data.]{.g} During the 2025 earthquake ceasefires, events fell from `r q$events_per_day[1]` to `r q$events_per_day[2]` a day, but air and drone strikes went from `r q$air_per_day[1]` to `r q$air_per_day[2]` a day.
+
+[Motivated, but requiring further data]{.subhead .no}
+
+- [Quiet is not safe.]{.a} A cold spot may hide unreported fighting; quiet townships need other sources before any conclusion.
+- [Cause.]{.a} Counts cannot show why fighting moves into a township, or whether a ceasefire caused a change rather than displacing it.
+- [Need.]{.a} The 2014 population predates mass displacement (3.6 million internally displaced in 2025, OCHA); overlaying displacement and access data is the next step.
+:::
+::::
+::::::
+
+## Summary in one line {.closer-hero background-image="images/image2.jpg" background-size="cover"}
+
+::: {style="font-size: 1.15em; line-height: 1.5; color:#ffffff; text-shadow: 0 2px 8px rgba(0,0,0,0.85); text-align:left; max-width: 80%;"}
+Myanmar's `r fmt(n_events)` armed-conflict events since the coup centre on a Dry Zone core that has been hot almost every quarter since 2021 and is still spreading, while other fronts flared and faded. Air strikes follow the ground war, so the `r sum(hot6)` townships hot in every run, holding `r ev_share` of all events, need a long-term protection posture, not a response to surges.
+:::
+
+<br>

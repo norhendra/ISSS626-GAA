@@ -55,9 +55,10 @@ website:
             href: "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html"
           - text: "Take-home Exercise 1 - Executive Summary"
             href: "Take-home_Ex/Take-home_Ex01/Take-home_Ex01_ExecSummary.html"
-       # menu:
-       #   - text: "Take-home Exercise 1"
-        #    href: "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html"
+          - text: "Take-home Exercise 2 - Technical Report"
+            href: "Take-home_Ex/Take-home_Ex02/Take-home_Ex02_TH.html"
+          - text: "Take-home Exercise 2 - Executive Summary"
+            href: "Take-home_Ex/Take-home_Ex02/Take-home_Ex02_ES.html"
   page-footer:
     left: "Nor Hendra · ISSS626 Geospatial Analytics & Applications, SMU"
     right: "Built with Quarto"
